@@ -385,42 +385,61 @@ export default function ResultsPage() {
             {/* LEFT COLUMN: Summary, Interactive Map Trigger Card, Gamification */}
             <div className="lg:col-span-5 flex flex-col gap-6">
               
-              {/* Score Summary Card */}
-              <div className="glass-card p-6 rounded-2xl flex flex-col items-center text-center relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-primary-600/10 to-transparent rounded-bl-full pointer-events-none" />
+              {/* Premium Score Summary Card */}
+              <div className="relative p-8 rounded-3xl flex flex-col items-center text-center overflow-hidden border border-white/[0.05] bg-zinc-950/40 backdrop-blur-3xl shadow-[0_0_80px_rgba(139,92,246,0.05)] group hover:shadow-[0_0_100px_rgba(139,92,246,0.1)] transition-all duration-700">
+                {/* Dynamic Background Mesh / Glows */}
+                <div className="absolute top-[-25%] left-[-25%] w-[150%] h-[150%] bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.15)_0%,transparent_50%)] animate-[spin_15s_linear_infinite]" />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-zinc-950/90" />
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/10 blur-[50px] rounded-full pointer-events-none" />
+
+                <h3 className="relative z-10 text-[10px] font-extrabold text-zinc-400 uppercase tracking-[0.2em] mb-8 flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-primary-400" /> Overall Standing
+                </h3>
                 
-                <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Overall Standing</h3>
-                
-                {/* Glowing Score Progress Circle */}
-                <div className="relative w-36 h-36 flex items-center justify-center mb-4">
-                  <svg className="w-full h-full transform -rotate-90">
-                    <circle 
-                      cx="72" 
-                      cy="72" 
-                      r="64" 
-                      className="stroke-zinc-800 fill-none" 
-                      strokeWidth="8" 
-                    />
+                {/* Stunning Glowing Progress Circle */}
+                <div className="relative z-10 w-48 h-48 flex items-center justify-center mb-8">
+                  <svg className="w-full h-full transform -rotate-90 overflow-visible">
+                    <defs>
+                      <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#c084fc" /> {/* purple-400 */}
+                        <stop offset="100%" stopColor="#8b5cf6" /> {/* violet-500 */}
+                      </linearGradient>
+                      <filter id="neonGlow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="6" result="blur" />
+                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                      </filter>
+                    </defs>
+                    {/* Background Track */}
+                    <circle cx="96" cy="96" r="80" className="stroke-zinc-800/40 fill-none" strokeWidth="6" />
+                    {/* Glowing Progress */}
                     <motion.circle 
-                      cx="72" 
-                      cy="72" 
-                      r="64" 
-                      className="stroke-primary-500 fill-none filter drop-shadow-[0_0_8px_rgba(139,92,246,0.3)]" 
-                      strokeWidth="8" 
-                      strokeDasharray={2 * Math.PI * 64}
-                      initial={{ strokeDashoffset: 2 * Math.PI * 64 }}
-                      animate={{ strokeDashoffset: 2 * Math.PI * 64 * (1 - data.scores.overall / 100) }}
-                      transition={{ duration: 1.5, ease: "easeOut" }}
+                      cx="96" cy="96" r="80" 
+                      className="fill-none" 
+                      stroke="url(#scoreGradient)"
+                      strokeWidth="10" 
+                      strokeDasharray={2 * Math.PI * 80}
+                      initial={{ strokeDashoffset: 2 * Math.PI * 80 }}
+                      animate={{ strokeDashoffset: 2 * Math.PI * 80 * (1 - data.scores.overall / 100) }}
+                      transition={{ duration: 2, ease: [0.175, 0.885, 0.32, 1.275] }}
                       strokeLinecap="round"
+                      filter="url(#neonGlow)"
                     />
                   </svg>
-                  <div className="absolute flex flex-col items-center">
-                    <span className="text-4xl font-extrabold text-white tracking-tight">{data.scores.overall}</span>
-                    <span className="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">Scale / 100</span>
+                  {/* Inner Score Text */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                    <motion.span 
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 1, delay: 0.5, type: "spring" }}
+                      className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-400 drop-shadow-[0_0_20px_rgba(255,255,255,0.2)] tracking-tighter"
+                    >
+                      {data.scores.overall}
+                    </motion.span>
+                    <span className="text-[9px] text-primary-400 uppercase tracking-[0.2em] font-bold mt-1 opacity-80">Scale / 100</span>
                   </div>
                 </div>
 
-                <p className="text-zinc-300 text-sm leading-relaxed max-w-sm">
+                <p className="relative z-10 text-zinc-300 text-sm leading-loose max-w-sm font-medium">
                   {data.feedback.overall_summary}
                 </p>
               </div>
@@ -432,8 +451,8 @@ export default function ResultsPage() {
             {/* RIGHT COLUMN: Navigation Tabs + Details Widgets */}
             <div className="lg:col-span-7 flex flex-col gap-6">
               
-              {/* Tab Navigation Menu */}
-              <div className="flex bg-zinc-900/60 p-1.5 rounded-2xl border border-white/5 w-full">
+              {/* Premium Tab Navigation Menu */}
+              <div className="flex bg-zinc-950/50 backdrop-blur-xl p-1.5 rounded-[1.25rem] border border-white/[0.08] w-full relative z-10 shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
                 {[
                   { id: "roadmap", label: "Learning Roadmap", icon: BookOpen },
                   { id: "resume", label: "ATS Resume Optimizer", icon: FileText }
@@ -444,14 +463,21 @@ export default function ResultsPage() {
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id as any)}
-                      className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-semibold tracking-wider uppercase transition-all cursor-pointer ${
+                      className={`relative flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-[11px] font-bold tracking-[0.1em] uppercase transition-all cursor-pointer z-10 ${
                         isActive 
-                          ? "bg-zinc-800 text-white shadow" 
+                          ? "text-white" 
                           : "text-zinc-500 hover:text-zinc-300"
                       }`}
                     >
-                      <Icon className={`w-4 h-4 ${isActive ? "text-primary-400" : ""}`} />
-                      <span>{tab.label}</span>
+                      {isActive && (
+                        <motion.div 
+                          layoutId="activeTabPill"
+                          className="absolute inset-0 bg-gradient-to-r from-zinc-800/80 to-zinc-900/80 backdrop-blur-md rounded-xl border border-white/[0.15] shadow-[0_0_20px_rgba(0,0,0,0.6)] -z-10"
+                          transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                        />
+                      )}
+                      <Icon className={`w-4 h-4 z-10 transition-colors ${isActive ? "text-primary-400 drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]" : ""}`} />
+                      <span className="z-10">{tab.label}</span>
                     </button>
                   );
                 })}
@@ -472,56 +498,75 @@ export default function ResultsPage() {
                       <span>We custom-synthesized a 3-week learning horizon to patch specific gaps noticed during the interview session. Mark tasks completed to level up!</span>
                     </div>
 
-                    <div className="relative border-l border-zinc-800 ml-4 pl-6 flex flex-col gap-6">
+                    <div className="relative border-l-2 border-primary-500/20 ml-4 pl-6 flex flex-col gap-8">
                       {data.roadmap.map((week) => {
                         const isExpanded = expandedWeek === week.week;
                         return (
-                          <div key={week.week} className="relative">
-                            {/* Marker dot */}
-                            <div className={`absolute left-[-31px] top-1.5 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${
-                              isExpanded ? "bg-primary-500 border-primary-400" : "bg-zinc-950 border-zinc-700"
-                            }`} />
+                          <div key={week.week} className="relative group">
+                            {/* Glowing Marker Dot */}
+                            <div className={`absolute left-[-35px] top-4 w-5 h-5 rounded-full border-[3px] flex items-center justify-center transition-all duration-300 ${
+                              isExpanded 
+                                ? "bg-zinc-950 border-primary-400 shadow-[0_0_15px_rgba(139,92,246,0.8)] scale-110" 
+                                : "bg-zinc-950 border-zinc-700 group-hover:border-primary-500/50"
+                            }`}>
+                              {isExpanded && <div className="w-1.5 h-1.5 bg-primary-400 rounded-full animate-pulse" />}
+                            </div>
 
                             <div 
                               onClick={() => setExpandedWeek(isExpanded ? null : week.week)}
-                              className="glass-card p-5 rounded-2xl hover:bg-zinc-900/40 transition-colors cursor-pointer select-none"
+                              className={`relative p-6 rounded-3xl transition-all duration-500 cursor-pointer select-none overflow-hidden ${
+                                isExpanded 
+                                  ? "bg-zinc-900/40 border border-primary-500/30 shadow-[0_0_40px_rgba(139,92,246,0.1)]" 
+                                  : "bg-zinc-950/40 border border-white/[0.05] hover:border-primary-500/20 hover:bg-zinc-900/20"
+                              }`}
                             >
-                              <div className="flex justify-between items-center">
+                              {isExpanded && (
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/10 blur-[40px] pointer-events-none rounded-full" />
+                              )}
+                              <div className="flex justify-between items-center relative z-10">
                                 <div>
-                                  <span className="text-[10px] text-primary-400 font-bold uppercase tracking-widest">Week 0{week.week}</span>
-                                  <h4 className="text-base font-bold text-white mt-0.5">{week.topic}</h4>
+                                  <span className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors ${isExpanded ? "text-primary-400" : "text-zinc-500"}`}>Week 0{week.week}</span>
+                                  <h4 className="text-lg font-bold text-white mt-1 tracking-tight">{week.topic}</h4>
                                 </div>
-                                {isExpanded ? <ChevronUp className="w-5 h-5 text-zinc-500" /> : <ChevronDown className="w-5 h-5 text-zinc-500" />}
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${isExpanded ? "bg-primary-500/20 text-primary-400" : "bg-zinc-900 text-zinc-500 group-hover:text-zinc-300"}`}>
+                                  {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                                </div>
                               </div>
 
                               <AnimatePresence>
                                 {isExpanded && (
                                   <motion.div 
                                     initial={{ height: 0, opacity: 0, marginTop: 0 }}
-                                    animate={{ height: "auto", opacity: 1, marginTop: 12 }}
+                                    animate={{ height: "auto", opacity: 1, marginTop: 16 }}
                                     exit={{ height: 0, opacity: 0, marginTop: 0 }}
-                                    className="overflow-hidden"
+                                    className="overflow-hidden relative z-10"
                                     onClick={(e) => e.stopPropagation()}
                                   >
-                                    <p className="text-xs text-zinc-400 leading-relaxed mb-4">
+                                    <p className="text-sm text-zinc-400 leading-relaxed mb-5 font-medium">
                                       {week.description}
                                     </p>
 
-                                    <div className="flex flex-col gap-2.5">
+                                    <div className="flex flex-col gap-3">
                                       {week.actions.map((act, actIdx) => {
                                         const isChecked = !!roadmapChecked[`${week.week}-${actIdx}`];
                                         return (
                                           <div 
                                             key={actIdx}
                                             onClick={() => handleCheckboxToggle(week.week, actIdx)}
-                                            className="flex items-center gap-3 p-2.5 rounded-lg bg-zinc-950 border border-white/5 hover:border-zinc-800 transition-all cursor-pointer"
+                                            className={`group/task flex items-center gap-3.5 p-3.5 rounded-xl border transition-all duration-300 cursor-pointer ${
+                                              isChecked 
+                                                ? "bg-primary-500/5 border-primary-500/20" 
+                                                : "bg-zinc-950/50 border-white/[0.05] hover:border-white/10 hover:bg-zinc-900/50"
+                                            }`}
                                           >
-                                            <div className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
-                                              isChecked ? "bg-primary-500 border-primary-500 text-white" : "border-zinc-700 bg-transparent"
+                                            <div className={`w-5 h-5 rounded-md border-[1.5px] flex items-center justify-center shrink-0 transition-all duration-300 ${
+                                              isChecked 
+                                                ? "bg-primary-500 border-primary-500 text-white shadow-[0_0_10px_rgba(139,92,246,0.5)] scale-110" 
+                                                : "border-zinc-600 bg-transparent group-hover/task:border-zinc-400"
                                             }`}>
-                                              {isChecked && <CheckCircle2 className="w-3.5 h-3.5" />}
+                                              {isChecked && <CheckCircle2 className="w-4 h-4" />}
                                             </div>
-                                            <span className={`text-xs ${isChecked ? "text-zinc-500 line-through" : "text-zinc-300"}`}>
+                                            <span className={`text-sm font-medium transition-all duration-300 ${isChecked ? "text-zinc-500 line-through" : "text-zinc-300 group-hover/task:text-white"}`}>
                                               {act}
                                             </span>
                                           </div>
