@@ -274,7 +274,7 @@ export default function ResultsPage() {
           </button>
           <div>
             <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-              <BrainCircuit className="text-primary-400" /> Dashboard
+              Dashboard
             </h1>
           </div>
         </div>
