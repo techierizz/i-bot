@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "../config";
+import UserBox from "@/components/UserBox";
 
 // Define TypeScript interfaces for the evaluation data
 interface EvaluationScores {
@@ -259,6 +260,7 @@ export default function ResultsPage() {
 
   return (
     <div className="flex-1 flex flex-col w-full bg-background min-h-screen relative overflow-x-hidden p-4 md:p-8">
+      {!loading && <UserBox forceShow />}
       {/* Background glow flares */}
       <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full blur-[140px] bg-primary-600/10 pointer-events-none" />
       <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full blur-[140px] bg-secondary-600/10 pointer-events-none" />
