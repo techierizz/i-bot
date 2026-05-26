@@ -400,8 +400,10 @@ export default function InterviewPage() {
     setChatHistory(newChatHistory);
     
     const userMessageCount = newChatHistory.filter(msg => msg.role === "user").length;
+    // Exclude the initial greeting ("Are you ready?") from the question limit
+    const actualQuestionCount = Math.max(0, userMessageCount - 1);
     const limit = context?.question_limit || 10;
-    const isFinal = userMessageCount >= limit;
+    const isFinal = actualQuestionCount >= limit;
     
     if (isFinal) {
       isConcludingRef.current = true;
@@ -474,7 +476,7 @@ export default function InterviewPage() {
             HireMind
           </Link>
           <p className="text-xs text-zinc-400 mt-1">
-            {context?.interview_mode} • {context?.persona} Persona • Question {Math.min(chatHistory.filter(m => m.role === 'user').length + 1, context?.question_limit || 10)} of {context?.question_limit || 10}
+            {context?.interview_mode} • {context?.persona} Persona
           </p>
         </div>
         
