@@ -32,6 +32,7 @@ export default function SetupPage() {
   
   const [selectedMode, setSelectedMode] = useState("General");
   const [selectedPersona, setSelectedPersona] = useState("Friendly");
+  const [questionLimit, setQuestionLimit] = useState<number>(10);
   
   const modes = [
     { id: "General", icon: <Briefcase className="w-5 h-5" />, desc: "Standard behavioral and background questions." },
@@ -40,6 +41,12 @@ export default function SetupPage() {
   ];
   
   const personas = ["Friendly", "Strict", "Fast-paced"];
+  
+  const lengths = [
+    { id: 5, label: "Quick Screen", desc: "5 Questions" },
+    { id: 10, label: "Standard", desc: "8-10 Questions" },
+    { id: 15, label: "Deep Dive", desc: "13-15 Questions" }
+  ];
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -101,6 +108,7 @@ export default function SetupPage() {
       localStorage.setItem("hiremind_config", JSON.stringify({ 
         mode: selectedMode, 
         persona: selectedPersona,
+        question_limit: questionLimit,
         user_id: candidateUser?.id,
         username: candidateUser?.username
       }));
@@ -161,7 +169,7 @@ export default function SetupPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-16"
         >
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight text-primary-400">
+          <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight text-purple-400">
             Ready to start?
           </h1>
           <p className="text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto leading-relaxed">
@@ -280,6 +288,29 @@ export default function SetupPage() {
                     }`}
                   >
                     {p}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-3xl bg-zinc-900/40 border border-white/5 p-8 flex-1 shadow-2xl backdrop-blur-xl hover:border-blue-500/30 transition-all">
+              <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
+                <div className="p-2 bg-blue-500/10 rounded-xl text-blue-400"><Settings className="w-5 h-5" /></div>
+                Interview Length
+              </h3>
+              <div className="flex flex-col gap-3">
+                {lengths.map(l => (
+                  <button
+                    key={l.id}
+                    onClick={() => setQuestionLimit(l.id)}
+                    className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-300 ${
+                      questionLimit === l.id 
+                        ? "border-blue-500 bg-blue-500/10 text-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.15)]" 
+                        : "border-zinc-800 bg-zinc-950/50 hover:border-zinc-600 hover:bg-zinc-800"
+                    }`}
+                  >
+                    <span className="font-bold text-white">{l.label}</span>
+                    <span className="text-sm text-zinc-400">{l.desc}</span>
                   </button>
                 ))}
               </div>
