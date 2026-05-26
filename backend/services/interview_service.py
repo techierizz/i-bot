@@ -61,6 +61,12 @@ def generate_interview_response(context: dict, chat_history: list, latest_user_r
         
         # Track current difficulty
         current_difficulty = context.get("current_difficulty", "Medium")
+        is_final_turn = context.get("is_final_turn", False)
+        
+        if is_final_turn:
+            turn_instruction = "6. THIS IS THE FINAL TURN OF THE INTERVIEW. Do NOT ask another question. Briefly thank the candidate for their time, acknowledge their final answer, and cleanly conclude the interview in 2-3 sentences max."
+        else:
+            turn_instruction = "6. Ask exactly ONE follow-up or new question matching the NEW difficulty level. Keep your spoken response conversational, concise (under 3 sentences), and natural (it will be read aloud)."
         
         system_prompt = f"""
         You are an expert technical interviewer. 
@@ -88,7 +94,7 @@ def generate_interview_response(context: dict, chat_history: list, latest_user_r
            - If score == 3: Maintain current difficulty.
         4. Cross-reference their response with their Candidate Background. If they claim a skill not listed, mismatch their experience level, or make highly implausible claims, flag it as a potential lie/inconsistency.
         5. Generate your next spoken response. If their answer was good, acknowledge it briefly. If it was bad, probe deeper.
-        6. Ask exactly ONE follow-up or new question matching the NEW difficulty level. Keep your spoken response conversational, concise (under 3 sentences), and natural (it will be read aloud).
+        {turn_instruction}
         
         Return your response strictly in the following JSON format:
         {{
@@ -377,4 +383,3 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
     except Exception as e:
         print(f"Error executing Gemini evaluation: {e}")
         return mock_data
-
