@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "../config";
+import Link from "next/link";
 
 interface ChatMessage {
   role: "user" | "ai";
@@ -36,7 +37,7 @@ export default function InterviewPage() {
   const [transcript, setTranscript] = useState("");
 
   // Phase 4 State
-  const [isWebcamOn, setIsWebcamOn] = useState(false);
+  const [isWebcamOn, setIsWebcamOn] = useState(true);
   const [scriptsLoaded, setScriptsLoaded] = useState(false);
   const [scriptsError, setScriptsError] = useState(false);
   const [gazeStatus, setGazeStatus] = useState<"Focused" | "Looking Away">("Focused");
@@ -359,7 +360,16 @@ export default function InterviewPage() {
     }
     
     utterance.onstart = () => setIsAiSpeaking(true);
-    utterance.onend = () => setIsAiSpeaking(false);
+    utterance.onend = () => {
+      setIsAiSpeaking(false);
+      setTranscript("");
+      try {
+        recognitionRef.current?.start();
+        setIsListening(true);
+      } catch (e) {
+        console.error(e);
+      }
+    };
     
     synthRef.current.speak(utterance);
   };
@@ -459,9 +469,9 @@ export default function InterviewPage() {
       {/* Header */}
       <header className="w-full p-6 flex justify-between items-center z-10 glass-panel border-b border-white/5">
         <div>
-          <h1 className="text-xl font-bold text-white flex items-center gap-2">
-            <BrainCircuit className="text-primary-400" /> HireMind <span className="font-light text-zinc-400">AI</span>
-          </h1>
+          <Link href="/" className="text-xl font-bold text-white flex items-center gap-2 hover:opacity-80 transition-opacity">
+            HireMind <span className="font-light text-zinc-400">AI</span>
+          </Link>
           <p className="text-xs text-zinc-400 mt-1">
             {context?.interview_mode} • {context?.persona} Persona
           </p>
@@ -479,15 +489,9 @@ export default function InterviewPage() {
             }`}
           >
             {isWebcamOn ? <VideoOff className="w-3.5 h-3.5" /> : <Video className="w-3.5 h-3.5" />}
-            {isWebcamOn ? "Webcam HUD On" : "Webcam HUD Off"}
+            {isWebcamOn ? "Webcam ON" : "Webcam OFF"}
           </button>
 
-          <div className="flex items-center gap-2 text-sm">
-            <div className={`w-2 h-2 rounded-full ${isAiThinking ? "bg-blue-500 animate-pulse" : isAiSpeaking ? "bg-primary-500 animate-pulse" : "bg-zinc-600"}`} />
-            <span className="text-zinc-400 text-xs hidden sm:inline">
-              {isAiThinking ? "AI is thinking..." : isAiSpeaking ? "AI is speaking" : "AI is ready"}
-            </span>
-          </div>
           <button 
             onClick={endInterview}
             className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors text-sm font-medium border border-red-500/20"
@@ -695,7 +699,7 @@ export default function InterviewPage() {
         {/* Right: Live Transcript */}
         <div className="w-full md:w-[360px] lg:w-[420px] flex flex-col glass-card rounded-2xl overflow-hidden">
           <div className="p-4 border-b border-white/10 bg-white/5 font-medium flex items-center gap-2">
-            <FileTextIcon /> Live Transcript
+            <FileTextIcon /> Live Feed
           </div>
           
           <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
@@ -742,7 +746,7 @@ export default function InterviewPage() {
           </div>
           
           <div className="p-4 border-t border-white/5 bg-white/5">
-             <p className="text-xs text-center text-zinc-500">
+             <p className="text-xs text-center text-amber-500 font-bold tracking-wide">
                Speak clearly into your microphone. The AI will respond automatically.
              </p>
           </div>
