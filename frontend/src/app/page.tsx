@@ -133,20 +133,9 @@ export default function Home() {
               </span>
             </h1>
 
-            <p className="text-lg md:text-2xl text-zinc-400 font-medium max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg md:text-2xl text-zinc-400 font-medium max-w-2xl mx-auto leading-relaxed pb-12">
               Step into a hyper-realistic, voice-driven AI interview. Get grilled like a real candidate, and get hired like a pro.
             </p>
-
-            <div className="pt-8 flex flex-col sm:flex-row items-center justify-center gap-5">
-              <Link href="/setup" className="w-full sm:w-auto group">
-                <button className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-500 hover:to-secondary-500 rounded-2xl font-bold text-white text-lg shadow-[0_0_40px_rgba(139,92,246,0.3)] transition-all hover:shadow-[0_0_60px_rgba(139,92,246,0.5)] hover:scale-105 active:scale-95 flex items-center justify-center gap-3 cursor-pointer">
-                  Start Free Interview <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </button>
-              </Link>
-              <button className="w-full sm:w-auto px-8 py-4 bg-zinc-900/80 border border-white/10 hover:bg-zinc-800 rounded-2xl font-semibold text-lg transition-all flex items-center justify-center gap-3 backdrop-blur-sm cursor-pointer">
-                <PlayCircle className="w-5 h-5 text-zinc-400" /> Watch Demo
-              </button>
-            </div>
           </motion.div>
 
           {/* Scroll Indicator */}
@@ -171,7 +160,9 @@ export default function Home() {
               transition={{ duration: 0.8 }}
               className="text-center max-w-3xl mx-auto mb-20"
             >
-              <h2 className="text-4xl md:text-5xl font-extrabold mb-6">Interviews are terrifying.</h2>
+              <h2 className="text-5xl md:text-6xl font-black mb-6 tracking-tight">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-400">Interviews are terrifying.</span>
+              </h2>
               <p className="text-xl text-zinc-400 leading-relaxed">
                 You apply, you wait, you finally get the call—and then you freeze. Without realistic practice and honest feedback, you're going in blind.
               </p>
@@ -215,7 +206,9 @@ export default function Home() {
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary-900/30 border border-secondary-500/30 text-secondary-300 text-sm font-medium mb-6">
                 The Solution
               </div>
-              <h2 className="text-4xl md:text-6xl font-extrabold mb-6">Your Personal Interviewer</h2>
+              <h2 className="text-5xl md:text-7xl font-black mb-6 tracking-tight">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Your Personal Interviewer</span>
+              </h2>
               <p className="text-xl text-zinc-400">
                 A seamless flow designed to extract your best performance.
               </p>
@@ -371,11 +364,16 @@ export default function Home() {
           >
             <h2 className="text-5xl md:text-7xl font-black">Ready to land the offer?</h2>
             <p className="text-xl text-zinc-400">Join thousands of engineers who mastered their interviews with HireMind AI.</p>
-            <Link href="/setup" className="inline-block mt-8">
-              <button className="px-10 py-5 bg-white text-zinc-950 hover:bg-zinc-200 rounded-2xl font-extrabold text-xl shadow-[0_0_40px_rgba(255,255,255,0.2)] transition-all hover:scale-105 active:scale-95 cursor-pointer">
-                Start Your Free Interview
+            <div className="pt-8 flex flex-col sm:flex-row items-center justify-center gap-5">
+              <Link href="/setup" className="w-full sm:w-auto group">
+                <button className="w-full sm:w-auto px-10 py-5 bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-500 hover:to-secondary-500 rounded-2xl font-black text-white text-xl shadow-[0_0_40px_rgba(139,92,246,0.3)] transition-all hover:shadow-[0_0_60px_rgba(139,92,246,0.5)] hover:scale-105 active:scale-95 flex items-center justify-center gap-3 cursor-pointer">
+                  Start Your Free Interview <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </Link>
+              <button className="w-full sm:w-auto px-10 py-5 bg-zinc-900/80 border border-white/10 hover:bg-zinc-800 rounded-2xl font-bold text-xl transition-all flex items-center justify-center gap-3 backdrop-blur-sm cursor-pointer">
+                <PlayCircle className="w-6 h-6 text-zinc-400" /> Watch Demo
               </button>
-            </Link>
+            </div>
           </motion.div>
         </section>
 
