@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Mic, LineChart, FileText, ArrowRight, LogOut, Shield, User, PlayCircle, CheckCircle2, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -9,7 +9,15 @@ import Image from "next/image";
 export default function Home() {
   const [candidateUser, setCandidateUser] = useState<any>(null);
   const [adminUser, setAdminUser] = useState<any>(null);
+  const [isScrolled, setIsScrolled] = useState(false);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     // Read session states from localStorage
@@ -139,14 +147,24 @@ export default function Home() {
           </motion.div>
 
           {/* Scroll Indicator */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1, y: [0, 15, 0] }}
-            transition={{ delay: 1.5, duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute bottom-10 left-1/2 -translate-x-1/2 flex justify-center items-center text-primary-500"
-          >
-            <ChevronDown className="w-10 h-10 drop-shadow-[0_0_15px_rgba(139,92,246,0.5)]" />
-          </motion.div>
+          <AnimatePresence>
+            {!isScrolled && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1, y: [0, 15, 0] }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.5 }}
+                className="absolute bottom-10 left-1/2 -translate-x-1/2 flex justify-center items-center text-primary-500"
+              >
+                <motion.div
+                  animate={{ y: [0, 15, 0] }}
+                  transition={{ delay: 1.5, duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <ChevronDown className="w-10 h-10 drop-shadow-[0_0_15px_rgba(139,92,246,0.5)]" />
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </section>
 
         {/* Section 2: The Problem */}
