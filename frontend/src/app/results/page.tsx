@@ -293,9 +293,9 @@ export default function ResultsPage() {
 
             <button 
               onClick={() => router.push("/interview")}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-xl font-medium shadow-lg hover:shadow-primary-500/10 transition-all transform hover:scale-[1.02] text-sm cursor-pointer"
+              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-white to-zinc-200 text-zinc-950 rounded-xl font-extrabold shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(255,255,255,0.25)] transition-all transform hover:scale-[1.05] active:scale-95 text-sm cursor-pointer"
             >
-              <RefreshCw className="w-4 h-4" /> Restart Interview
+              <RefreshCw className="w-4 h-4" /> Another interview
             </button>
           </div>
         </header>
@@ -423,156 +423,7 @@ export default function ResultsPage() {
                 </p>
               </div>
 
-              {/* Gamification Hub — Dynamic Per-User */}
-              <div className="glass-card p-6 rounded-2xl flex flex-col gap-5 relative overflow-hidden">
-                {/* Background glow */}
-                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-violet-600/10 to-transparent rounded-bl-full pointer-events-none" />
 
-                {/* Header row */}
-                <div className="flex justify-between items-center">
-                  <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Career Progression</h3>
-                  <div className="flex items-center gap-2">
-                    {gamification && gamification.streak > 1 && (
-                      <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-orange-500/10 border border-orange-500/20 text-orange-400 text-[10px] font-bold">
-                        <Flame className="w-3 h-3" /> {gamification.streak}-Day Streak
-                      </span>
-                    )}
-                    <span className="px-2.5 py-1 rounded bg-violet-500/10 border border-violet-500/20 text-violet-400 text-[10px] font-bold tracking-wider flex items-center gap-1">
-                      <Trophy className="w-3 h-3" />
-                      {gamification ? `LVL ${gamification.level}` : "LVL 1"}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Level + Rank display */}
-                <div className="flex items-center gap-4">
-                  <div className="relative w-14 h-14 shrink-0">
-                    <svg className="w-full h-full -rotate-90" viewBox="0 0 56 56">
-                      <circle cx="28" cy="28" r="24" className="fill-none stroke-zinc-800" strokeWidth="5" />
-                      <motion.circle
-                        cx="28" cy="28" r="24"
-                        className="fill-none stroke-violet-500"
-                        strokeWidth="5"
-                        strokeLinecap="round"
-                        strokeDasharray={2 * Math.PI * 24}
-                        initial={{ strokeDashoffset: 2 * Math.PI * 24 }}
-                        animate={{ strokeDashoffset: 2 * Math.PI * 24 * (1 - (gamification?.progress_pct ?? 0) / 100) }}
-                        transition={{ duration: 1.5, ease: "easeOut", delay: 0.4 }}
-                      />
-                    </svg>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-sm font-extrabold text-white">{gamification?.level ?? 1}</span>
-                    </div>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-base font-extrabold text-white leading-tight">{gamification?.rank_title ?? "Recruit"}</p>
-                    <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Current Rank</p>
-                    <div className="mt-2 w-full bg-zinc-950 border border-white/5 h-2 rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: "0%" }}
-                        animate={{ width: `${gamification?.progress_pct ?? 0}%` }}
-                        transition={{ duration: 1.5, ease: "easeOut", delay: 0.5 }}
-                        className="h-full rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 shadow-[0_0_8px_rgba(139,92,246,0.5)]"
-                      />
-                    </div>
-                    <div className="flex justify-between text-[9px] text-zinc-600 mt-1 font-semibold">
-                      <span>{gamification?.xp_into_level?.toLocaleString() ?? 0} XP</span>
-                      <span>{gamification?.xp_for_next_lvl?.toLocaleString() ?? 500} XP to next</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Interview too short warning */}
-                {gamification && (gamification as any).skipped_reason && (
-                  <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-amber-500/5 border border-amber-500/15 text-[11px]">
-                    <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
-                    <span className="text-amber-300/80">{(gamification as any).skipped_reason}. <span className="text-amber-400 font-bold">No XP was awarded this session.</span> Complete a full interview to earn XP!</span>
-                  </div>
-                )}
-
-                {/* XP earned this session */}
-                <div className="grid grid-cols-3 gap-2 border-t border-white/5 pt-4">
-                  <div className="flex flex-col items-center p-2.5 rounded-xl bg-violet-500/5 border border-violet-500/10">
-                    <span className="text-lg font-extrabold text-violet-400">+{gamification?.xp_earned ?? data.xp_earned}</span>
-                    <span className="text-[9px] text-zinc-500 uppercase tracking-wider font-semibold mt-0.5">Session XP</span>
-                  </div>
-                  <div className="flex flex-col items-center p-2.5 rounded-xl bg-zinc-900/50 border border-white/5">
-                    <span className="text-lg font-extrabold text-white">{gamification?.total_xp?.toLocaleString() ?? data.xp_earned}</span>
-                    <span className="text-[9px] text-zinc-500 uppercase tracking-wider font-semibold mt-0.5">Total XP</span>
-                  </div>
-                  <div className="flex flex-col items-center p-2.5 rounded-xl bg-orange-500/5 border border-orange-500/10">
-                    <span className="text-lg font-extrabold text-orange-400">{gamification?.streak ?? 0}🔥</span>
-                    <span className="text-[9px] text-zinc-500 uppercase tracking-wider font-semibold mt-0.5">Streak</span>
-                  </div>
-                </div>
-
-                {/* Streak bonus callout */}
-                {gamification && gamification.xp_bonus > 0 && (
-                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-orange-500/5 border border-orange-500/10 text-[11px]">
-                    <Flame className="w-3.5 h-3.5 text-orange-400 shrink-0" />
-                    <span className="text-zinc-400">Streak multiplier <span className="text-orange-400 font-bold">×{gamification.streak_multiplier}</span> added <span className="text-orange-300 font-bold">+{gamification.xp_bonus} bonus XP</span></span>
-                  </div>
-                )}
-
-                {/* Badge Vault */}
-                <div className="border-t border-white/5 pt-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">
-                      Badge Vault — {(gamification?.all_badges ?? data.achievements.map(a => a.id)).length}/{ALL_BADGES.length} Unlocked
-                    </span>
-                    <button
-                      onClick={() => setShowBadgeVault(v => !v)}
-                      className="text-[9px] text-primary-400 hover:text-primary-300 font-bold uppercase tracking-wider transition-colors cursor-pointer"
-                    >
-                      {showBadgeVault ? "Hide All" : "View All"}
-                    </button>
-                  </div>
-                  <div className="grid grid-cols-4 gap-2">
-                    {(showBadgeVault ? ALL_BADGES : ALL_BADGES.slice(0, 8)).map((badge) => {
-                      const earned = (gamification?.all_badges ?? data.achievements.map(a => a.id)).includes(badge.id);
-                      const isNew = (gamification?.new_badges ?? []).includes(badge.id);
-                      const IconComponent = iconMap[badge.icon] || Trophy;
-                      return (
-                        <div
-                          key={badge.id}
-                          className={`group relative flex flex-col items-center text-center p-2 rounded-xl border transition-all cursor-pointer ${
-                            earned
-                              ? isNew
-                                ? "bg-violet-500/15 border-violet-500/40 shadow-[0_0_12px_rgba(139,92,246,0.2)]"
-                                : "bg-zinc-900/50 border-white/10 hover:border-primary-500/30"
-                              : "bg-zinc-950/50 border-white/5 opacity-40 grayscale"
-                          }`}
-                        >
-                          {isNew && (
-                            <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-violet-500 border border-zinc-950 animate-pulse" />
-                          )}
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center mb-1 transition-transform ${
-                            earned ? "bg-primary-500/15 border border-primary-500/20 text-primary-400 group-hover:scale-110" : "bg-zinc-900 text-zinc-600"
-                          }`}>
-                            {earned ? <IconComponent className="w-4 h-4" /> : <Lock className="w-3.5 h-3.5" />}
-                          </div>
-                          <span className="text-[8px] font-bold text-zinc-300 leading-tight line-clamp-2">{badge.name}</span>
-                          {/* Tooltip */}
-                          <div className="absolute bottom-full mb-2 hidden group-hover:block z-20 w-40 p-2 bg-zinc-950 border border-white/10 rounded-lg text-[9px] text-zinc-300 text-left shadow-2xl leading-normal pointer-events-none">
-                            <div className="font-bold text-white mb-0.5">{badge.name}</div>
-                            {badge.description}
-                            {!earned && <div className="text-zinc-600 mt-1 italic">🔒 Not yet unlocked</div>}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Profile link */}
-                <button
-                  onClick={() => router.push("/profile")}
-                  className="w-full py-2 rounded-xl border border-white/5 bg-zinc-900/40 hover:bg-zinc-900/70 hover:border-primary-500/20 transition-all text-[10px] text-zinc-400 hover:text-primary-400 font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  <User className="w-3.5 h-3.5" /> View Full Progress Profile
-                </button>
-
-              </div>
 
             </div>
 
