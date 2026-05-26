@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import UserBox from "@/components/UserBox";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -20,6 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${inter.variable} antialiased min-h-screen flex flex-col`}>
+        <UserBox />
         <main className="flex-1 w-full relative z-10 flex flex-col">
           {children}
         </main>
