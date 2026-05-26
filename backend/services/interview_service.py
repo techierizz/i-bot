@@ -214,10 +214,17 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
         ],
         "resume_optimizer": {
             "ats_score_impact": 15,
-            "suggestions": [
-                "Quantify impact: add percentages, dollar values, or user counts to experience descriptions.",
-                "List specific AWS services used (e.g. S3, Lambda, API Gateway) instead of just 'Cloud deployment'.",
-                "Incorporate strong action verbs at the start of each bullet point."
+            "what_to_add": [
+                "Add specific metrics (percentages, dollar values, or user counts) to quantify the impact of your work.",
+                "Include a section detailing your specific cloud infrastructure experience (e.g., AWS S3, Lambda, API Gateway)."
+            ],
+            "what_to_delete": [
+                "Remove vague phrases like 'Responsible for' or 'Helped team build'—they weaken your active contributions.",
+                "Delete outdated skills or technologies that aren't relevant to a mid-level React/Fullstack role."
+            ],
+            "what_to_change": [
+                "Change 'Cloud deployment' to explicitly list the services you orchestrated.",
+                "Rewrite bullet points to start with strong action verbs (e.g., 'Architected', 'Refactored', 'Engineered')."
             ],
             "bullet_points": [
                 {
@@ -301,9 +308,11 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
            - Overall: An average of the 4 scores, or weighted as you see fit.
         2. Provide constructive feedback for each of the 4 areas and a high-level overall summary.
         3. Generate a personalized 3-week roadmap tailored to their weaknesses shown in the interview. Each week should have a topic, description, and 3 actionable tasks.
-        4. Provide ATS Resume Optimizer recommendations:
-           - Suggestions: 3 general tips to improve their resume based on their answers.
-           - Bullet Points: 2 before/after examples of how they can rewrite bullet points on their resume to show impact, along with a rationale.
+        4. Provide ATS Resume Optimizer recommendations based on their answers:
+           - what_to_add: 2-3 specific things missing from their resume (keywords, metrics, or sections).
+           - what_to_delete: 2-3 specific things they should remove (fluff, filler, or weak phrasing).
+           - what_to_change: 2-3 structural or phrasing changes they should make to existing content.
+           - bullet_points: 2 before/after examples of how they can rewrite bullet points on their resume to show impact, along with a rationale.
         5. Award achievements/badges from the following list (choose 2-4 that best fit their interview behavior):
            - id: "fluent_speaker",   name: "Fluent Communicator",  icon: "MessageSquare" — excellent communication, < 5 filler words
            - id: "logic_master",     name: "Logic Master",          icon: "Zap"          — exceptional problem-solving, structured reasoning
@@ -345,7 +354,9 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
           ],
           "resume_optimizer": {{
             "ats_score_impact": number,
-            "suggestions": ["string", "string", "string"],
+            "what_to_add": ["string", "string"],
+            "what_to_delete": ["string", "string"],
+            "what_to_change": ["string", "string"],
             "bullet_points": [
               {{ "before": "string", "after": "string", "rationale": "string" }},
               {{ "before": "string", "after": "string", "rationale": "string" }}
