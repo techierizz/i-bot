@@ -45,7 +45,9 @@ interface ResumeBulletPoint {
 
 interface ResumeOptimizer {
   ats_score_impact: number;
-  suggestions: string[];
+  what_to_add: string[];
+  what_to_delete: string[];
+  what_to_change: string[];
   bullet_points: ResumeBulletPoint[];
 }
 
@@ -562,17 +564,58 @@ export default function ResultsPage() {
                       </div>
                     </div>
 
-                    {/* Skill/Keyword Recommendations */}
-                    <div className="glass-card p-5 rounded-2xl">
-                      <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-3">Recommended Modifications</h4>
-                      <ul className="space-y-2.5 text-xs text-zinc-300 list-none">
-                        {data.resume_optimizer.suggestions.map((sug, i) => (
-                          <li key={i} className="flex items-start gap-2.5">
-                            <span className="text-primary-400 mt-0.5 font-bold">•</span>
-                            <span className="leading-relaxed">{sug}</span>
-                          </li>
-                        ))}
-                      </ul>
+                    {/* Add/Delete/Change Recommendations */}
+                    <div className="flex flex-col gap-4">
+                      {/* What to Add */}
+                      {data.resume_optimizer.what_to_add && data.resume_optimizer.what_to_add.length > 0 && (
+                        <div className="glass-card p-5 rounded-2xl border-l-4 border-l-emerald-500">
+                          <h4 className="text-xs font-extrabold text-emerald-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                            <span className="w-5 h-5 rounded-full bg-emerald-500/10 flex items-center justify-center">+</span> What To Add
+                          </h4>
+                          <ul className="space-y-2.5 text-xs text-zinc-300 list-none">
+                            {data.resume_optimizer.what_to_add.map((item, i) => (
+                              <li key={i} className="flex items-start gap-2.5 leading-relaxed">
+                                <span className="text-emerald-500/50 mt-0.5 font-bold">•</span>
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* What to Delete */}
+                      {data.resume_optimizer.what_to_delete && data.resume_optimizer.what_to_delete.length > 0 && (
+                        <div className="glass-card p-5 rounded-2xl border-l-4 border-l-red-500">
+                          <h4 className="text-xs font-extrabold text-red-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                            <span className="w-5 h-5 rounded-full bg-red-500/10 flex items-center justify-center">-</span> What To Delete
+                          </h4>
+                          <ul className="space-y-2.5 text-xs text-zinc-300 list-none">
+                            {data.resume_optimizer.what_to_delete.map((item, i) => (
+                              <li key={i} className="flex items-start gap-2.5 leading-relaxed">
+                                <span className="text-red-500/50 mt-0.5 font-bold">•</span>
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* What to Change */}
+                      {data.resume_optimizer.what_to_change && data.resume_optimizer.what_to_change.length > 0 && (
+                        <div className="glass-card p-5 rounded-2xl border-l-4 border-l-amber-500">
+                          <h4 className="text-xs font-extrabold text-amber-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                            <span className="w-5 h-5 rounded-full bg-amber-500/10 flex items-center justify-center">~</span> What To Change
+                          </h4>
+                          <ul className="space-y-2.5 text-xs text-zinc-300 list-none">
+                            {data.resume_optimizer.what_to_change.map((item, i) => (
+                              <li key={i} className="flex items-start gap-2.5 leading-relaxed">
+                                <span className="text-amber-500/50 mt-0.5 font-bold">•</span>
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                     </div>
 
                     {/* Before/After bullet point comparison */}
