@@ -136,6 +136,7 @@ export default function Home() {
   const headerBorder = useTransform(scrollY, [0, 50], ["rgba(255, 255, 255, 0)", "rgba(255, 255, 255, 0.05)"]);
   const headerPy = useTransform(scrollY, [0, 50], ["24px", "16px"]);
   const headerBackdrop = useTransform(scrollY, [0, 50], ["blur(0px)", "blur(12px)"]);
+  const scrollIndicatorOpacity = useTransform(scrollY, [0, 50], [1, 0]);
 
   useEffect(() => {
     const candidateSession = localStorage.getItem("hiremind_user");
@@ -274,21 +275,18 @@ export default function Home() {
           </motion.div>
 
           {/* Scroll Indicator */}
-          <AnimatePresence>
-            {!isScrolled && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0, scale: 0.8, y: 20 }}
-                transition={{ delay: 2, duration: 0.5 }}
-                className="absolute bottom-10 left-1/2 -translate-x-1/2 flex justify-center items-center text-primary-500"
-              >
-                <motion.div animate={{ y: [0, 15, 0] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}>
-                  <ChevronDown className="w-10 h-10 drop-shadow-[0_0_15px_rgba(139,92,246,0.5)] opacity-50" />
-                </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <motion.div
+            style={{ opacity: scrollIndicatorOpacity }}
+            className="absolute bottom-10 left-1/2 -translate-x-1/2 flex justify-center items-center text-primary-500 pointer-events-none"
+          >
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1, y: [0, 15, 0] }}
+              transition={{ delay: 2, duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <ChevronDown className="w-10 h-10 drop-shadow-[0_0_15px_rgba(139,92,246,0.5)] opacity-50" />
+            </motion.div>
+          </motion.div>
         </section>
 
         {/* Section 2: The Problem */}
