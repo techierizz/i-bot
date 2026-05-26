@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { User, LogOut } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 
-export default function UserBox() {
+export default function UserBox({ forceShow = false }: { forceShow?: boolean }) {
   const [user, setUser] = useState<any>(null);
   const router = useRouter();
   const pathname = usePathname();
@@ -29,7 +29,8 @@ export default function UserBox() {
     router.push("/");
   };
 
-  if (!user || pathname === "/") return null;
+  if (!user) return null;
+  if (!forceShow && (pathname === "/" || pathname === "/interview" || pathname === "/results")) return null;
 
   return (
     <div className="fixed top-6 right-6 z-50 flex items-center gap-3">
