@@ -260,18 +260,7 @@ export default function Home() {
               Step into a hyper-realistic, voice-driven AI interview. Get grilled like a real candidate, and get hired like a pro.
             </motion.p>
             
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.5, duration: 0.8 }}
-            >
-              <Link href="/setup">
-                <button className="px-10 py-5 bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-500 hover:to-secondary-500 rounded-2xl font-black text-white text-xl shadow-[0_0_40px_rgba(139,92,246,0.4)] transition-all hover:shadow-[0_0_80px_rgba(139,92,246,0.6)] hover:scale-105 active:scale-95 flex items-center gap-3 relative overflow-hidden group">
-                   <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] skew-x-12" />
-                   Start Your Free Interview <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform relative z-10" />
-                </button>
-              </Link>
-            </motion.div>
+
           </motion.div>
 
           {/* Scroll Indicator */}
@@ -364,9 +353,7 @@ export default function Home() {
                   transition={{ duration: 0.8 }}
                   className="flex-1 space-y-6"
                 >
-                  <div className="w-16 h-16 rounded-2xl bg-blue-500/10 flex items-center justify-center border border-blue-500/30 shadow-[0_0_30px_rgba(59,130,246,0.2)]">
-                    <FileText className="w-8 h-8 text-blue-400" />
-                  </div>
+
                   <h3 className="text-4xl font-bold">1. Context-Aware</h3>
                   <p className="text-xl text-zinc-400 leading-relaxed">
                     Upload your resume. HireMind analyzes your experience, projects, and skills to generate tailored, hyper-specific questions just like a real hiring manager.
@@ -388,20 +375,8 @@ export default function Home() {
                   style={{ perspective: 1000 }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/10 via-transparent to-transparent opacity-50" />
-                  {/* Resume Scanning Animation */}
-                  <div className="w-3/4 h-3/4 rounded-xl border border-white/10 bg-zinc-950/80 p-6 shadow-2xl flex flex-col gap-5 relative overflow-hidden transform transition-transform group-hover:scale-105">
-                     <motion.div 
-                        initial={{ y: "-10%" }}
-                        animate={{ y: "110%" }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                        className="absolute left-0 right-0 h-1 bg-blue-500/80 shadow-[0_0_15px_rgba(59,130,246,0.8)] z-10"
-                     />
-                    <div className="w-1/3 h-5 bg-zinc-800 rounded-full" />
-                    <div className="w-full h-32 bg-zinc-900/50 rounded-xl border-2 border-zinc-800 border-dashed flex items-center justify-center">
-                      <span className="text-zinc-500 font-medium flex items-center gap-2"><FileText className="w-5 h-5"/> Drag & Drop Resume.pdf</span>
-                    </div>
-                    <div className="w-2/3 h-4 bg-zinc-800 rounded-full" />
-                    <div className="w-1/2 h-4 bg-zinc-800 rounded-full" />
+                  <div className="relative w-full h-full rounded-3xl overflow-hidden">
+                     <Image src="/context-aware.png" alt="Context Aware Analysis" fill className="object-cover transform group-hover:scale-105 transition-transform duration-700" />
                   </div>
                 </motion.div>
               </div>
@@ -415,9 +390,7 @@ export default function Home() {
                   transition={{ duration: 0.8 }}
                   className="flex-1 space-y-6"
                 >
-                  <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/30 shadow-[0_0_30px_rgba(16,185,129,0.2)]">
-                    <Mic className="w-8 h-8 text-emerald-400" />
-                  </div>
+
                   <h3 className="text-4xl font-bold">2. Voice-Driven & Adaptive</h3>
                   <p className="text-xl text-zinc-400 leading-relaxed">
                     Speak naturally. The AI listens, understands, and dynamically adjusts the difficulty. If you excel, it digs deeper. If you struggle, it pivots.
@@ -439,18 +412,8 @@ export default function Home() {
                   style={{ perspective: 1000 }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-transparent opacity-50" />
-                  <div className="w-32 h-32 rounded-full bg-emerald-500/20 flex items-center justify-center relative shadow-[0_0_50px_rgba(16,185,129,0.3)] transform transition-transform group-hover:scale-110">
-                    <motion.div 
-                      animate={{ scale: [1, 1.5, 1], opacity: [0.8, 0, 0.8] }}
-                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
-                      className="absolute inset-0 rounded-full border border-emerald-500/50" 
-                    />
-                    <motion.div 
-                      animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0, 0.5] }}
-                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut", delay: 0.3 }}
-                      className="absolute inset-0 rounded-full border border-emerald-500/30" 
-                    />
-                    <Activity className="w-12 h-12 text-emerald-400 z-10" />
+                  <div className="relative w-full h-full rounded-3xl overflow-hidden">
+                     <Image src="/voice-driven.png" alt="Voice Driven Interview" fill className="object-cover transform group-hover:scale-105 transition-transform duration-700" />
                   </div>
                 </motion.div>
               </div>
@@ -464,9 +427,7 @@ export default function Home() {
                   transition={{ duration: 0.8 }}
                   className="flex-1 space-y-6"
                 >
-                  <div className="w-16 h-16 rounded-2xl bg-purple-500/10 flex items-center justify-center border border-purple-500/30 shadow-[0_0_30px_rgba(168,85,247,0.2)]">
-                    <LineChart className="w-8 h-8 text-purple-400" />
-                  </div>
+
                   <h3 className="text-4xl font-bold">3. Actionable Feedback</h3>
                   <p className="text-xl text-zinc-400 leading-relaxed">
                     Instantly receive a comprehensive breakdown of your performance. Identify weak points, filler words, and get a concrete roadmap to improvement.
@@ -487,42 +448,8 @@ export default function Home() {
                   className="flex-1 w-full aspect-square md:aspect-video rounded-3xl glass-card relative overflow-hidden flex items-center justify-center p-8 group"
                 >
                   <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/10 via-transparent to-transparent opacity-50" />
-                  <div className="w-full h-full flex flex-col gap-5 relative z-10 transform transition-transform group-hover:scale-105">
-                    <div className="flex gap-5 h-1/2 items-end">
-                      <div className="flex-1 bg-zinc-950/80 rounded-2xl border border-white/5 p-4 flex flex-col justify-end overflow-hidden h-full">
-                        <motion.div 
-                           initial={{ height: 0 }}
-                           whileInView={{ height: "75%" }}
-                           viewport={{ once: true }}
-                           transition={{ duration: 1, delay: 0.2, type: "spring" }}
-                           className="w-full bg-gradient-to-t from-purple-600/50 to-purple-400/50 rounded-t-lg border-t border-purple-400 shadow-[0_0_20px_rgba(168,85,247,0.4)]" 
-                        />
-                      </div>
-                      <div className="flex-1 bg-zinc-950/80 rounded-2xl border border-white/5 p-4 flex flex-col justify-end overflow-hidden h-full">
-                        <motion.div 
-                           initial={{ height: 0 }}
-                           whileInView={{ height: "90%" }}
-                           viewport={{ once: true }}
-                           transition={{ duration: 1, delay: 0.4, type: "spring" }}
-                           className="w-full bg-gradient-to-t from-emerald-600/50 to-emerald-400/50 rounded-t-lg border-t border-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.4)]" 
-                        />
-                      </div>
-                    </div>
-                    <div className="h-1/2 bg-zinc-950/80 rounded-2xl border border-white/5 p-6 flex flex-col justify-center gap-4">
-                      <div className="w-1/3 h-3 bg-zinc-800 rounded-full" />
-                      <motion.div 
-                        initial={{ width: 0 }} whileInView={{ width: "100%" }} viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.6 }}
-                        className="h-2 bg-gradient-to-r from-purple-500 to-emerald-500 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.5)]" 
-                      />
-                      <motion.div 
-                        initial={{ width: 0 }} whileInView={{ width: "83%" }} viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.7 }}
-                        className="h-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full" 
-                      />
-                      <motion.div 
-                        initial={{ width: 0 }} whileInView={{ width: "66%" }} viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.8 }}
-                        className="h-2 bg-zinc-700 rounded-full" 
-                      />
-                    </div>
+                  <div className="relative w-full h-full rounded-3xl overflow-hidden">
+                     <Image src="/actionable-feedback.png" alt="Actionable Feedback" fill className="object-cover transform group-hover:scale-105 transition-transform duration-700" />
                   </div>
                 </motion.div>
               </div>
