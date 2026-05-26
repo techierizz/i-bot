@@ -37,7 +37,7 @@ export default function InterviewPage() {
   const [transcript, setTranscript] = useState("");
 
   // Phase 4 State
-  const [isWebcamOn, setIsWebcamOn] = useState(true);
+  const [isWebcamVisible, setIsWebcamVisible] = useState(true);
   const [scriptsLoaded, setScriptsLoaded] = useState(false);
   const [scriptsError, setScriptsError] = useState(false);
   const [gazeStatus, setGazeStatus] = useState<"Focused" | "Looking Away">("Focused");
@@ -178,7 +178,7 @@ export default function InterviewPage() {
 
   // Real-Time Gaze & Stress Face Mesh Tracking
   useEffect(() => {
-    if (!isWebcamOn || !scriptsLoaded || typeof window === "undefined") return;
+    if (!scriptsLoaded || typeof window === "undefined") return;
 
     const FaceMeshClass = (window as any).FaceMesh;
     const CameraClass = (window as any).Camera;
@@ -298,7 +298,7 @@ export default function InterviewPage() {
 
     const camera = new CameraClass(videoElement, {
       onFrame: async () => {
-        if (videoElement && isWebcamOn) {
+        if (videoElement) {
           await faceMesh.send({ image: videoElement });
         }
       },
@@ -319,7 +319,7 @@ export default function InterviewPage() {
       setGazeStatus("Focused");
       setStressStatus("Calm");
     };
-  }, [isWebcamOn, scriptsLoaded]);
+  }, [scriptsLoaded]);
   
   // Auto-scroll on new messages
   useEffect(() => {
@@ -470,7 +470,7 @@ export default function InterviewPage() {
       <header className="w-full p-6 flex justify-between items-center z-10 glass-panel border-b border-white/5">
         <div>
           <Link href="/" className="text-xl font-bold text-white flex items-center gap-2 hover:opacity-80 transition-opacity">
-            HireMind <span className="font-light text-zinc-400">AI</span>
+            HireMind
           </Link>
           <p className="text-xs text-zinc-400 mt-1">
             {context?.interview_mode} • {context?.persona} Persona
@@ -480,16 +480,16 @@ export default function InterviewPage() {
         <div className="flex items-center gap-4">
           {/* Webcam Control Button */}
           <button
-            onClick={() => setIsWebcamOn(prev => !prev)}
+            onClick={() => setIsWebcamVisible(prev => !prev)}
             disabled={scriptsError}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all text-xs font-semibold ${
-              isWebcamOn 
+              isWebcamVisible 
                 ? "bg-teal-500/10 text-teal-400 border-teal-500/20 shadow-[0_0_15px_rgba(20,184,166,0.1)] hover:bg-teal-500/20" 
                 : "bg-zinc-800 text-zinc-400 border-zinc-700 hover:bg-zinc-700"
             }`}
           >
-            {isWebcamOn ? <VideoOff className="w-3.5 h-3.5" /> : <Video className="w-3.5 h-3.5" />}
-            {isWebcamOn ? "Webcam ON" : "Webcam OFF"}
+            {isWebcamVisible ? <VideoOff className="w-3.5 h-3.5" /> : <Video className="w-3.5 h-3.5" />}
+            {isWebcamVisible ? "Minimize Webcam" : "Expand Webcam"}
           </button>
 
           <button 
@@ -510,11 +510,11 @@ export default function InterviewPage() {
           <div className="w-full flex-1 flex flex-col items-center justify-center">
             
             {/* Dynamic Two-Column Layout for Orb vs Webcam */}
-            <div className={`w-full flex flex-col lg:flex-row items-center justify-center gap-8 transition-all duration-500 ${isWebcamOn ? "lg:items-stretch" : ""}`}>
+            <div className={`w-full flex flex-col lg:flex-row items-center justify-center gap-8 transition-all duration-500 ${isWebcamVisible ? "lg:items-stretch" : ""}`}>
               
               {/* Central AI Orb */}
-              <div className={`flex flex-col items-center justify-center transition-all duration-500 ${isWebcamOn ? "lg:w-1/2" : "w-full"}`}>
-                <div className={`relative flex items-center justify-center mb-6 transition-all ${isWebcamOn ? "w-48 h-48" : "w-60 h-60"}`}>
+              <div className={`flex flex-col items-center justify-center transition-all duration-500 ${isWebcamVisible ? "lg:w-1/2" : "w-full"}`}>
+                <div className={`relative flex items-center justify-center mb-6 transition-all ${isWebcamVisible ? "w-48 h-48" : "w-60 h-60"}`}>
                   <motion.div 
                     animate={{ 
                       scale: isAiSpeaking ? [1, 1.2, 1] : isListening ? [1, 1.1, 1] : 1,
@@ -535,14 +535,14 @@ export default function InterviewPage() {
                       isListening ? "border-green-500" : "border-primary-500"
                     }`}
                   />
-                  <div className={`rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(0,0,0,0.5)] transition-all duration-500 ${
-                    isWebcamOn ? "w-28 h-28" : "w-32 h-32"
+                  <div className={`rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(0,0,0,0.5)] transition-all duration-500 overflow-hidden ${
+                    isWebcamVisible ? "w-28 h-28" : "w-32 h-32"
                   } ${
                     isListening ? "bg-gradient-to-br from-green-400 to-green-600 shadow-green-500/50" : 
                     isAiThinking ? "bg-gradient-to-br from-blue-400 to-blue-600 shadow-blue-500/50" :
                     "bg-gradient-to-br from-primary-400 to-primary-600 shadow-primary-500/50"
                   }`}>
-                    <BrainCircuit className="w-10 h-10 text-white/80" />
+                    <img src="/logo.png" alt="HireMind" className="w-14 h-14 object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]" />
                   </div>
                 </div>
 
@@ -582,9 +582,8 @@ export default function InterviewPage() {
               </div>
 
               {/* Webcam Tracking HUD */}
-              {isWebcamOn && (
-                <div className="lg:w-1/2 flex flex-col justify-center items-center">
-                  <div className="relative w-full max-w-sm aspect-[4/3] rounded-xl overflow-hidden border border-white/10 bg-black/40 shadow-inner">
+              <div className={`${isWebcamVisible ? "lg:w-1/2 flex relative" : "absolute opacity-0 pointer-events-none w-0 h-0 overflow-hidden"} flex-col justify-center items-center`}>
+                <div className="relative w-full max-w-sm aspect-[4/3] rounded-xl overflow-hidden border border-white/10 bg-black/40 shadow-inner">
                     <video
                       ref={videoRef}
                       className="w-full h-full object-cover scale-x-[-1]" 
@@ -619,7 +618,6 @@ export default function InterviewPage() {
                     </div>
                   </div>
                 </div>
-              )}
 
             </div>
 
@@ -710,10 +708,10 @@ export default function InterviewPage() {
                 animate={{ opacity: 1, x: 0 }}
                 className={`flex gap-3 max-w-[85%] ${msg.role === "user" ? "ml-auto flex-row-reverse" : "mr-auto"}`}
               >
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 overflow-hidden ${
                   msg.role === "user" ? "bg-zinc-800 text-zinc-400" : "bg-primary-500/20 text-primary-400"
                 }`}>
-                  {msg.role === "user" ? <User className="w-4 h-4" /> : <BrainCircuit className="w-4 h-4" />}
+                  {msg.role === "user" ? <User className="w-4 h-4" /> : <img src="/logo.png" alt="AI" className="w-5 h-5 object-contain" />}
                 </div>
                 <div className={`p-3 rounded-2xl text-sm leading-relaxed ${
                   msg.role === "user" 
