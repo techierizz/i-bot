@@ -141,15 +141,11 @@ export default function InterviewPage() {
       recognition.interimResults = true;
       
       recognition.onresult = (event: any) => {
-        let currentTranscript = "";
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          if (event.results[i].isFinal) {
-            currentTranscript += event.results[i][0].transcript;
-          }
+        let fullTranscript = "";
+        for (let i = 0; i < event.results.length; i++) {
+          fullTranscript += event.results[i][0].transcript;
         }
-        if (currentTranscript.trim()) {
-          setTranscript((prev) => prev + " " + currentTranscript);
-        }
+        setTranscript(fullTranscript);
       };
       
       recognition.onerror = (event: any) => {
@@ -456,15 +452,7 @@ export default function InterviewPage() {
   return (
     <div className="flex flex-col h-screen w-full bg-background overflow-hidden relative">
       
-      {/* Dynamic Background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className={`absolute top-[20%] left-[50%] -translate-x-1/2 w-[600px] h-[600px] rounded-full blur-[120px] transition-all duration-1000 ${
-          isAiSpeaking ? "bg-primary-600/30 scale-110" :
-          isAiThinking ? "bg-blue-600/20 animate-pulse" :
-          isListening ? "bg-green-600/20 scale-105" :
-          "bg-primary-900/10"
-        }`} />
-      </div>
+      {/* Background removed as per request */}
 
       {/* Header */}
       <header className="w-full p-6 flex justify-between items-center z-10 glass-panel border-b border-white/5">
@@ -515,25 +503,17 @@ export default function InterviewPage() {
               {/* Central AI Orb */}
               <div className={`flex flex-col items-center justify-center transition-all duration-500 ${isWebcamVisible ? "lg:w-1/2" : "w-full"}`}>
                 <div className={`relative flex items-center justify-center mb-6 transition-all ${isWebcamVisible ? "w-48 h-48" : "w-60 h-60"}`}>
-                  <motion.div 
-                    animate={{ 
-                      scale: isAiSpeaking ? [1, 1.2, 1] : isListening ? [1, 1.1, 1] : 1,
-                      opacity: isAiSpeaking ? [0.3, 0.6, 0.3] : 0.2
-                    }}
-                    transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                  <div 
                     className={`absolute inset-0 rounded-full border-2 ${
-                      isListening ? "border-green-500" : "border-primary-500"
-                    }`}
+                      isListening ? "border-green-500 opacity-20" : "border-primary-500 opacity-20"
+                    } ${isAiSpeaking || isListening ? 'animate-ping' : ''}`}
+                    style={{ animationDuration: '3s' }}
                   />
-                  <motion.div 
-                    animate={{ 
-                      scale: isAiSpeaking ? [1, 1.4, 1] : isListening ? [1, 1.2, 1] : 1,
-                      opacity: isAiSpeaking ? [0.1, 0.3, 0.1] : 0.1
-                    }}
-                    transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut", delay: 0.2 }}
+                  <div 
                     className={`absolute inset-[-15px] rounded-full border border-dashed ${
-                      isListening ? "border-green-500" : "border-primary-500"
-                    }`}
+                      isListening ? "border-green-500 opacity-10" : "border-primary-500 opacity-10"
+                    } ${isAiSpeaking || isListening ? 'animate-pulse' : ''}`}
+                    style={{ animationDuration: '2s' }}
                   />
                   <div className={`rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(0,0,0,0.5)] transition-all duration-500 overflow-hidden ${
                     isWebcamVisible ? "w-28 h-28" : "w-32 h-32"
