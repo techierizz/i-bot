@@ -9,18 +9,6 @@ import Image from "next/image";
 // --- Components ---
 
 const AnimatedBackground = () => {
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  useEffect(() => {
-    const handleMouseMove = (e: globalThis.MouseEvent) => {
-      mouseX.set(e.clientX - 300);
-      mouseY.set(e.clientY - 300);
-    };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [mouseX, mouseY]);
-
   return (
     <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none bg-zinc-950">
       {/* Base Grid */}
@@ -48,17 +36,6 @@ const AnimatedBackground = () => {
         transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }}
         className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-secondary-600/20 blur-[100px] rounded-full mix-blend-screen"
         style={{ willChange: "transform, opacity" }}
-      />
-      
-      {/* Mouse Follower Spotlight */}
-      <motion.div
-        className="absolute top-0 left-0 w-[600px] h-[600px] rounded-full pointer-events-none"
-        style={{
-          x: mouseX,
-          y: mouseY,
-          background: "radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%)",
-          willChange: "transform"
-        }}
       />
     </div>
   );
@@ -408,7 +385,7 @@ export default function Home() {
                   whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
                   viewport={{ once: true, margin: "-100px" }}
                   transition={{ duration: 0.8 }}
-                  className="flex-1 w-full aspect-square md:aspect-video rounded-3xl glass-card relative overflow-hidden flex items-center justify-center group"
+                  className="flex-1 w-full aspect-square md:aspect-video rounded-3xl glass-card relative overflow-hidden flex items-center justify-center p-8 group"
                   style={{ perspective: 1000 }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-transparent opacity-50" />
