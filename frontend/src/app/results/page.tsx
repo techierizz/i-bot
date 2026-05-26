@@ -266,42 +266,40 @@ export default function ResultsPage() {
       <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full blur-[140px] bg-secondary-600/10 pointer-events-none" />
 
       {/* Header bar */}
-      <header className="max-w-6xl mx-auto w-full flex justify-between items-center mb-8 z-10">
-        <div className="flex items-center gap-3">
-          <button 
-            onClick={() => router.push("/setup")}
-            className="p-2 rounded-xl bg-zinc-900 border border-white/5 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all flex items-center justify-center cursor-pointer"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <div>
-            <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-              Dashboard
-            </h1>
+      {!loading && (
+        <header className="max-w-6xl mx-auto w-full flex justify-between items-center mb-8 z-10">
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => router.push("/setup")}
+              className="p-2 rounded-xl bg-zinc-900 border border-white/5 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all flex items-center justify-center cursor-pointer"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <div>
+              <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+                Dashboard
+              </h1>
+            </div>
           </div>
-        </div>
 
-        <div className="flex items-center gap-3">
-          {!loading && (
-            <>
-              {/* Map Modal trigger button */}
-              <button 
-                onClick={() => setIsModalOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-zinc-900 border border-white/10 text-zinc-300 rounded-xl font-medium hover:text-white hover:bg-zinc-800 transition-all cursor-pointer text-sm"
-              >
-                <Map className="w-4 h-4 text-primary-400 animate-pulse" /> View Map
-              </button>
+          <div className="flex items-center gap-3">
+            {/* Map Modal trigger button */}
+            <button 
+              onClick={() => setIsModalOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-zinc-900 border border-white/10 text-zinc-300 rounded-xl font-medium hover:text-white hover:bg-zinc-800 transition-all cursor-pointer text-sm"
+            >
+              <Map className="w-4 h-4 text-primary-400 animate-pulse" /> View Map
+            </button>
 
-              <button 
-                onClick={() => router.push("/interview")}
-                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-xl font-medium shadow-lg hover:shadow-primary-500/10 transition-all transform hover:scale-[1.02] text-sm cursor-pointer"
-              >
-                <RefreshCw className="w-4 h-4" /> Restart Interview
-              </button>
-            </>
-          )}
-        </div>
-      </header>
+            <button 
+              onClick={() => router.push("/interview")}
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-xl font-medium shadow-lg hover:shadow-primary-500/10 transition-all transform hover:scale-[1.02] text-sm cursor-pointer"
+            >
+              <RefreshCw className="w-4 h-4" /> Restart Interview
+            </button>
+          </div>
+        </header>
+      )}
 
       {/* Animate Loading State */}
       <AnimatePresence mode="wait">
