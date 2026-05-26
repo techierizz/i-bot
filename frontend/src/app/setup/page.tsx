@@ -187,7 +187,6 @@ export default function SetupPage() {
             className="rounded-3xl bg-zinc-900/40 border border-white/5 p-8 flex flex-col h-full hover:border-primary-500/30 transition-all shadow-2xl backdrop-blur-xl"
           >
             <div className="flex items-center gap-4 mb-8">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-primary-500 to-secondary-500 flex items-center justify-center text-white font-bold text-lg shadow-lg">1</div>
               <h2 className="text-3xl font-bold">Upload Resume</h2>
             </div>
             
@@ -244,7 +243,6 @@ export default function SetupPage() {
           >
             <div className="rounded-3xl bg-zinc-900/40 border border-white/5 p-8 shadow-2xl backdrop-blur-xl hover:border-secondary-500/30 transition-all">
               <div className="flex items-center gap-4 mb-8">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-secondary-500 to-purple-500 flex items-center justify-center text-white font-bold text-lg shadow-lg">2</div>
                 <h2 className="text-3xl font-bold">Interview Mode</h2>
               </div>
               
