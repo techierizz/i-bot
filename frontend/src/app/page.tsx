@@ -14,8 +14,8 @@ const AnimatedBackground = () => {
 
   useEffect(() => {
     const handleMouseMove = (e: globalThis.MouseEvent) => {
-      mouseX.set(e.clientX);
-      mouseY.set(e.clientY);
+      mouseX.set(e.clientX - 300);
+      mouseY.set(e.clientY - 300);
     };
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
@@ -35,7 +35,8 @@ const AnimatedBackground = () => {
           y: [0, -50, 0],
         }}
         transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary-600/30 blur-[140px] rounded-full mix-blend-screen"
+        className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary-600/30 blur-[100px] rounded-full mix-blend-screen"
+        style={{ willChange: "transform, opacity" }}
       />
       <motion.div
         animate={{
@@ -45,14 +46,18 @@ const AnimatedBackground = () => {
           y: [0, 50, 0],
         }}
         transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-secondary-600/20 blur-[140px] rounded-full mix-blend-screen"
+        className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-secondary-600/20 blur-[100px] rounded-full mix-blend-screen"
+        style={{ willChange: "transform, opacity" }}
       />
       
       {/* Mouse Follower Spotlight */}
       <motion.div
-        className="absolute inset-0 z-0 transition-opacity duration-300"
+        className="absolute top-0 left-0 w-[600px] h-[600px] rounded-full pointer-events-none"
         style={{
-          background: useMotionTemplate`radial-gradient(600px circle at ${mouseX}px ${mouseY}px, rgba(139, 92, 246, 0.05), transparent 80%)`,
+          x: mouseX,
+          y: mouseY,
+          background: "radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%)",
+          willChange: "transform"
         }}
       />
     </div>
@@ -123,15 +128,14 @@ const WordReveal = ({ text, className }: { text: string; className?: string }) =
 export default function Home() {
   const [candidateUser, setCandidateUser] = useState<any>(null);
   const [adminUser, setAdminUser] = useState<any>(null);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const { scrollYProgress } = useScroll();
+  
+  const { scrollY, scrollYProgress } = useScroll();
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
-
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  
+  const headerBg = useTransform(scrollY, [0, 50], ["rgba(9, 9, 11, 0)", "rgba(9, 9, 11, 0.8)"]);
+  const headerBorder = useTransform(scrollY, [0, 50], ["rgba(255, 255, 255, 0)", "rgba(255, 255, 255, 0.05)"]);
+  const headerPy = useTransform(scrollY, [0, 50], ["24px", "16px"]);
+  const headerBackdrop = useTransform(scrollY, [0, 50], ["blur(0px)", "blur(12px)"]);
 
   useEffect(() => {
     const candidateSession = localStorage.getItem("hiremind_user");
@@ -153,7 +157,17 @@ export default function Home() {
       <AnimatedBackground />
 
       {/* Top Header Navigation */}
-      <header className={`w-full transition-all duration-300 fixed top-0 z-50 ${isScrolled ? 'bg-zinc-950/80 backdrop-blur-xl border-b border-white/5 py-4' : 'bg-transparent py-6'}`}>
+      <motion.header 
+        style={{ 
+          backgroundColor: headerBg, 
+          borderBottomColor: headerBorder, 
+          paddingTop: headerPy, 
+          paddingBottom: headerPy,
+          backdropFilter: headerBackdrop,
+          WebkitBackdropFilter: headerBackdrop
+        }}
+        className="w-full fixed top-0 z-50 border-b border-transparent"
+      >
         <div className="max-w-7xl mx-auto flex justify-between items-center w-full px-6">
           <Link href="/" className="flex items-center gap-3 group">
             <div className="relative w-10 h-10 overflow-hidden rounded-xl bg-zinc-900 border border-white/10 group-hover:border-primary-500/50 group-hover:shadow-[0_0_15px_rgba(139,92,246,0.5)] transition-all">
@@ -200,7 +214,7 @@ export default function Home() {
             )}
           </nav>
         </div>
-      </header>
+      </motion.header>
 
       <main className="flex-1 w-full relative z-10 pt-24">
         {/* Section 1: Hero */}
