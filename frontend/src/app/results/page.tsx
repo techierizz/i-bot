@@ -274,27 +274,30 @@ export default function ResultsPage() {
           </button>
           <div>
             <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-              <BrainCircuit className="text-primary-400" /> HireMind <span className="font-light text-zinc-400">Dashboard</span>
+              <BrainCircuit className="text-primary-400" /> Dashboard
             </h1>
-            <p className="text-xs text-zinc-500">Post-interview intelligence & growth engine</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Map Modal trigger button */}
-          <button 
-            onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-zinc-900 border border-white/10 text-zinc-300 rounded-xl font-medium hover:text-white hover:bg-zinc-800 transition-all cursor-pointer text-sm"
-          >
-            <Map className="w-4 h-4 text-primary-400 animate-pulse" /> View Map
-          </button>
+          {!loading && (
+            <>
+              {/* Map Modal trigger button */}
+              <button 
+                onClick={() => setIsModalOpen(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-zinc-900 border border-white/10 text-zinc-300 rounded-xl font-medium hover:text-white hover:bg-zinc-800 transition-all cursor-pointer text-sm"
+              >
+                <Map className="w-4 h-4 text-primary-400 animate-pulse" /> View Map
+              </button>
 
-          <button 
-            onClick={() => router.push("/interview")}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-xl font-medium shadow-lg hover:shadow-primary-500/10 transition-all transform hover:scale-[1.02] text-sm cursor-pointer"
-          >
-            <RefreshCw className="w-4 h-4" /> Restart Interview
-          </button>
+              <button 
+                onClick={() => router.push("/interview")}
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-xl font-medium shadow-lg hover:shadow-primary-500/10 transition-all transform hover:scale-[1.02] text-sm cursor-pointer"
+              >
+                <RefreshCw className="w-4 h-4" /> Restart Interview
+              </button>
+            </>
+          )}
         </div>
       </header>
 
