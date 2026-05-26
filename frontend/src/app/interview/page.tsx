@@ -50,6 +50,7 @@ export default function InterviewPage() {
   const recognitionRef = useRef<any>(null);
   const synthRef = useRef<SpeechSynthesis | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const isConcludingRef = useRef(false);
 
   // Webcam & Tracking Refs
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -359,11 +360,15 @@ export default function InterviewPage() {
     utterance.onend = () => {
       setIsAiSpeaking(false);
       setTranscript("");
-      try {
-        recognitionRef.current?.start();
-        setIsListening(true);
-      } catch (e) {
-        console.error(e);
+      if (isConcludingRef.current) {
+        setTimeout(() => endInterview(), 3000);
+      } else {
+        try {
+          recognitionRef.current?.start();
+          setIsListening(true);
+        } catch (e) {
+          console.error(e);
+        }
       }
     };
     
@@ -394,6 +399,14 @@ export default function InterviewPage() {
     const newChatHistory = [...chatHistory, { role: "user", content: userText } as ChatMessage];
     setChatHistory(newChatHistory);
     
+    const userMessageCount = newChatHistory.filter(msg => msg.role === "user").length;
+    const limit = context?.question_limit || 10;
+    const isFinal = userMessageCount >= limit;
+    
+    if (isFinal) {
+      isConcludingRef.current = true;
+    }
+    
     setIsAiThinking(true);
     
     try {
@@ -401,7 +414,7 @@ export default function InterviewPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          context: context,
+          context: { ...context, is_final_turn: isFinal },
           chat_history: chatHistory.map(msg => ({ [msg.role]: msg.content })),
           latest_user_response: userText
         }),
@@ -461,7 +474,7 @@ export default function InterviewPage() {
             HireMind
           </Link>
           <p className="text-xs text-zinc-400 mt-1">
-            {context?.interview_mode} • {context?.persona} Persona
+            {context?.interview_mode} • {context?.persona} Persona • Question {Math.min(chatHistory.filter(m => m.role === 'user').length + 1, context?.question_limit || 10)} of {context?.question_limit || 10}
           </p>
         </div>
         
