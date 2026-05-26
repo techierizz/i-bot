@@ -43,9 +43,9 @@ export default function SetupPage() {
   const personas = ["Friendly", "Strict", "Fast-paced"];
   
   const lengths = [
-    { id: 5, label: "Quick Screen", desc: "5 Questions" },
-    { id: 10, label: "Standard", desc: "8-10 Questions" },
-    { id: 15, label: "Deep Dive", desc: "13-15 Questions" }
+    { id: 5, label: "Quick Screen" },
+    { id: 10, label: "Standard" },
+    { id: 15, label: "Deep Dive" }
   ];
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -301,14 +301,13 @@ export default function SetupPage() {
                   <button
                     key={l.id}
                     onClick={() => setQuestionLimit(l.id)}
-                    className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-300 ${
+                    className={`flex items-center justify-center p-4 rounded-xl border transition-all duration-300 ${
                       questionLimit === l.id 
                         ? "border-blue-500 bg-blue-500/10 text-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.15)]" 
                         : "border-zinc-800 bg-zinc-950/50 hover:border-zinc-600 hover:bg-zinc-800"
                     }`}
                   >
                     <span className="font-bold text-white">{l.label}</span>
-                    <span className="text-sm text-zinc-400">{l.desc}</span>
                   </button>
                 ))}
               </div>
