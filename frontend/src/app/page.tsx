@@ -533,7 +533,7 @@ export default function Home() {
                   }}
                   transition={{ duration: 5 + Math.random() * 5, repeat: Infinity, delay: Math.random() * 5 }}
                   className="absolute bg-white rounded-full w-1 h-1 blur-[1px]"
-                  style={{ left: \`\${Math.random() * 100}%\`, top: \`\${Math.random() * 100}%\` }}
+                  style={{ left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%` }}
                 />
              ))}
           </div>
@@ -572,17 +572,6 @@ export default function Home() {
         <p>© {new Date().getFullYear()} HireMind AI. All rights reserved.</p>
       </footer>
       
-      {/* Keyframes for shimmering effect */}
-      <style jsx global>{`
-        @keyframes shimmer {
-          100% { transform: translateX(100%); }
-        }
-        @keyframes gradient {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-      `}</style>
     </div>
   );
 }
