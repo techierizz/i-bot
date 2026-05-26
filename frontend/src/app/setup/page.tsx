@@ -161,8 +161,8 @@ export default function SetupPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-16"
         >
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight text-white">
-            Let's set up your interview
+          <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight text-primary-400">
+            Ready to start?
           </h1>
           <p className="text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto leading-relaxed">
             Upload your resume and select the interview parameters. HireMind AI will automatically extract your context and tailor the questions to your specific background.
