@@ -538,12 +538,22 @@ export default function ResultsPage() {
                     animate={{ opacity: 1, x: 0 }}
                     className="flex flex-col gap-4"
                   >
-                    <div className="p-4 rounded-xl bg-primary-500/5 border border-primary-500/10 text-xs text-primary-300 flex items-start gap-2.5 mb-2 leading-relaxed">
-                      <Sparkles className="w-4 h-4 shrink-0 text-primary-400 mt-0.5" />
-                      <span>We custom-synthesized a 3-week learning horizon to patch specific gaps noticed during the interview session. Mark tasks completed to level up!</span>
-                    </div>
+                    {!data.roadmap || data.roadmap.length === 0 ? (
+                      <div className="p-10 text-center flex flex-col items-center justify-center bg-zinc-950/40 rounded-2xl border border-white/5 mt-4">
+                        <BookOpen className="w-12 h-12 text-zinc-600 mb-4 opacity-50" />
+                        <h3 className="text-zinc-300 font-bold mb-2">No Roadmap Generated</h3>
+                        <p className="text-xs text-zinc-500 max-w-sm">
+                          The interview was ended before enough data could be gathered. Complete at least one question in your next interview to receive a personalized learning roadmap.
+                        </p>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="p-4 rounded-xl bg-primary-500/5 border border-primary-500/10 text-xs text-primary-300 flex items-start gap-2.5 mb-2 leading-relaxed">
+                          <Sparkles className="w-4 h-4 shrink-0 text-primary-400 mt-0.5" />
+                          <span>We custom-synthesized a 3-week learning horizon to patch specific gaps noticed during the interview session. Mark tasks completed to level up!</span>
+                        </div>
 
-                    <div className="relative border-l-2 border-primary-500/20 ml-4 pl-6 flex flex-col gap-8">
+                        <div className="relative border-l-2 border-primary-500/20 ml-4 pl-6 flex flex-col gap-8">
                       {data.roadmap.map((week) => {
                         const isExpanded = expandedWeek === week.week;
                         return (
@@ -625,7 +635,9 @@ export default function ResultsPage() {
                           </div>
                         );
                       })}
-                    </div>
+                        </div>
+                      </>
+                    )}
                   </motion.div>
                 )}
 
@@ -636,23 +648,32 @@ export default function ResultsPage() {
                     animate={{ opacity: 1, x: 0 }}
                     className="flex flex-col gap-5"
                   >
-                    
-                    {/* Impact Overview */}
-                    <div className="glass-card p-6 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-                          <Sparkles className="w-6 h-6" />
-                        </div>
-                        <div>
-                          <h4 className="text-base font-bold text-white">Estimated ATS Impact</h4>
-                          <p className="text-xs text-zinc-400">Projected score boost after rewriting your resume points</p>
-                        </div>
+                    {!data.resume_optimizer || (data.resume_optimizer.what_to_add.length === 0 && data.resume_optimizer.what_to_delete.length === 0 && data.resume_optimizer.what_to_change.length === 0) ? (
+                      <div className="p-10 text-center flex flex-col items-center justify-center bg-zinc-950/40 rounded-2xl border border-white/5 mt-4">
+                        <FileText className="w-12 h-12 text-zinc-600 mb-4 opacity-50" />
+                        <h3 className="text-zinc-300 font-bold mb-2">No Resume Optimizations</h3>
+                        <p className="text-xs text-zinc-500 max-w-sm">
+                          We didn't gather enough data from your interview to suggest meaningful resume improvements. Try completing a full interview session!
+                        </p>
                       </div>
-                      <div className="text-center sm:text-right">
-                        <span className="text-3xl font-extrabold text-emerald-400">+{data.resume_optimizer.ats_score_impact}%</span>
-                        <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider block">Score Increase</span>
-                      </div>
-                    </div>
+                    ) : (
+                      <>
+                        {/* Impact Overview */}
+                        <div className="glass-card p-6 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                              <Sparkles className="w-6 h-6" />
+                            </div>
+                            <div>
+                              <h4 className="text-base font-bold text-white">Estimated ATS Impact</h4>
+                              <p className="text-xs text-zinc-400">Projected score boost after rewriting your resume points</p>
+                            </div>
+                          </div>
+                          <div className="text-center sm:text-right">
+                            <span className="text-3xl font-extrabold text-emerald-400">+{data.resume_optimizer.ats_score_impact}%</span>
+                            <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider block">Score Increase</span>
+                          </div>
+                        </div>
 
                     {/* Add/Delete/Change Recommendations */}
                     <div className="flex flex-col gap-4">
@@ -745,7 +766,8 @@ export default function ResultsPage() {
                         </div>
                       ))}
                     </div>
-
+                      </>
+                    )}
                   </motion.div>
                 )}
 
