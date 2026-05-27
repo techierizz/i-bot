@@ -469,8 +469,8 @@ export default function ProfilePage() {
               className="relative w-full max-w-5xl bg-zinc-950 border border-white/10 rounded-[2rem] shadow-[0_0_50px_rgba(0,0,0,0.8)] overflow-hidden z-10 max-h-[90vh] flex flex-col"
             >
               {/* Badge Vault Aesthetic Background */}
-              <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:32px_32px]" />
-              <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-violet-900/10 via-zinc-950/90 to-zinc-950" />
+              <div className="absolute inset-0 pointer-events-none bg-[url('/vault-bg.jpg')] bg-cover bg-center opacity-40 mix-blend-lighten" />
+              <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-violet-900/20 via-zinc-950/80 to-zinc-950/90" />
 
               <div className="relative z-10 p-6 border-b border-white/5 flex items-center justify-between bg-zinc-900/50 backdrop-blur-sm sticky top-0">
                 <h3 className="text-lg font-black text-white uppercase tracking-widest flex items-center gap-2">
@@ -495,7 +495,7 @@ export default function ProfilePage() {
                   // but we can maybe add a subtle indicator if they don't actually own it, or just let it be fully colorful.
                   return (
                     <div key={badge.id} className="relative group flex flex-col items-center">
-                      <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full flex items-center justify-center transition-all duration-500 overflow-hidden cursor-help bg-zinc-900 shadow-[inset_0_2px_10px_rgba(255,255,255,0.1),_0_10px_25px_rgba(0,0,0,0.5)] ring-1 ring-white/10 group-hover:ring-white/30 group-hover:scale-[1.05] group-hover:shadow-[inset_0_4px_15px_rgba(255,255,255,0.2),_0_15px_40px_rgba(0,0,0,0.8)]">
+                      <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-full flex items-center justify-center transition-all duration-500 overflow-hidden cursor-help bg-zinc-900 shadow-[inset_0_2px_10px_rgba(255,255,255,0.1),_0_10px_25px_rgba(0,0,0,0.5)] ring-1 ring-white/10 group-hover:ring-white/30 group-hover:scale-[1.05] group-hover:shadow-[inset_0_4px_15px_rgba(255,255,255,0.2),_0_15px_40px_rgba(0,0,0,0.8)]">
                         {(badge as any).image ? (
                           <Image src={(badge as any).image} alt={badge.name} fill className="object-cover" />
                         ) : (
