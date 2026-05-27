@@ -266,42 +266,54 @@ export default function ResultsPage() {
   }, []);
 
   const handleCheckboxToggle = async (weekIndex: number, actionIndex: number) => {
-    const key = `${weekIndex}-${actionIndex}`;
+    if (!data || !data.roadmap) return;
     
+    const key = `${weekIndex}-${actionIndex}`;
     const wasAlreadySaved = !!roadmapChecked[key];
     
-    setRoadmapChecked(prev => {
-      const newState = { ...prev, [key]: !prev[key] };
-      const trueKeys = Object.keys(newState).filter(k => newState[k]);
-      localStorage.setItem("hiremind_completed_tasks", JSON.stringify(trueKeys));
-      return newState;
+    // Calculate total tasks in the roadmap
+    let totalTasks = 0;
+    data.roadmap.forEach(week => {
+        totalTasks += week.actions.length;
     });
 
-    // Only give XP if they are checking it and it wasn't already checked before
-    if (!wasAlreadySaved) {
-      try {
-        const session = localStorage.getItem("hiremind_user");
-        if (session) {
-          const loggedUser = JSON.parse(session);
-          const response = await fetch(`${API_BASE_URL}/api/gamification/add_xp`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              user_id: loggedUser.id,
-              amount: 50
-            })
-          });
-          const result = await response.json();
-          if (result.status === "success" && result.gamification) {
-            setGamification(result.gamification);
-            if (result.gamification.level_up) {
-              setTimeout(() => setShowLevelUpModal(true), 500);
+    const newState = { ...roadmapChecked, [key]: !roadmapChecked[key] };
+    const trueKeys = Object.keys(newState).filter(k => newState[k]);
+    
+    setRoadmapChecked(newState);
+    localStorage.setItem("hiremind_completed_tasks", JSON.stringify(trueKeys));
+
+    // Check if ALL tasks are now checked
+    if (trueKeys.length === totalTasks && totalTasks > 0) {
+        const rewardClaimed = localStorage.getItem("hiremind_roadmap_reward_claimed");
+        if (!rewardClaimed) {
+            localStorage.setItem("hiremind_roadmap_reward_claimed", "true");
+            
+            // Give 200 XP once for completing the entire roadmap
+            try {
+                const session = localStorage.getItem("hiremind_user");
+                if (session) {
+                    const loggedUser = JSON.parse(session);
+                    const response = await fetch(`${API_BASE_URL}/api/gamification/add_xp`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            user_id: loggedUser.id,
+                            amount: 200
+                        })
+                    });
+                    const result = await response.json();
+                    if (result.status === "success" && result.gamification) {
+                        setGamification(result.gamification);
+                        if (result.gamification.level_up) {
+                            setTimeout(() => setShowLevelUpModal(true), 500);
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to add roadmap completion XP:", err);
             }
-          }
         }
-      } catch (err) {
-        console.error("Failed to add XP for roadmap task", err);
-      }
     }
   };
 
