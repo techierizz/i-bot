@@ -493,6 +493,9 @@ export default function ProfilePage() {
                   
                   // In the All Badges modal, we want to show off the artwork, so we force the 'unlocked' visual state
                   // but we can maybe add a subtle indicator if they don't actually own it, or just let it be fully colorful.
+                  // For the bottom row of badges, make the tooltip pop upwards so it doesn't get cut off
+                  const isBottom = i >= ALL_BADGES.length - 4;
+
                   return (
                     <div key={badge.id} className="relative group flex flex-col items-center">
                       <div className="relative w-36 h-36 sm:w-44 sm:h-44 rounded-full flex items-center justify-center transition-all duration-500 overflow-hidden cursor-help bg-zinc-900 shadow-[inset_0_2px_10px_rgba(255,255,255,0.1),_0_10px_25px_rgba(0,0,0,0.5)] ring-1 ring-white/10 group-hover:ring-white/30 group-hover:scale-[1.05] group-hover:shadow-[inset_0_4px_15px_rgba(255,255,255,0.2),_0_15px_40px_rgba(0,0,0,0.8)]">
@@ -504,9 +507,15 @@ export default function ProfilePage() {
                       </div>
 
                       {/* Custom Tooltip */}
-                      <div className="absolute top-[110%] left-1/2 -translate-x-1/2 w-48 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-50 transform translate-y-[-10px] group-hover:translate-y-0">
+                      <div className={`absolute left-1/2 -translate-x-1/2 w-48 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-50 transform ${
+                        isBottom 
+                          ? "bottom-[110%] translate-y-[10px] group-hover:translate-y-0" 
+                          : "top-[110%] translate-y-[-10px] group-hover:translate-y-0"
+                      }`}>
                         <div className="bg-zinc-900 border border-white/10 p-3 rounded-xl shadow-2xl backdrop-blur-xl relative flex flex-col items-center text-center">
-                          <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-zinc-900 border-t border-l border-white/10 rotate-45" />
+                          <div className={`absolute left-1/2 -translate-x-1/2 w-3 h-3 bg-zinc-900 border-white/10 rotate-45 ${
+                            isBottom ? "-bottom-1.5 border-b border-r" : "-top-1.5 border-t border-l"
+                          }`} />
                           <span className="text-[11px] font-black uppercase tracking-wider mb-1 text-violet-400">
                             {badge.name}
                           </span>
