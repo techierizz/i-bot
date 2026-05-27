@@ -466,7 +466,7 @@ export default function ProfilePage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-4xl bg-zinc-950 border border-white/10 rounded-[2rem] shadow-[0_0_50px_rgba(0,0,0,0.8)] overflow-hidden z-10 max-h-[90vh] flex flex-col"
+              className="relative w-full max-w-4xl bg-zinc-950 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-800 via-zinc-950 to-black border border-white/10 rounded-[2rem] shadow-[0_0_50px_rgba(0,0,0,0.8)] overflow-hidden z-10 max-h-[90vh] flex flex-col"
             >
               <div className="p-6 border-b border-white/5 flex items-center justify-between bg-zinc-900/50 backdrop-blur-sm sticky top-0 z-20">
                 <h3 className="text-lg font-black text-white uppercase tracking-widest flex items-center gap-2">
@@ -491,7 +491,7 @@ export default function ProfilePage() {
                   // but we can maybe add a subtle indicator if they don't actually own it, or just let it be fully colorful.
                   return (
                     <div key={badge.id} className="relative group flex flex-col items-center">
-                      <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full flex items-center justify-center transition-all duration-300 overflow-hidden cursor-help bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 border-2 border-violet-500/50 shadow-[0_0_15px_rgba(139,92,246,0.3)] hover:scale-105">
+                      <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full flex items-center justify-center transition-all duration-500 overflow-hidden cursor-help bg-zinc-900 shadow-[inset_0_2px_10px_rgba(255,255,255,0.1),_0_10px_25px_rgba(0,0,0,0.5)] ring-1 ring-white/10 group-hover:ring-white/30 group-hover:scale-110 group-hover:shadow-[inset_0_4px_15px_rgba(255,255,255,0.2),_0_15px_40px_rgba(0,0,0,0.8)]">
                         {(badge as any).image ? (
                           <Image src={(badge as any).image} alt={badge.name} fill className="object-cover" />
                         ) : (
