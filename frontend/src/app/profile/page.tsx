@@ -308,21 +308,30 @@ export default function ProfilePage() {
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: i * 0.04 }}
-                    className={`group relative flex flex-col items-center text-center p-5 rounded-2xl border transition-all ${
+                    className={`group relative flex flex-col items-center text-center p-5 rounded-3xl border transition-all duration-300 ${
                       earned
-                        ? "bg-zinc-900/60 border-violet-500/20 hover:border-violet-500/40 hover:bg-zinc-900/80"
-                        : "bg-zinc-950/50 border-white/5 opacity-50 grayscale"
+                        ? "bg-gradient-to-br from-violet-900/40 to-zinc-900/80 border-violet-500/30 shadow-[0_0_20px_rgba(139,92,246,0.15)] hover:shadow-[0_0_30px_rgba(139,92,246,0.3)] hover:border-violet-400/50 hover:scale-[1.03] cursor-default"
+                        : "bg-zinc-950/80 border-white/5 opacity-60 grayscale hover:opacity-100 transition-opacity cursor-not-allowed"
                     }`}
                   >
-                    <div className={`w-14 h-14 rounded-full flex items-center justify-center mb-3 transition-transform group-hover:scale-110 ${
+                    <div className={`relative w-16 h-16 rounded-full flex items-center justify-center mb-4 transition-transform duration-500 ${
                       earned
-                        ? "bg-violet-500/15 border border-violet-500/30 text-violet-400"
-                        : "bg-zinc-900 text-zinc-700"
+                        ? "bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 border-2 border-violet-500/50 text-violet-300 shadow-[0_0_15px_rgba(139,92,246,0.5)] group-hover:scale-110 group-hover:rotate-12"
+                        : "bg-zinc-900 border-2 border-zinc-800 text-zinc-600"
                     }`}>
-                      {earned ? <Ic className="w-7 h-7" /> : <Lock className="w-6 h-6" />}
+                      <Ic className={`w-7 h-7 ${earned ? "drop-shadow-[0_0_8px_rgba(139,92,246,0.8)]" : ""}`} />
+                      {!earned && (
+                        <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center backdrop-blur-[1px]">
+                          <Lock className="w-4 h-4 text-zinc-500" />
+                        </div>
+                      )}
                     </div>
-                    <span className="text-xs font-bold text-zinc-200 leading-tight mb-1">{badge.name}</span>
-                    <span className="text-[9px] text-zinc-500 leading-relaxed">{badge.description}</span>
+                    <h4 className={`text-xs font-black tracking-wide mb-2 ${earned ? "text-transparent bg-clip-text bg-gradient-to-r from-violet-300 to-fuchsia-300 drop-shadow-md" : "text-white"}`}>
+                      {badge.name}
+                    </h4>
+                    <p className={`text-[10px] leading-relaxed ${earned ? "text-violet-200/70" : "text-zinc-500"}`}>
+                      {badge.description}
+                    </p>
                     {earned && (
                       <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-violet-500 shadow-[0_0_6px_rgba(139,92,246,0.8)]" />
                     )}
