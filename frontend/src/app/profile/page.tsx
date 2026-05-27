@@ -52,13 +52,13 @@ const XP_LEVELS = [
 ];
 
 const ALL_BADGES = [
-  { id: "first_blood",   name: "First Blood",        icon: "Zap",         description: "Completed your very first interview on HireMind." },
-  { id: "fluent_speaker",name: "Fluent Communicator",icon: "MessageSquare",description: "< 5 filler words across the entire interview." },
-  { id: "logic_master",  name: "Logic Master",       icon: "Zap",         description: "Structured reasoning across all problem-solving questions." },
-  { id: "cracked_hard",  name: "Cracked Hard Round", icon: "Trophy",      description: "Successfully handled Hard-difficulty questions." },
-  { id: "unshakable",    name: "Unshakable Focus",   icon: "Eye",         description: "High confidence score (>85) and steady answers." },
-  { id: "clean_coder",   name: "Clean Coder",        icon: "Code",        description: "Precise and well-structured code explanations." },
-  { id: "perfectionist", name: "Perfectionist",      icon: "Star",        description: "Achieved an overall score above 90." },
+  { id: "first_blood",   name: "First Blood",        icon: "Zap",         description: "Completed your very first interview on HireMind.", image: "/badges/badge_first_blood.png" },
+  { id: "fluent_speaker",name: "Fluent Communicator",icon: "MessageSquare",description: "< 5 filler words across the entire interview.", image: "/badges/badge_fluent_speaker.png" },
+  { id: "logic_master",  name: "Logic Master",       icon: "Zap",         description: "Structured reasoning across all problem-solving questions.", image: "/badges/badge_logic_master.png" },
+  { id: "cracked_hard",  name: "Cracked Hard Round", icon: "Trophy",      description: "Successfully handled Hard-difficulty questions.", image: "/badges/badge_cracked_hard.png" },
+  { id: "unshakable",    name: "Unshakable Focus",   icon: "Eye",         description: "High confidence score (>85) and steady answers.", image: "/badges/badge_unshakable.png" },
+  { id: "clean_coder",   name: "Clean Coder",        icon: "Code",        description: "Precise and well-structured code explanations.", image: "/badges/badge_clean_coder.png" },
+  { id: "perfectionist", name: "Perfectionist",      icon: "Star",        description: "Achieved an overall score above 90.", image: "/badges/badge_perfectionist.png" },
   { id: "speed_demon",   name: "Speed Demon",        icon: "Target",      description: "Concise, sharp answers with zero rambling." },
   { id: "comeback_kid",  name: "Comeback Kid",       icon: "TrendingUp",  description: "Recovered strongly after a weak opening answer." },
   { id: "deep_diver",    name: "Deep Diver",         icon: "BookOpen",    description: "Demonstrated expert depth beyond what was asked." },
@@ -314,14 +314,18 @@ export default function ProfilePage() {
                         : "bg-zinc-950/80 border-white/5 opacity-60 grayscale hover:opacity-100 transition-opacity cursor-not-allowed"
                     }`}
                   >
-                    <div className={`relative w-16 h-16 rounded-full flex items-center justify-center mb-4 transition-transform duration-500 ${
+                    <div className={`relative w-16 h-16 rounded-full flex items-center justify-center mb-4 transition-transform duration-500 overflow-hidden ${
                       earned
                         ? "bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 border-2 border-violet-500/50 text-violet-300 shadow-[0_0_15px_rgba(139,92,246,0.5)] group-hover:scale-110 group-hover:rotate-12"
-                        : "bg-zinc-900 border-2 border-zinc-800 text-zinc-600"
+                        : "bg-zinc-900 border-2 border-zinc-800 text-zinc-600 grayscale opacity-80"
                     }`}>
-                      <Ic className={`w-7 h-7 ${earned ? "drop-shadow-[0_0_8px_rgba(139,92,246,0.8)]" : ""}`} />
+                      {(badge as any).image ? (
+                        <Image src={(badge as any).image} alt={badge.name} fill className="object-cover" />
+                      ) : (
+                        <Ic className={`w-7 h-7 ${earned ? "drop-shadow-[0_0_8px_rgba(139,92,246,0.8)]" : ""}`} />
+                      )}
                       {!earned && (
-                        <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center backdrop-blur-[1px]">
+                        <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center backdrop-blur-[1px]">
                           <Lock className="w-4 h-4 text-zinc-500" />
                         </div>
                       )}
