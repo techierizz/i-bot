@@ -449,7 +449,7 @@ export default function ProfilePage() {
           )}
         </AnimatePresence>
 
-      </div>
+      </main>
       
       {/* All Badges Modal */}
       <AnimatePresence>
