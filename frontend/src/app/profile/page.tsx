@@ -8,6 +8,7 @@ import {
   MessageSquare, Code, TrendingUp, Users, Target, BookOpen,
   Lock, Crown, Medal, Award, User, RefreshCw
 } from "lucide-react";
+import Image from "next/image";
 import { API_BASE_URL } from "../config";
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -38,16 +39,16 @@ interface LeaderboardEntry {
 
 // ── Constants ────────────────────────────────────────────────────────────────
 const XP_LEVELS = [
-  { level: 1,  xp: 0,      rank: "Recruit",   color: "from-zinc-500 to-zinc-400" },
-  { level: 2,  xp: 500,    rank: "Applicant",  color: "from-emerald-600 to-emerald-400" },
-  { level: 3,  xp: 1500,   rank: "Contender",  color: "from-cyan-600 to-cyan-400" },
-  { level: 4,  xp: 3500,   rank: "Specialist", color: "from-blue-600 to-blue-400" },
-  { level: 5,  xp: 7000,   rank: "Expert",     color: "from-violet-600 to-violet-400" },
-  { level: 6,  xp: 12000,  rank: "Senior",     color: "from-purple-600 to-purple-400" },
-  { level: 7,  xp: 20000,  rank: "Principal",  color: "from-fuchsia-600 to-fuchsia-400" },
-  { level: 8,  xp: 32000,  rank: "Director",   color: "from-pink-600 to-pink-400" },
-  { level: 9,  xp: 50000,  rank: "VP",         color: "from-rose-600 to-amber-400" },
-  { level: 10, xp: 75000,  rank: "Legend",     color: "from-amber-500 to-yellow-300" },
+  { level: 1,  xp: 0,      rank: "Recruit",   color: "from-zinc-500 to-zinc-400",       image: "/ranks/rank_1_recruit.png" },
+  { level: 2,  xp: 500,    rank: "Applicant",  color: "from-emerald-600 to-emerald-400", image: "/ranks/rank_2_applicant.png" },
+  { level: 3,  xp: 1500,   rank: "Contender",  color: "from-cyan-600 to-cyan-400",       image: "/ranks/rank_3_contender.png" },
+  { level: 4,  xp: 3500,   rank: "Specialist", color: "from-blue-600 to-blue-400",       image: "/ranks/rank_4_specialist.png" },
+  { level: 5,  xp: 7000,   rank: "Expert",     color: "from-violet-600 to-violet-400",   image: "/ranks/rank_5_expert.png" },
+  { level: 6,  xp: 12000,  rank: "Senior",     color: "from-purple-600 to-purple-400",   image: "/ranks/rank_6_senior.png" },
+  { level: 7,  xp: 20000,  rank: "Principal",  color: "from-fuchsia-600 to-fuchsia-400", image: "/ranks/rank_7_principal.png" },
+  { level: 8,  xp: 32000,  rank: "Director",   color: "from-pink-600 to-pink-400",       image: "/ranks/rank_8_director.png" },
+  { level: 9,  xp: 50000,  rank: "VP",         color: "from-rose-600 to-amber-400",      image: "/ranks/rank_9_vp.png" },
+  { level: 10, xp: 75000,  rank: "Legend",     color: "from-amber-500 to-yellow-300",    image: "/ranks/rank_10_legend.png" },
 ];
 
 const ALL_BADGES = [
@@ -127,16 +128,9 @@ export default function ProfilePage() {
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div className="flex items-center gap-2">
-            <BrainCircuit className="w-5 h-5 text-violet-400" />
             <h1 className="text-lg font-bold text-white">My Progress Profile</h1>
           </div>
         </div>
-        <button
-          onClick={() => router.push("/interview")}
-          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow-lg hover:opacity-90 transition-all cursor-pointer"
-        >
-          <RefreshCw className="w-3.5 h-3.5" /> New Interview
-        </button>
       </header>
 
       <main className="max-w-5xl mx-auto px-4 md:px-8 py-10 space-y-8">
@@ -158,8 +152,10 @@ export default function ProfilePage() {
                 transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
                 className={`absolute inset-0 rounded-full bg-gradient-to-br ${currentTier.color} opacity-20 blur-xl`}
               />
-              <div className={`relative w-32 h-32 rounded-full bg-gradient-to-br ${currentTier.color} flex items-center justify-center shadow-[0_0_40px_rgba(139,92,246,0.4)]`}>
-                <span className="text-5xl font-black text-white">{gData?.level ?? 1}</span>
+              <div className={`relative w-32 h-32 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(139,92,246,0.4)] bg-gradient-to-br ${currentTier.color} p-1`}>
+                <div className="w-full h-full rounded-full bg-zinc-950 overflow-hidden relative">
+                  <Image src={currentTier.image} alt={currentTier.rank} fill className="object-cover" />
+                </div>
               </div>
               {gData && gData.streak > 1 && (
                 <div className="absolute -bottom-2 -right-2 flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-500 text-white text-[10px] font-extrabold shadow-lg">
@@ -235,14 +231,18 @@ export default function ProfilePage() {
               return (
                 <div key={tier.level} className="flex items-center shrink-0">
                   <div className={`flex flex-col items-center gap-1.5 ${isCurrent ? "scale-110" : ""} transition-transform`}>
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-extrabold border-2 transition-all ${
+                    <div className={`shrink-0 relative w-12 h-12 rounded-full flex items-center justify-center text-sm font-extrabold border-2 transition-all overflow-hidden ${
                       isCurrent
-                        ? `bg-gradient-to-br ${tier.color} border-white/30 shadow-[0_0_15px_rgba(139,92,246,0.4)] text-white`
+                        ? `bg-gradient-to-br ${tier.color} border-white/50 shadow-[0_0_15px_rgba(139,92,246,0.6)]`
                         : unlocked
-                        ? `bg-gradient-to-br ${tier.color} border-transparent text-white opacity-80`
-                        : "bg-zinc-900 border-zinc-800 text-zinc-600"
+                        ? `bg-gradient-to-br ${tier.color} border-transparent opacity-80`
+                        : "bg-zinc-900 border-zinc-800 text-zinc-600 grayscale opacity-40"
                     }`}>
-                      {unlocked ? tier.level : <Lock className="w-3.5 h-3.5" />}
+                      {unlocked ? (
+                        <Image src={tier.image} alt={tier.rank} fill className="object-cover" />
+                      ) : (
+                        <Lock className="w-4 h-4" />
+                      )}
                     </div>
                     <span className={`text-[8px] font-bold uppercase tracking-wider ${isCurrent ? "text-white" : unlocked ? "text-zinc-400" : "text-zinc-700"}`}>
                       {tier.rank}
@@ -363,8 +363,12 @@ export default function ProfilePage() {
                         </div>
 
                         {/* Level orb */}
-                        <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${tierColor} flex items-center justify-center text-xs font-extrabold text-white shrink-0`}>
-                          {entry.level}
+                        <div className={`relative w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br ${tierColor} shrink-0 p-[2px] shadow-sm`}>
+                          <div className="w-full h-full rounded-full bg-zinc-950 overflow-hidden relative">
+                            {XP_LEVELS.find(t => t.level === entry.level)?.image && (
+                              <Image src={XP_LEVELS.find(t => t.level === entry.level)!.image} alt={entry.rank_title} fill className="object-cover" />
+                            )}
+                          </div>
                         </div>
 
                         {/* Name + rank */}
