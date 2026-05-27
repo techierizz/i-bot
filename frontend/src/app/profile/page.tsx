@@ -221,9 +221,10 @@ export default function ProfilePage() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="rounded-2xl border border-white/5 bg-zinc-900/40 p-6"
+          className="rounded-3xl border border-white/10 bg-gradient-to-b from-zinc-900/80 to-zinc-950/80 backdrop-blur-xl p-8 relative overflow-hidden shadow-2xl"
         >
-          <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-5">Rank Progression Roadmap</h3>
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-violet-500/10 via-transparent to-transparent pointer-events-none" />
+          <h3 className="relative z-10 text-xs font-black text-transparent bg-clip-text bg-gradient-to-r from-zinc-400 to-zinc-600 uppercase tracking-widest mb-8">Rank Progression Roadmap</h3>
           <div className="flex items-center gap-0 overflow-x-auto pb-2">
             {XP_LEVELS.map((tier, i) => {
               const unlocked = (gData?.level ?? 1) >= tier.level;
@@ -231,17 +232,24 @@ export default function ProfilePage() {
               return (
                 <div key={tier.level} className="flex items-center shrink-0">
                   <div className={`flex flex-col items-center gap-1.5 ${isCurrent ? "scale-110" : ""} transition-transform`}>
-                    <div className={`shrink-0 relative w-12 h-12 rounded-full flex items-center justify-center text-sm font-extrabold border-2 transition-all overflow-hidden ${
+                    <div className={`relative min-w-[3.5rem] min-h-[3.5rem] w-14 h-14 rounded-full flex items-center justify-center text-sm font-extrabold border-2 transition-all overflow-hidden shrink-0 aspect-square shadow-lg ${
                       isCurrent
-                        ? `bg-gradient-to-br ${tier.color} border-white/50 shadow-[0_0_15px_rgba(139,92,246,0.6)]`
+                        ? `border-white/70 shadow-[0_0_20px_rgba(139,92,246,0.8)] ring-4 ring-violet-500/20`
                         : unlocked
-                        ? `bg-gradient-to-br ${tier.color} border-transparent opacity-80`
-                        : "bg-zinc-900 border-zinc-800 text-zinc-600 grayscale opacity-40"
+                        ? `border-white/20 opacity-90 hover:border-white/40`
+                        : "border-white/5 opacity-50 grayscale hover:opacity-70"
                     }`}>
-                      {unlocked ? (
-                        <Image src={tier.image} alt={tier.rank} fill className="object-cover" />
-                      ) : (
-                        <Lock className="w-4 h-4" />
+                      <div className="absolute inset-0 bg-zinc-950 z-0" />
+                      <Image 
+                        src={tier.image} 
+                        alt={tier.rank} 
+                        fill 
+                        className={`object-cover z-10 transition-transform duration-500 ${isCurrent ? 'scale-110' : ''} ${!unlocked ? 'opacity-30' : ''}`} 
+                      />
+                      {!unlocked && (
+                        <div className="absolute inset-0 z-20 flex items-center justify-center bg-zinc-950/40 backdrop-blur-[2px]">
+                          <Lock className="w-5 h-5 text-zinc-400 drop-shadow-md" />
+                        </div>
                       )}
                     </div>
                     <span className={`text-[8px] font-bold uppercase tracking-wider ${isCurrent ? "text-white" : unlocked ? "text-zinc-400" : "text-zinc-700"}`}>
