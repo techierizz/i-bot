@@ -165,6 +165,30 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
     Provides a comprehensive feedback report, learning roadmap, resume suggestions, and achievements.
     Returns a structured dictionary matching the dashboard evaluation scheme.
     """
+    user_turns = sum(1 for msg in chat_history if isinstance(msg, dict) and (msg.get("role") in ("user", "candidate") or "user" in msg or "candidate" in msg))
+    if user_turns == 0:
+        return {
+            "scores": {
+                "technical": 0, "communication": 0, "confidence": 0, "problem_solving": 0, "overall": 0
+            },
+            "feedback": {
+                "technical": "Not enough data to evaluate.",
+                "communication": "Not enough data to evaluate.",
+                "confidence": "Not enough data to evaluate.",
+                "problem_solving": "Not enough data to evaluate.",
+                "overall_summary": "The interview was ended before a meaningful conversation occurred. Please answer at least 1 question to receive a full evaluation."
+            },
+            "roadmap": [],
+            "resume_optimizer": {
+                "ats_score_impact": 0, "what_to_add": [], "what_to_delete": [], "what_to_change": [], "bullet_points": []
+            },
+            "achievements": [],
+            "xp_earned": 0,
+            "xp_breakdown": {
+                "base": 0, "score_bonus": 0, "achievement_bonus": 0, "total": 0
+            }
+        }
+
     mock_data = {
         "scores": {
             "technical": 85,
@@ -325,7 +349,7 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
            - id: "deep_diver",       name: "Deep Diver",            icon: "BookOpen"     — demonstrated advanced depth beyond the question asked
            - id: "team_player",      name: "Team Player",           icon: "Users"        — highlighted collaboration and leadership examples effectively
         6. Calculate XP earned using this formula:
-           - Base XP: 1000
+           - Base XP: Count the number of candidate responses in the chat history. Award 200 Base XP per candidate response, up to a maximum of 1000 Base XP (5+ responses).
            - Score bonus: add up to +500 based on overall score (score * 5)
            - Achievement bonus: +100 per badge awarded
            - Maximum total: 2500
