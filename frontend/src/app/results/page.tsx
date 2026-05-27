@@ -252,12 +252,57 @@ export default function ResultsPage() {
   const coordinates = data ? getCoordinates(data.scores) : [];
   const polygonPoints = coordinates.map(c => `${c.x},${c.y}`).join(" ");
 
-  const handleCheckboxToggle = (weekIndex: number, actionIndex: number) => {
+  useEffect(() => {
+    // Load completed tasks from localStorage to prevent farming
+    const savedCompleted = localStorage.getItem("hiremind_completed_tasks");
+    if (savedCompleted) {
+      try {
+        const parsed = JSON.parse(savedCompleted);
+        const state: Record<string, boolean> = {};
+        parsed.forEach((k: string) => state[k] = true);
+        setRoadmapChecked(state);
+      } catch (e) { }
+    }
+  }, []);
+
+  const handleCheckboxToggle = async (weekIndex: number, actionIndex: number) => {
     const key = `${weekIndex}-${actionIndex}`;
-    setRoadmapChecked(prev => ({
-      ...prev,
-      [key]: !prev[key]
-    }));
+    
+    const wasAlreadySaved = !!roadmapChecked[key];
+    
+    setRoadmapChecked(prev => {
+      const newState = { ...prev, [key]: !prev[key] };
+      const trueKeys = Object.keys(newState).filter(k => newState[k]);
+      localStorage.setItem("hiremind_completed_tasks", JSON.stringify(trueKeys));
+      return newState;
+    });
+
+    // Only give XP if they are checking it and it wasn't already checked before
+    if (!wasAlreadySaved) {
+      try {
+        const session = localStorage.getItem("hiremind_user");
+        if (session) {
+          const loggedUser = JSON.parse(session);
+          const response = await fetch(`${API_BASE_URL}/api/gamification/add_xp`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              user_id: loggedUser.id,
+              amount: 50
+            })
+          });
+          const result = await response.json();
+          if (result.status === "success" && result.gamification) {
+            setGamification(result.gamification);
+            if (result.gamification.level_up) {
+              setTimeout(() => setShowLevelUpModal(true), 500);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Failed to add XP for roadmap task", err);
+      }
+    }
   };
 
   return (
