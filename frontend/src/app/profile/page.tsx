@@ -80,6 +80,7 @@ export default function ProfilePage() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"badges" | "leaderboard" | "roadmap">("badges");
+  const [showAllBadgesModal, setShowAllBadgesModal] = useState(false);
 
   useEffect(() => {
     const session = localStorage.getItem("hiremind_user");
@@ -269,7 +270,7 @@ export default function ProfilePage() {
         {/* Tabs */}
         <div className="flex bg-zinc-900/60 p-1.5 rounded-2xl border border-white/5">
           {[
-            { id: "badges",      label: "Badge Vault",   icon: Award },
+            { id: "badges",      label: "My Badges",   icon: Award },
             { id: "leaderboard", label: "Leaderboard",   icon: Crown },
           ].map(tab => {
             const Icon = tab.icon;
@@ -289,7 +290,7 @@ export default function ProfilePage() {
           })}
         </div>
 
-        {/* Badge Vault Tab */}
+        {/* My Badges Tab */}
         <AnimatePresence mode="wait">
           {activeTab === "badges" && (
             <motion.div
@@ -297,51 +298,66 @@ export default function ProfilePage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"
+              className="flex flex-col gap-8"
             >
-              {ALL_BADGES.map((badge, i) => {
-                const earned = (gData?.badges ?? []).includes(badge.id);
-                const Ic = ICON_MAP[badge.icon] || Trophy;
-                return (
-                  <motion.div
-                    key={badge.id}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: i * 0.04 }}
-                    className={`group relative flex flex-col items-center text-center p-5 rounded-3xl border transition-all duration-300 ${
-                      earned
-                        ? "bg-gradient-to-br from-violet-900/40 to-zinc-900/80 border-violet-500/30 shadow-[0_0_20px_rgba(139,92,246,0.15)] hover:shadow-[0_0_30px_rgba(139,92,246,0.3)] hover:border-violet-400/50 hover:scale-[1.03] cursor-default"
-                        : "bg-zinc-950/80 border-white/5 opacity-60 grayscale hover:opacity-100 transition-opacity cursor-not-allowed"
-                    }`}
-                  >
-                    <div className={`relative w-16 h-16 rounded-full flex items-center justify-center mb-4 transition-transform duration-500 overflow-hidden ${
-                      earned
-                        ? "bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 border-2 border-violet-500/50 text-violet-300 shadow-[0_0_15px_rgba(139,92,246,0.5)] group-hover:scale-110 group-hover:rotate-12"
-                        : "bg-zinc-900 border-2 border-zinc-800 text-zinc-600 grayscale opacity-80"
-                    }`}>
-                      {(badge as any).image ? (
-                        <Image src={(badge as any).image} alt={badge.name} fill className="object-cover" />
-                      ) : (
-                        <Ic className={`w-7 h-7 ${earned ? "drop-shadow-[0_0_8px_rgba(139,92,246,0.8)]" : ""}`} />
-                      )}
-                      {!earned && (
-                        <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center backdrop-blur-[1px]">
-                          <Lock className="w-4 h-4 text-zinc-500" />
-                        </div>
-                      )}
+              {(() => {
+                const earnedBadges = ALL_BADGES.filter(badge => (gData?.badges ?? []).includes(badge.id));
+                
+                if (earnedBadges.length === 0) {
+                  return (
+                    <div className="flex flex-col items-center justify-center py-16 px-4 text-center bg-zinc-950/40 rounded-3xl border border-white/5 shadow-inner">
+                      <Lock className="w-12 h-12 text-zinc-700 mb-5 opacity-50" />
+                      <h3 className="text-xl font-black text-zinc-500 uppercase tracking-widest drop-shadow-sm">Way More To Go!!</h3>
+                      <p className="text-xs text-zinc-600 mt-2.5 font-medium">Complete interviews to earn your first badge.</p>
                     </div>
-                    <h4 className={`text-xs font-black tracking-wide mb-2 ${earned ? "text-transparent bg-clip-text bg-gradient-to-r from-violet-300 to-fuchsia-300 drop-shadow-md" : "text-white"}`}>
-                      {badge.name}
-                    </h4>
-                    <p className={`text-[10px] leading-relaxed ${earned ? "text-violet-200/70" : "text-zinc-500"}`}>
-                      {badge.description}
-                    </p>
-                    {earned && (
-                      <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-violet-500 shadow-[0_0_6px_rgba(139,92,246,0.8)]" />
-                    )}
-                  </motion.div>
+                  );
+                }
+
+                return (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5">
+                    {earnedBadges.map((badge, i) => {
+                      const Ic = ICON_MAP[badge.icon] || Trophy;
+                      return (
+                        <motion.div
+                          key={badge.id}
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: i * 0.04 }}
+                          className="group relative flex flex-col items-center text-center p-6 rounded-3xl border bg-gradient-to-br from-violet-900/40 to-zinc-900/80 border-violet-500/30 shadow-[0_0_20px_rgba(139,92,246,0.15)] hover:shadow-[0_0_30px_rgba(139,92,246,0.3)] hover:border-violet-400/50 hover:scale-[1.02] transition-all duration-300"
+                        >
+                          <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full flex items-center justify-center mb-5 transition-transform duration-500 overflow-hidden bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 border-2 border-violet-500/50 text-violet-300 shadow-[0_0_15px_rgba(139,92,246,0.5)] group-hover:scale-110 group-hover:rotate-6">
+                            {(badge as any).image ? (
+                              <Image src={(badge as any).image} alt={badge.name} fill className="object-cover" />
+                            ) : (
+                              <Ic className="w-10 h-10 drop-shadow-[0_0_8px_rgba(139,92,246,0.8)]" />
+                            )}
+                          </div>
+                          <h4 className="text-[13px] font-black tracking-wide mb-2 text-transparent bg-clip-text bg-gradient-to-r from-violet-300 to-fuchsia-300 drop-shadow-md">
+                            {badge.name}
+                          </h4>
+                          <p className="text-[11px] leading-relaxed text-violet-200/70 font-medium">
+                            {badge.description}
+                          </p>
+                          <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-violet-500 shadow-[0_0_8px_rgba(139,92,246,1)]" />
+                        </motion.div>
+                      );
+                    })}
+                  </div>
                 );
-              })}
+              })()}
+
+              {/* Separator and All Badges Button */}
+              <div className="flex flex-col items-center justify-center pt-6 pb-2 relative">
+                <div className="absolute inset-0 flex items-center justify-center px-12">
+                  <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                </div>
+                <button
+                  onClick={() => setShowAllBadgesModal(true)}
+                  className="relative px-6 py-2 rounded-full bg-zinc-950 border border-white/10 text-[10px] font-extrabold text-zinc-400 uppercase tracking-widest hover:text-white hover:border-white/20 hover:bg-zinc-900 transition-all shadow-xl"
+                >
+                  All Badges
+                </button>
+              </div>
             </motion.div>
           )}
 
@@ -433,7 +449,82 @@ export default function ProfilePage() {
           )}
         </AnimatePresence>
 
-      </main>
+      </div>
+      
+      {/* All Badges Modal */}
+      <AnimatePresence>
+        {showAllBadgesModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowAllBadgesModal(false)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-md"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-4xl bg-zinc-950 border border-white/10 rounded-[2rem] shadow-[0_0_50px_rgba(0,0,0,0.8)] overflow-hidden z-10 max-h-[90vh] flex flex-col"
+            >
+              <div className="p-6 border-b border-white/5 flex items-center justify-between bg-zinc-900/50 backdrop-blur-sm sticky top-0 z-20">
+                <h3 className="text-lg font-black text-white uppercase tracking-widest flex items-center gap-2">
+                  <Award className="w-5 h-5 text-violet-400" />
+                  All Badges
+                </h3>
+                <button 
+                  onClick={() => setShowAllBadgesModal(false)}
+                  className="w-8 h-8 rounded-full bg-zinc-900 hover:bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
+                >
+                  <Lock className="w-4 h-4 hidden" /> {/* Just utilizing icon for size hack if needed */}
+                  <span className="text-lg leading-none mb-0.5">&times;</span>
+                </button>
+              </div>
+
+              <div className="p-8 overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-6 gap-y-10">
+                {ALL_BADGES.map((badge, i) => {
+                  const earned = (gData?.badges ?? []).includes(badge.id);
+                  const Ic = ICON_MAP[badge.icon] || Trophy;
+                  return (
+                    <div key={badge.id} className="relative group flex flex-col items-center">
+                      <div className={`relative w-20 h-20 sm:w-24 sm:h-24 rounded-full flex items-center justify-center transition-all duration-300 overflow-hidden cursor-help ${
+                        earned
+                          ? "bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 border-2 border-violet-500/50 shadow-[0_0_15px_rgba(139,92,246,0.3)] hover:scale-105"
+                          : "bg-zinc-900 border-2 border-zinc-800 opacity-60 grayscale hover:opacity-100 transition-opacity hover:scale-105"
+                      }`}>
+                        {(badge as any).image ? (
+                          <Image src={(badge as any).image} alt={badge.name} fill className="object-cover" />
+                        ) : (
+                          <Ic className={`w-8 h-8 ${earned ? "text-violet-300" : "text-zinc-600"}`} />
+                        )}
+                        {!earned && (
+                          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                            <Lock className="w-5 h-5 text-zinc-400 drop-shadow-md" />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Custom Tooltip */}
+                      <div className="absolute top-[110%] left-1/2 -translate-x-1/2 w-48 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-50 transform translate-y-[-10px] group-hover:translate-y-0">
+                        <div className="bg-zinc-900 border border-white/10 p-3 rounded-xl shadow-2xl backdrop-blur-xl relative flex flex-col items-center text-center">
+                          <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-zinc-900 border-t border-l border-white/10 rotate-45" />
+                          <span className={`text-[11px] font-black uppercase tracking-wider mb-1 ${earned ? "text-violet-400" : "text-zinc-300"}`}>
+                            {badge.name}
+                          </span>
+                          <span className="text-[10px] text-zinc-400 leading-tight">
+                            {badge.description}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
