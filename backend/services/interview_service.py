@@ -295,6 +295,13 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key or api_key == "YOUR_API_KEY_HERE":
         print("WARNING: GEMINI_API_KEY not found or invalid. Returning mock evaluation data.")
+        if user_turns < 3:
+            mock_data["scores"] = {"technical": 0, "communication": 0, "confidence": 0, "problem_solving": 0, "overall": 0}
+            mock_data["feedback"]["overall_summary"] = "Interview ended early. Evaluation unavailable."
+            mock_data["xp_earned"] = 0
+            mock_data["achievements"] = []
+            mock_data["roadmap"] = []
+            mock_data["resume_optimizer"] = {"ats_score_impact": 0, "what_to_add": [], "what_to_delete": [], "what_to_change": [], "bullet_points": []}
         return mock_data
 
     try:
@@ -417,4 +424,31 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
         
     except Exception as e:
         print(f"Error executing Gemini evaluation: {e}")
+        
+        # If the interview was aborted early (e.g. they only said "yes") or the API failed,
+        # award Base XP based on turns, but zero out the evaluation scores to avoid giving unearned mock XP.
+        if user_turns < 5:
+            base_xp = min(user_turns * 200, 1000)
+            return {
+                "scores": {
+                    "technical": 0, "communication": 0, "confidence": 0, "problem_solving": 0, "overall": 0
+                },
+                "feedback": {
+                    "technical": "Evaluation unavailable.",
+                    "communication": "Evaluation unavailable.",
+                    "confidence": "Evaluation unavailable.",
+                    "problem_solving": "Evaluation unavailable.",
+                    "overall_summary": "The AI could not properly evaluate the interview due to insufficient data or a system error. You have still been awarded Base XP for your participation!"
+                },
+                "roadmap": [],
+                "resume_optimizer": {
+                    "ats_score_impact": 0, "what_to_add": [], "what_to_delete": [], "what_to_change": [], "bullet_points": []
+                },
+                "achievements": [],
+                "xp_earned": base_xp,
+                "xp_breakdown": {
+                    "base": base_xp, "score_bonus": 0, "achievement_bonus": 0, "total": base_xp
+                }
+            }
+            
         return mock_data
