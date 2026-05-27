@@ -484,24 +484,18 @@ export default function ProfilePage() {
 
               <div className="p-8 overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-6 gap-y-10">
                 {ALL_BADGES.map((badge, i) => {
-                  const earned = (gData?.badges ?? []).includes(badge.id);
+                  const actuallyEarned = (gData?.badges ?? []).includes(badge.id);
                   const Ic = ICON_MAP[badge.icon] || Trophy;
+                  
+                  // In the All Badges modal, we want to show off the artwork, so we force the 'unlocked' visual state
+                  // but we can maybe add a subtle indicator if they don't actually own it, or just let it be fully colorful.
                   return (
                     <div key={badge.id} className="relative group flex flex-col items-center">
-                      <div className={`relative w-20 h-20 sm:w-24 sm:h-24 rounded-full flex items-center justify-center transition-all duration-300 overflow-hidden cursor-help ${
-                        earned
-                          ? "bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 border-2 border-violet-500/50 shadow-[0_0_15px_rgba(139,92,246,0.3)] hover:scale-105"
-                          : "bg-zinc-900 border-2 border-zinc-800 opacity-60 grayscale hover:opacity-100 transition-opacity hover:scale-105"
-                      }`}>
+                      <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full flex items-center justify-center transition-all duration-300 overflow-hidden cursor-help bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 border-2 border-violet-500/50 shadow-[0_0_15px_rgba(139,92,246,0.3)] hover:scale-105">
                         {(badge as any).image ? (
                           <Image src={(badge as any).image} alt={badge.name} fill className="object-cover" />
                         ) : (
-                          <Ic className={`w-8 h-8 ${earned ? "text-violet-300" : "text-zinc-600"}`} />
-                        )}
-                        {!earned && (
-                          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                            <Lock className="w-5 h-5 text-zinc-400 drop-shadow-md" />
-                          </div>
+                          <Ic className="w-8 h-8 text-violet-300" />
                         )}
                       </div>
 
@@ -509,7 +503,7 @@ export default function ProfilePage() {
                       <div className="absolute top-[110%] left-1/2 -translate-x-1/2 w-48 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-50 transform translate-y-[-10px] group-hover:translate-y-0">
                         <div className="bg-zinc-900 border border-white/10 p-3 rounded-xl shadow-2xl backdrop-blur-xl relative flex flex-col items-center text-center">
                           <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-zinc-900 border-t border-l border-white/10 rotate-45" />
-                          <span className={`text-[11px] font-black uppercase tracking-wider mb-1 ${earned ? "text-violet-400" : "text-zinc-300"}`}>
+                          <span className="text-[11px] font-black uppercase tracking-wider mb-1 text-violet-400">
                             {badge.name}
                           </span>
                           <span className="text-[10px] text-zinc-400 leading-tight">
