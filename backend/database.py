@@ -417,7 +417,7 @@ def add_xp_to_user(user_id: int, xp_earned: int, new_badge_ids: List[str]) -> Di
 
     all_badges = list(set(existing_badges + new_badge_ids))
 
-    if old_total_xp == 0 and "first_blood" not in all_badges:
+    if old_total_xp == 0 and "first_blood" not in all_badges and xp_earned >= 1000:
         all_badges.append("first_blood")
 
     cursor.execute(
