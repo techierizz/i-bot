@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, MouseEvent } from "react";
 import { motion, AnimatePresence, useScroll, useTransform, useMotionTemplate, useMotionValue, useSpring } from "framer-motion";
-import { Mic, LineChart, FileText, ArrowRight, LogOut, Shield, User, PlayCircle, CheckCircle2, ChevronDown, Sparkles, Activity } from "lucide-react";
+import { Mic, LineChart, FileText, ArrowRight, LogOut, Shield, User, PlayCircle, CheckCircle2, ChevronDown, Sparkles, Activity, X } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -105,6 +105,7 @@ const WordReveal = ({ text, className }: { text: string; className?: string }) =
 export default function Home() {
   const [candidateUser, setCandidateUser] = useState<any>(null);
   const [adminUser, setAdminUser] = useState<any>(null);
+  const [showDemoModal, setShowDemoModal] = useState(false);
   
   const { scrollY, scrollYProgress } = useScroll();
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
@@ -170,9 +171,11 @@ export default function Home() {
               </>
             ) : candidateUser ? (
               <div className="flex items-center gap-4">
-                <span className="text-sm font-bold text-zinc-300 flex items-center gap-2 bg-zinc-900/50 glass px-3 py-1.5 rounded-lg border border-white/5">
-                  <User className="w-4 h-4 text-primary-400" /> {candidateUser.username}
-                </span>
+                <Link href="/profile">
+                  <button className="text-sm font-bold text-zinc-300 flex items-center gap-2 bg-zinc-900/50 glass px-3 py-1.5 rounded-lg border border-white/5 hover:border-primary-500/30 hover:bg-zinc-800/80 transition-all hover:scale-105 active:scale-95 cursor-pointer">
+                    <User className="w-4 h-4 text-primary-400" /> {candidateUser.username}
+                  </button>
+                </Link>
                 <button onClick={handleLogout} className="px-4 py-2 bg-zinc-900 border border-white/10 hover:border-red-500/50 hover:bg-zinc-800 rounded-xl text-sm font-bold uppercase tracking-wider text-zinc-400 hover:text-red-400 transition-all flex items-center gap-2 hover:scale-105 active:scale-95">
                   <LogOut className="w-4 h-4" /> Logout
                 </button>
@@ -470,7 +473,7 @@ export default function Home() {
                   Start Your Free Interview <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform relative z-10" />
                 </button>
               </Link>
-              <button className="w-full sm:w-auto px-12 py-6 bg-zinc-900/80 border border-white/10 hover:bg-zinc-800 rounded-2xl font-bold text-xl transition-all flex items-center justify-center gap-3 backdrop-blur-md hover:scale-105 active:scale-95 hover:border-white/20 group">
+              <button onClick={() => setShowDemoModal(true)} className="w-full sm:w-auto px-12 py-6 bg-zinc-900/80 border border-white/10 hover:bg-zinc-800 rounded-2xl font-bold text-xl transition-all flex items-center justify-center gap-3 backdrop-blur-md hover:scale-105 active:scale-95 hover:border-white/20 group">
                 <PlayCircle className="w-6 h-6 text-zinc-400 group-hover:text-white transition-colors" /> Watch Demo
               </button>
             </div>
@@ -478,6 +481,43 @@ export default function Home() {
         </section>
 
       </main>
+
+      {/* Demo Cinematic Modal */}
+      <AnimatePresence>
+        {showDemoModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowDemoModal(false)}
+              className="absolute inset-0 bg-black/95 backdrop-blur-3xl"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-6xl aspect-video bg-zinc-950 border border-white/10 rounded-[2rem] shadow-[0_0_150px_rgba(139,92,246,0.15)] overflow-hidden z-10 flex items-center justify-center group"
+            >
+              <button 
+                onClick={() => setShowDemoModal(false)}
+                className="absolute top-6 right-6 w-12 h-12 rounded-full bg-zinc-900/80 border border-white/10 backdrop-blur-md flex items-center justify-center hover:bg-white/10 transition-colors z-20 text-zinc-400 hover:text-white hover:scale-110 active:scale-95"
+              >
+                <X className="w-6 h-6" />
+              </button>
+              
+              {/* Replace with your video embed */}
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-900 to-black flex flex-col items-center justify-center">
+                <div className="w-24 h-24 rounded-full bg-primary-500/10 border border-primary-500/20 flex items-center justify-center mb-6 shadow-[0_0_50px_rgba(139,92,246,0.2)]">
+                  <PlayCircle className="w-12 h-12 text-primary-400/50" />
+                </div>
+                <h3 className="text-3xl font-black text-white/50 tracking-tight">Cinematic Demo Coming Soon</h3>
+                <p className="text-zinc-500 mt-3 max-w-md text-center text-lg">Embed your YouTube video, Vimeo link, or MP4 file inside this glass-morphic container.</p>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Footer */}
       <footer className="w-full border-t border-white/5 py-12 text-center text-zinc-500 text-sm relative z-10 bg-zinc-950 flex flex-col items-center justify-center gap-4">
