@@ -59,12 +59,12 @@ const ALL_BADGES = [
   { id: "unshakable",    name: "Unshakable Focus",   icon: "Eye",         description: "High confidence score (>85) and steady answers.", image: "/badges/badge_unshakable.png" },
   { id: "clean_coder",   name: "Clean Coder",        icon: "Code",        description: "Precise and well-structured code explanations.", image: "/badges/badge_clean_coder.png" },
   { id: "perfectionist", name: "Perfectionist",      icon: "Star",        description: "Achieved an overall score above 90.", image: "/badges/badge_perfectionist.png" },
-  { id: "speed_demon",   name: "Speed Demon",        icon: "Target",      description: "Concise, sharp answers with zero rambling." },
-  { id: "comeback_kid",  name: "Comeback Kid",       icon: "TrendingUp",  description: "Recovered strongly after a weak opening answer." },
-  { id: "deep_diver",    name: "Deep Diver",         icon: "BookOpen",    description: "Demonstrated expert depth beyond what was asked." },
-  { id: "team_player",   name: "Team Player",        icon: "Users",       description: "Highlighted strong collaboration and leadership examples." },
-  { id: "streak_3",      name: "On Fire",            icon: "Flame",       description: "Completed interviews 3 days in a row." },
-  { id: "streak_7",      name: "Week Warrior",       icon: "Flame",       description: "Completed interviews 7 days in a row." },
+  { id: "speed_demon",   name: "Speed Demon",        icon: "Target",      description: "Concise, sharp answers with zero rambling.", image: "/badges/speed_demon.png" },
+  { id: "comeback_kid",  name: "Comeback Kid",       icon: "TrendingUp",  description: "Recovered strongly after a weak opening answer.", image: "/badges/comeback_kid.png" },
+  { id: "deep_diver",    name: "Deep Diver",         icon: "BookOpen",    description: "Demonstrated expert depth beyond what was asked.", image: "/badges/deep_diver.png" },
+  { id: "team_player",   name: "Team Player",        icon: "Users",       description: "Highlighted strong collaboration and leadership examples.", image: "/badges/Team_player.png" },
+  { id: "streak_3",      name: "On Fire",            icon: "Flame",       description: "Completed interviews 3 days in a row.", image: "/badges/On_fire.png" },
+  { id: "streak_7",      name: "Week Warrior",       icon: "Flame",       description: "Completed interviews 7 days in a row.", image: "/badges/week_warrior.png" },
 ];
 
 const ICON_MAP: Record<string, any> = {
