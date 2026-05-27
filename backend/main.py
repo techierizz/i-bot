@@ -64,6 +64,10 @@ class LoginRequest(BaseModel):
     username: str
     password: str
 
+class AddXPRequest(BaseModel):
+    user_id: int
+    amount: int
+
 # Endpoints
 @app.get("/health")
 def health_check():
@@ -241,6 +245,15 @@ async def evaluate_endpoint(request: EvaluationRequest):
         raise HTTPException(status_code=500, detail=f"Error evaluating interview: {str(e)}")
 
 # Gamification endpoints
+@app.post("/api/gamification/add_xp")
+def api_add_xp(req: AddXPRequest):
+    try:
+        # Give XP, no badges awarded for roadmap tasks currently
+        result = add_xp_to_user(user_id=req.user_id, xp_earned=req.amount, new_badge_ids=[])
+        return {"status": "success", "gamification": result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/api/gamification/{user_id}")
 def fetch_user_gamification(user_id: int):
     try:
