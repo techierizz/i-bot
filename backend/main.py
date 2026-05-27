@@ -182,7 +182,7 @@ async def evaluate_endpoint(request: EvaluationRequest):
                 elif "user" in msg or "candidate" in msg:
                     user_turns += 1
         
-        MIN_USER_TURNS = 2  # Must answer at least 2 questions to earn XP
+        MIN_USER_TURNS = 1  # Must answer at least 1 question to earn XP
         is_meaningful = user_turns >= MIN_USER_TURNS
         
         gamification_result = None
