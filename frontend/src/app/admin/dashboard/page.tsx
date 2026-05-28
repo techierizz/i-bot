@@ -333,11 +333,19 @@ export default function AdminDashboard() {
                     <tbody className="divide-y divide-white/5">
                       {filteredCandidates.map((c) => (
                         <tr key={c.id} className="group hover:bg-white/[0.02] transition-colors border-b border-white/5 last:border-0">
-                          <td className="py-4 px-2 font-bold text-white group-hover:text-red-400 transition-colors flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-zinc-800 to-zinc-900 border border-white/10 flex items-center justify-center text-xs text-zinc-400 group-hover:border-red-500/30 group-hover:text-red-400 transition-all">
-                              {c.username.charAt(0).toUpperCase()}
+                          <td className="py-4 px-2">
+                            <div 
+                              onClick={() => setSearchQuery(c.username)}
+                              title="Click to filter by this candidate"
+                              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-900/80 border border-white/5 hover:border-red-500/50 hover:bg-red-500/10 hover:shadow-[0_0_15px_rgba(239,68,68,0.2)] transition-all cursor-pointer group/pill"
+                            >
+                              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center text-[10px] font-black text-white shadow-[0_0_8px_rgba(239,68,68,0.8)] group-hover/pill:animate-pulse">
+                                {c.username.charAt(0).toUpperCase()}
+                              </div>
+                              <span className="font-bold text-white text-xs tracking-wide group-hover/pill:text-red-300 transition-colors">
+                                {c.username}
+                              </span>
                             </div>
-                            {c.username}
                           </td>
                           <td className="py-4 px-2">
                             <span className="px-2.5 py-1 bg-white/5 border border-white/10 rounded-md text-[10px] text-zinc-300 font-medium tracking-wide">
