@@ -274,7 +274,7 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
         mode = context.get("interview_mode", "General")
         persona = context.get("persona", "Friendly")
         extracted = context.get("extracted_context", {})
-        raw_resume = context.get("raw_resume_text", "No resume provided.")
+        raw_resume = context.get("raw_resume_text") or extracted.get("raw_resume_text", "No resume provided.")
         
         # Optimize context by taking the last 10 turns of history if large
         recent_history = chat_history[-10:] if len(chat_history) > 10 else chat_history
