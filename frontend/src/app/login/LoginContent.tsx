@@ -95,23 +95,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8 relative min-h-screen bg-zinc-950">
-      {/* Premium Cinematic Ambient Background */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none bg-black">
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.15] mix-blend-overlay z-20" />
-        <motion.div
-          animate={{
-            transform: ["rotate(0deg) scale(1)", "rotate(180deg) scale(1.2)", "rotate(360deg) scale(1)"],
-          }}
-          transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-          className="absolute -top-[50%] -left-[50%] w-[200%] h-[200%] opacity-40 z-10 blur-[120px]"
-          style={{
-            background: "conic-gradient(from 90deg at 50% 50%, #09090b 0%, #4c1d95 25%, #09090b 50%, #0284c7 75%, #09090b 100%)",
-          }}
-        />
-        <div className="absolute inset-0 bg-black/50 z-10" />
-      </div>
-
+    <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8 relative min-h-screen bg-black bg-gradient-to-br from-black via-[#0a0510] to-[#130822]">
       {/* Top Left Branding */}
       <Link href="/" className="absolute top-6 left-6 md:top-8 md:left-8 z-20">
         <span className="text-xl md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-zinc-100 via-primary-300 to-zinc-500 tracking-tighter drop-shadow-sm">HireMind</span>
