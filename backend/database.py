@@ -177,6 +177,88 @@ def authenticate_user(username: str, password: str, role: str = "candidate") -> 
         }
     return None
 
+def _enforce_rolling_window(cursor, user_id: int):
+    cursor.execute("SELECT id, overall, evaluation_data FROM evaluations WHERE user_id = %s ORDER BY created_at DESC", (user_id,))
+    evals = cursor.fetchall()
+    
+    if len(evals) <= 10:
+        return
+        
+    best_idx = 0
+    best_score = -1
+    best_xp = -1
+    best_badges = -1
+    
+    for i, e in enumerate(evals):
+        score = e["overall"] or 0
+        ed = json.loads(e["evaluation_data"]) if isinstance(e["evaluation_data"], str) else (e["evaluation_data"] or {})
+        xp = ed.get("xp_earned", 0)
+        badges = len(ed.get("achievements", []))
+        
+        is_better = False
+        if score > best_score:
+            is_better = True
+        elif score == best_score:
+            if xp > best_xp:
+                is_better = True
+            elif xp == best_xp:
+                if badges > best_badges:
+                    is_better = True
+                    
+        if is_better:
+            best_score = score
+            best_xp = xp
+            best_badges = badges
+            best_idx = i
+            
+    best_eval_id = evals[best_idx]["id"]
+    ids_to_keep = set([e["id"] for e in evals[:10]])
+    ids_to_keep.add(best_eval_id)
+    
+    ids_to_delete = [e["id"] for e in evals if e["id"] not in ids_to_keep]
+    if ids_to_delete:
+        cursor.execute("DELETE FROM evaluations WHERE id = ANY(%s)", (ids_to_delete,))
+
+def get_best_interview(user_id: int) -> Optional[Dict[str, Any]]:
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    
+    cursor.execute("SELECT * FROM evaluations WHERE user_id = %s", (user_id,))
+    evals = cursor.fetchall()
+    conn.close()
+    
+    if not evals:
+        return None
+        
+    best_e = None
+    best_score = -1
+    best_xp = -1
+    best_badges = -1
+    
+    for e in evals:
+        score = e["overall"] or 0
+        ed = json.loads(e["evaluation_data"]) if isinstance(e["evaluation_data"], str) else (e["evaluation_data"] or {})
+        xp = ed.get("xp_earned", 0)
+        badges = len(ed.get("achievements", []))
+        
+        is_better = False
+        if score > best_score:
+            is_better = True
+        elif score == best_score:
+            if xp > best_xp:
+                is_better = True
+            elif xp == best_xp:
+                if badges > best_badges:
+                    is_better = True
+                    
+        if is_better:
+            best_score = score
+            best_xp = xp
+            best_badges = badges
+            best_e = e
+            
+    return best_e
+
 def save_evaluation(
     user_id: int,
     username: str,
@@ -207,6 +289,10 @@ def save_evaluation(
         )
     )
     eval_id = cursor.fetchone()["id"]
+    
+    # Enforce rolling window keeping best interview
+    _enforce_rolling_window(cursor, user_id)
+    
     conn.commit()
     conn.close()
     return eval_id
