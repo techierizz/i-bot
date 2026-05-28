@@ -68,6 +68,10 @@ class AddXPRequest(BaseModel):
     user_id: int
     amount: int
 
+class SettingsUpdateRequest(BaseModel):
+    prompt_temp: Optional[float] = None
+    system_prompt: Optional[str] = None
+
 # Endpoints
 @app.get("/health")
 def health_check():
@@ -98,6 +102,29 @@ def login_admin(req: LoginRequest):
     if not user:
         raise HTTPException(status_code=401, detail="Invalid administrator credentials.")
     return {"status": "success", "user": user}
+
+# Admin Settings Routes
+@app.get("/api/admin/settings")
+def get_settings():
+    from database import get_system_settings
+    settings = get_system_settings()
+    return {
+        "prompt_temp": float(settings.get("prompt_temp", 0.7)),
+        "system_prompt": settings.get("system_prompt", "")
+    }
+
+@app.post("/api/admin/settings")
+def update_settings(req: SettingsUpdateRequest):
+    from database import update_system_settings
+    updates = {}
+    if req.prompt_temp is not None:
+        updates["prompt_temp"] = req.prompt_temp
+    if req.system_prompt is not None:
+        updates["system_prompt"] = req.system_prompt
+    
+    if updates:
+        update_system_settings(updates)
+    return {"status": "success"}
 
 # Candidate Resume setup
 @app.post("/api/setup/upload")
