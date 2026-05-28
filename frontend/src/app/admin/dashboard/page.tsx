@@ -57,6 +57,7 @@ export default function AdminDashboard() {
   });
   const [candidates, setCandidates] = useState<EvaluationRecord[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCandidate, setSelectedCandidate] = useState<string | null>(null);
   const [selectedRecord, setSelectedRecord] = useState<EvaluationRecord | null>(null);
   const [loading, setLoading] = useState(true);
   const [promptTemp, setPromptTemp] = useState(0.7);
@@ -183,11 +184,13 @@ export default function AdminDashboard() {
   };
 
   // Filter candidates log
-  const filteredCandidates = candidates.filter(
-    (c) =>
-      c.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.mode.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredCandidates = candidates.filter(c => {
+    if (selectedCandidate && c.username !== selectedCandidate) return false;
+    return c.username.toLowerCase().includes(searchQuery.toLowerCase()) || 
+           c.mode.toLowerCase().includes(searchQuery.toLowerCase());
+  });
+
+  const uniqueCandidates = Array.from(new Set(candidates.map(c => c.username)));
 
   // SVG Radar grid formulas
   const center = 170;
@@ -290,27 +293,67 @@ export default function AdminDashboard() {
             <div className="lg:col-span-2 glass-card rounded-2xl p-6 border border-white/10 flex flex-col gap-6">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                  <h2 className="text-md font-bold text-white uppercase tracking-wider">Candidate Simulation Logs</h2>
+                  <h2 className="text-md font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                    Candidate Simulation Logs
+                    {selectedCandidate && (
+                      <span className="text-red-400 text-[10px] bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20">/ {selectedCandidate}</span>
+                    )}
+                  </h2>
                   <p className="text-xs text-zinc-500 mt-1">Review, monitor, and delete candidate evaluation runs</p>
                 </div>
 
-                {/* Search */}
-                <div className="relative w-full sm:w-64">
-                  <Search className="absolute left-3 w-4 h-4 text-zinc-500 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    placeholder="search by name or mode..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-zinc-950/80 border border-white/5 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-red-500 transition-colors"
-                  />
-                </div>
+                {/* Search - Only show if a candidate is selected */}
+                {selectedCandidate && (
+                  <div className="flex items-center gap-3 w-full sm:w-auto">
+                    <button
+                      onClick={() => {
+                        setSelectedCandidate(null);
+                        setSearchQuery("");
+                      }}
+                      className="px-3 py-2 bg-zinc-900 border border-white/5 rounded-xl text-xs font-bold text-zinc-400 hover:text-white hover:border-white/20 transition-all cursor-pointer whitespace-nowrap"
+                    >
+                      ⬅ Back
+                    </button>
+                    <div className="relative w-full sm:w-64">
+                      <Search className="absolute left-3 w-4 h-4 text-zinc-500 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        placeholder="search runs..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full bg-zinc-950/80 border border-white/5 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-red-500 transition-colors"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
 
               {loading ? (
                 <div className="flex flex-col items-center justify-center py-20 gap-3">
                   <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
                   <p className="text-xs text-zinc-500">Querying candidate tables...</p>
+                </div>
+              ) : selectedCandidate === null ? (
+                <div className="flex flex-wrap gap-4 pt-4">
+                  {uniqueCandidates.map(username => (
+                    <div 
+                      key={username}
+                      onClick={() => setSelectedCandidate(username)}
+                      className="inline-flex items-center gap-3 px-4 py-2.5 rounded-full bg-zinc-900/80 border border-white/5 hover:border-red-500/50 hover:bg-red-500/10 hover:shadow-[0_0_15px_rgba(239,68,68,0.2)] transition-all cursor-pointer group/pill"
+                    >
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center text-xs font-black text-white shadow-[0_0_10px_rgba(239,68,68,0.6)] group-hover/pill:animate-pulse">
+                        {username.charAt(0).toUpperCase()}
+                      </div>
+                      <span className="font-bold text-white text-sm tracking-wide group-hover/pill:text-red-300 transition-colors pr-2">
+                        {username}
+                      </span>
+                    </div>
+                  ))}
+                  {uniqueCandidates.length === 0 && (
+                    <div className="w-full text-center py-20 border border-dashed border-white/5 rounded-2xl bg-zinc-900/10">
+                      <p className="text-sm text-zinc-500">No candidates have completed simulations yet.</p>
+                    </div>
+                  )}
                 </div>
               ) : filteredCandidates.length === 0 ? (
                 <div className="text-center py-20 border border-dashed border-white/5 rounded-2xl bg-zinc-900/10">
