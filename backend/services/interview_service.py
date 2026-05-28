@@ -3,6 +3,7 @@ import re
 from google import genai
 from dotenv import load_dotenv
 import json
+from datetime import datetime
 
 load_dotenv()
 
@@ -284,6 +285,8 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
         You have two tasks:
         1. Evaluate the candidate's interview performance based on the transcript.
         2. Optimize their resume for ATS systems based purely on their raw resume text.
+
+        Current Date: {datetime.now().strftime('%B %d, %Y')}
 
         Raw Resume Text:
         {raw_resume}
