@@ -117,10 +117,27 @@ export default function AdminDashboard() {
         })
       });
       if (res.ok) {
-        alert("System evaluation configurations successfully updated globally.");
+        alert("Global configuration (Temperature & Prompt) saved successfully.");
       }
     } catch (err) {
       console.error("Failed to save settings", err);
+    }
+  };
+
+  const handleApplyPrompt = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/admin/settings`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          system_prompt: systemPrompt
+        })
+      });
+      if (res.ok) {
+        alert("System prompt override applied globally.");
+      }
+    } catch (err) {
+      console.error("Failed to apply prompt", err);
     }
   };
 
@@ -131,7 +148,6 @@ export default function AdminDashboard() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          prompt_temp: promptTemp,
           system_prompt: ""
         })
       });
@@ -390,25 +406,29 @@ export default function AdminDashboard() {
                     />
                   </div>
 
-                  <div>
-                    <label className="text-[10px] font-semibold text-zinc-400 block mb-1">SYSTEM PROMPT OVERRIDE</label>
+                  <div className="p-4 rounded-xl bg-zinc-950/50 border border-white/10 space-y-3 relative overflow-hidden group shadow-lg">
+                    <div className="absolute inset-0 bg-gradient-to-b from-red-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                    <label className="text-[10px] font-black text-zinc-300 block tracking-widest relative z-10 flex items-center gap-2">
+                      <span className="w-1 h-3 bg-red-500 rounded-full inline-block"></span>
+                      SYSTEM PROMPT OVERRIDE
+                    </label>
                     <textarea
                       rows={4}
                       value={systemPrompt}
                       onChange={(e) => setSystemPrompt(e.target.value)}
                       placeholder="Leave blank for default behavior..."
-                      className="w-full bg-zinc-950 border border-white/5 rounded-xl p-3 text-xs text-zinc-300 placeholder-zinc-700 focus:outline-none focus:border-red-500 resize-none leading-relaxed"
+                      className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-xs text-zinc-300 placeholder-zinc-700 focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 resize-none leading-relaxed relative z-10 transition-all shadow-inner"
                     />
-                    <div className="flex gap-2 mt-2">
+                    <div className="flex gap-3 relative z-10 pt-1">
                       <button
                         onClick={handleClearPrompt}
-                        className="flex-1 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white text-[10px] font-bold uppercase tracking-wider rounded-xl border border-white/5 transition-all cursor-pointer"
+                        className="flex-1 py-2 bg-zinc-900/80 hover:bg-red-500/10 text-zinc-400 hover:text-red-400 text-[10px] font-bold uppercase tracking-wider rounded-xl border border-white/5 hover:border-red-500/30 transition-all cursor-pointer"
                       >
                         Clear
                       </button>
                       <button
-                        onClick={handleSaveSettings}
-                        className="flex-1 py-2 bg-zinc-800 hover:bg-zinc-700 text-white text-[10px] font-bold uppercase tracking-wider rounded-xl border border-white/10 transition-all cursor-pointer"
+                        onClick={handleApplyPrompt}
+                        className="flex-1 py-2 bg-gradient-to-b from-zinc-800 to-zinc-900 hover:from-zinc-700 hover:to-zinc-800 text-white text-[10px] font-bold uppercase tracking-wider rounded-xl border border-white/10 hover:border-white/20 transition-all cursor-pointer shadow-md"
                       >
                         Apply
                       </button>
