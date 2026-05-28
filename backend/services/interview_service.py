@@ -166,28 +166,6 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
     Returns a structured dictionary matching the dashboard evaluation scheme.
     """
     user_turns = sum(1 for msg in chat_history if isinstance(msg, dict) and (msg.get("role") in ("user", "candidate") or "user" in msg or "candidate" in msg))
-    if user_turns == 0:
-        return {
-            "scores": {
-                "technical": 0, "communication": 0, "confidence": 0, "problem_solving": 0, "overall": 0
-            },
-            "feedback": {
-                "technical": "Not enough data to evaluate.",
-                "communication": "Not enough data to evaluate.",
-                "confidence": "Not enough data to evaluate.",
-                "problem_solving": "Not enough data to evaluate.",
-                "overall_summary": "The interview was ended before a meaningful conversation occurred. Please answer at least 1 question to receive a full evaluation."
-            },
-            "roadmap": [],
-            "resume_optimizer": {
-                "ats_score_impact": 0, "what_to_add": [], "what_to_delete": [], "what_to_change": [], "bullet_points": []
-            },
-            "achievements": [],
-            "xp_earned": 0,
-            "xp_breakdown": {
-                "base": 0, "score_bonus": 0, "achievement_bonus": 0, "total": 0
-            }
-        }
 
     mock_data = {
         "scores": {
@@ -238,29 +216,15 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
         ],
         "resume_optimizer": {
             "ats_score_impact": 15,
-            "what_to_add": [
-                "Add specific metrics (percentages, dollar values, or user counts) to quantify the impact of your work.",
-                "Include a section detailing your specific cloud infrastructure experience (e.g., AWS S3, Lambda, API Gateway)."
-            ],
-            "what_to_delete": [
-                "Remove vague phrases like 'Responsible for' or 'Helped team build'—they weaken your active contributions.",
-                "Delete outdated skills or technologies that aren't relevant to a mid-level React/Fullstack role."
-            ],
-            "what_to_change": [
-                "Change 'Cloud deployment' to explicitly list the services you orchestrated.",
-                "Rewrite bullet points to start with strong action verbs (e.g., 'Architected', 'Refactored', 'Engineered')."
-            ],
-            "bullet_points": [
+            "line_modifications": [
                 {
-                    "before": "Responsible for maintaining the main React application and improving load times.",
-                    "after": "Refactored main React application using dynamic imports and code-splitting, reducing initial bundle size by 35% and improving PageSpeed score from 68 to 92.",
-                    "rationale": "Shows direct technical action and quantifies the exact performance impact achieved."
-                },
-                {
-                    "before": "Helped team build backend APIs using Python and FastAPI.",
-                    "after": "Architected 10+ scalable backend REST APIs using Python and FastAPI, handling 50k+ daily active requests with sub-100ms response times.",
-                    "rationale": "Specifies API scale, load metrics, and latency achievements to demonstrate system reliability."
+                    "exact_line": "Responsible for maintaining the main React application and improving load times.",
+                    "modification_reason": "Shows direct technical action and quantifies the exact performance impact achieved.",
+                    "suggested_change": "Refactored main React application using dynamic imports and code-splitting, reducing initial bundle size by 35% and improving PageSpeed score from 68 to 92."
                 }
+            ],
+            "top_tips": [
+                "Your resume uses a complex two-column design that ATS parsers often scramble. Switch to a single-column format."
             ]
         },
         "achievements": [
@@ -301,7 +265,7 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
             mock_data["xp_earned"] = 0
             mock_data["achievements"] = []
             mock_data["roadmap"] = []
-            mock_data["resume_optimizer"] = {"ats_score_impact": 0, "what_to_add": [], "what_to_delete": [], "what_to_change": [], "bullet_points": []}
+            mock_data["resume_optimizer"] = {"ats_score_impact": 0, "line_modifications": [], "top_tips": []}
         return mock_data
 
     try:
@@ -310,16 +274,21 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
         mode = context.get("interview_mode", "General")
         persona = context.get("persona", "Friendly")
         extracted = context.get("extracted_context", {})
+        raw_resume = context.get("raw_resume_text", "No resume provided.")
         
         # Optimize context by taking the last 10 turns of history if large
         recent_history = chat_history[-10:] if len(chat_history) > 10 else chat_history
         
         system_prompt = f"""
-        You are an expert technical interviewer and executive talent coach.
-        Analyze the following complete interview chat transcript and the candidate's background context.
-        Then, generate a comprehensive performance evaluation, a personalized 3-week study roadmap, and ATS resume optimizations.
+        You are an expert technical interviewer and an expert ATS Resume Optimizer.
+        You have two tasks:
+        1. Evaluate the candidate's interview performance based on the transcript.
+        2. Optimize their resume for ATS systems based purely on their raw resume text.
 
-        Candidate Background:
+        Raw Resume Text:
+        {raw_resume}
+        
+        Candidate Background (Extracted):
         - Skills: {', '.join(extracted.get('skills', []))}
         - Experience: {extracted.get('experience_level', 'Unknown')}
         
@@ -331,36 +300,35 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
         {json.dumps(recent_history, indent=2)}
 
         INSTRUCTIONS:
-        1. Score the candidate's performance from 0 to 100 on these 4 metrics:
+        1. Score the candidate's performance from 0 to 100 on these 4 metrics (if the interview was empty/aborted, score 0):
            - Technical: Understanding of concepts, accuracy of code, system design thinking.
            - Communication: Conciseness, clarity, structuring of responses.
            - Confidence: Posture, decisiveness, lack of hesitation.
            - Problem Solving: Edge case analysis, logical reasoning, proactive optimization.
-           - Overall: An average of the 4 scores, or weighted as you see fit.
+           - Overall: An average of the 4 scores.
         2. Provide constructive feedback for each of the 4 areas and a high-level overall summary.
-        3. Generate a personalized 3-week roadmap tailored to their weaknesses shown in the interview. Each week should have a topic, description, and 3 actionable tasks.
-        4. Provide ATS Resume Optimizer recommendations based on their answers:
-           - what_to_add: 2-3 specific things missing from their resume (keywords, metrics, or sections).
-           - what_to_delete: 2-3 specific things they should remove (fluff, filler, or weak phrasing).
-           - what_to_change: 2-3 structural or phrasing changes they should make to existing content.
-           - bullet_points: 2 before/after examples of how they can rewrite bullet points on their resume to show impact, along with a rationale.
+        3. Generate a personalized 3-week roadmap tailored to their weaknesses shown in the interview.
+        4. Provide ATS Resume Optimizer recommendations based STRICTLY on the Raw Resume Text above:
+           - Scan all the lines in the raw resume.
+           - Provide line_modifications: find 2-3 exact sentences/lines from the resume that are poorly written or not ATS-friendly, and provide a suggested change along with a modification reason.
+           - Provide top_tips: 2-3 general tips to make the resume "ATS Level" (like poor design, informal design, missing keywords, incorrect formatting).
+           - This resume optimization MUST be provided even if the interview transcript is empty.
         5. Award achievements/badges from the following list (choose 2-4 that best fit their interview behavior):
-           - id: "fluent_speaker",   name: "Fluent Communicator",  icon: "MessageSquare" — excellent communication, < 5 filler words
-           - id: "logic_master",     name: "Logic Master",          icon: "Zap"          — exceptional problem-solving, structured reasoning
-           - id: "cracked_hard",     name: "Cracked Hard Round",    icon: "Trophy"       — handled Hard-difficulty questions well
-           - id: "unshakable",       name: "Unshakable Focus",      icon: "Eye"          — high confidence score (>85), steady decisive answers
-           - id: "clean_coder",      name: "Clean Coder",           icon: "Code"         — structured, precise, well-named code explanations
-           - id: "perfectionist",    name: "Perfectionist",         icon: "Star"         — overall score above 90
-           - id: "speed_demon",      name: "Speed Demon",           icon: "Zap"          — concise answers with no unnecessary rambling
-           - id: "comeback_kid",     name: "Comeback Kid",          icon: "TrendingUp"   — recovered strongly after a weak answer
-           - id: "deep_diver",       name: "Deep Diver",            icon: "BookOpen"     — demonstrated advanced depth beyond the question asked
-           - id: "team_player",      name: "Team Player",           icon: "Users"        — highlighted collaboration and leadership examples effectively
+           - id: "fluent_speaker",   name: "Fluent Communicator",  icon: "MessageSquare"
+           - id: "logic_master",     name: "Logic Master",          icon: "Zap"
+           - id: "cracked_hard",     name: "Cracked Hard Round",    icon: "Trophy"
+           - id: "unshakable",       name: "Unshakable Focus",      icon: "Eye"
+           - id: "clean_coder",      name: "Clean Coder",           icon: "Code"
+           - id: "perfectionist",    name: "Perfectionist",         icon: "Star"
+           - id: "speed_demon",      name: "Speed Demon",           icon: "Zap"
+           - id: "comeback_kid",     name: "Comeback Kid",          icon: "TrendingUp"
+           - id: "deep_diver",       name: "Deep Diver",            icon: "BookOpen"
+           - id: "team_player",      name: "Team Player",           icon: "Users"
         6. Calculate XP earned using this formula:
            - Base XP: Count the number of candidate responses in the chat history. Award 200 Base XP per candidate response, up to a maximum of 1000 Base XP (5+ responses).
            - Score bonus: add up to +500 based on overall score (score * 5)
            - Achievement bonus: +100 per badge awarded
            - Maximum total: 2500
-           - Return a detailed xp_breakdown object.
 
         You must return your output strictly in the following JSON format:
         {{
@@ -385,13 +353,10 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
           ],
           "resume_optimizer": {{
             "ats_score_impact": number,
-            "what_to_add": ["string", "string"],
-            "what_to_delete": ["string", "string"],
-            "what_to_change": ["string", "string"],
-            "bullet_points": [
-              {{ "before": "string", "after": "string", "rationale": "string" }},
-              {{ "before": "string", "after": "string", "rationale": "string" }}
-            ]
+            "line_modifications": [
+              {{ "exact_line": "string", "modification_reason": "string", "suggested_change": "string" }}
+            ],
+            "top_tips": ["string", "string"]
           }},
           "achievements": [
             {{ "id": "string", "name": "string", "icon": "string", "description": "string" }}
@@ -420,15 +385,27 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
         else:
             text_response = text_response.strip()
             
-        return json.loads(text_response)
+        parsed_response = json.loads(text_response)
+        
+        # If the interview was aborted early (e.g. they only said "yes"),
+        # zero out the evaluation scores to avoid giving unearned mock XP,
+        # but keep the ATS resume_optimizer which operates independently.
+        if user_turns == 0:
+            base_xp = 0
+            parsed_response["scores"] = {"technical": 0, "communication": 0, "confidence": 0, "problem_solving": 0, "overall": 0}
+            parsed_response["feedback"]["overall_summary"] = "Interview ended before answering any questions. Evaluation unavailable, but ATS Resume Optimization has been provided below based on your resume."
+            parsed_response["achievements"] = []
+            parsed_response["roadmap"] = []
+            parsed_response["xp_earned"] = base_xp
+            parsed_response["xp_breakdown"] = {"base": base_xp, "score_bonus": 0, "achievement_bonus": 0, "total": base_xp}
+
+        return parsed_response
         
     except Exception as e:
         print(f"Error executing Gemini evaluation: {e}")
         
-        # If the interview was aborted early (e.g. they only said "yes") or the API failed,
-        # award Base XP based on turns, but zero out the evaluation scores to avoid giving unearned mock XP.
-        if user_turns < 5:
-            base_xp = min(user_turns * 200, 1000)
+        if user_turns == 0:
+            base_xp = 0
             return {
                 "scores": {
                     "technical": 0, "communication": 0, "confidence": 0, "problem_solving": 0, "overall": 0
@@ -442,7 +419,7 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
                 },
                 "roadmap": [],
                 "resume_optimizer": {
-                    "ats_score_impact": 0, "what_to_add": [], "what_to_delete": [], "what_to_change": [], "bullet_points": []
+                    "ats_score_impact": 0, "line_modifications": [], "top_tips": []
                 },
                 "achievements": [],
                 "xp_earned": base_xp,
