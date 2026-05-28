@@ -506,13 +506,16 @@ export default function Home() {
                 <X className="w-6 h-6" />
               </button>
               
-              {/* Replace with your video embed */}
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-900 to-black flex flex-col items-center justify-center">
-                <div className="w-24 h-24 rounded-full bg-primary-500/10 border border-primary-500/20 flex items-center justify-center mb-6 shadow-[0_0_50px_rgba(139,92,246,0.2)]">
-                  <PlayCircle className="w-12 h-12 text-primary-400/50" />
-                </div>
-                <h3 className="text-3xl font-black text-white/50 tracking-tight">Cinematic Demo Coming Soon</h3>
-                <p className="text-zinc-500 mt-3 max-w-md text-center text-lg">Embed your YouTube video, Vimeo link, or MP4 file inside this glass-morphic container.</p>
+              <div className="absolute inset-0 bg-black flex flex-col items-center justify-center">
+                <video 
+                  className="w-full h-full object-contain"
+                  controls
+                  autoPlay
+                  playsInline
+                  src="/demo.mp4"
+                >
+                  Your browser does not support the video tag.
+                </video>
               </div>
             </motion.div>
           </div>
