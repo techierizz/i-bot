@@ -424,6 +424,21 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
             parsed_response["xp_earned"] = base_xp
             parsed_response["xp_breakdown"] = {"base": base_xp, "score_bonus": 0, "achievement_bonus": 0, "total": base_xp}
 
+        # Recalculate XP accurately to avoid LLM math errors
+        if user_turns > 0:
+            base_xp = min(user_turns * 200, 1000)
+            score_bonus = int(parsed_response.get("scores", {}).get("overall", 0)) * 5
+            achievement_bonus = len(parsed_response.get("achievements", [])) * 100
+            total_xp = min(base_xp + score_bonus + achievement_bonus, 2500)
+            
+            parsed_response["xp_earned"] = total_xp
+            parsed_response["xp_breakdown"] = {
+                "base": base_xp,
+                "score_bonus": score_bonus,
+                "achievement_bonus": achievement_bonus,
+                "total": total_xp
+            }
+
         return parsed_response
         
     except Exception as e:
