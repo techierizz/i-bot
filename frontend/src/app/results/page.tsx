@@ -680,7 +680,7 @@ export default function ResultsPage() {
                             </div>
                           </div>
                           <div className="text-center sm:text-right">
-                            <span className="text-3xl font-extrabold text-emerald-400">+{data.resume_optimizer.ats_score_impact}%</span>
+                            <span className="text-3xl font-extrabold text-emerald-400">+{Math.abs(data.resume_optimizer.ats_score_impact)}%</span>
                             <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider block">Score Increase</span>
                           </div>
                         </div>
