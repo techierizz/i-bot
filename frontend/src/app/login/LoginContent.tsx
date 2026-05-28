@@ -95,15 +95,18 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8 relative min-h-screen">
+    <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8 relative min-h-screen bg-zinc-950">
+      {/* Elegant Background */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(139,92,246,0.25),rgba(24,24,27,0))]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_10%,transparent_100%)]" />
+      </div>
+
       {/* Top Left Branding */}
       <Link href="/" className="absolute top-6 left-6 md:top-8 md:left-8 z-20">
-        <span className="text-xl md:text-2xl font-extrabold text-white tracking-tight">HireMind</span>
+        <span className="text-xl md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-zinc-100 via-primary-300 to-zinc-500 tracking-tighter drop-shadow-sm">HireMind</span>
       </Link>
-
-      {/* Decorative Blur Orbs */}
-      <div className="absolute top-[20%] left-[15%] w-80 h-80 rounded-full blur-[100px] bg-primary-600/15 pointer-events-none" />
-      <div className="absolute bottom-[20%] right-[15%] w-80 h-80 rounded-full blur-[100px] bg-secondary-600/15 pointer-events-none" />
 
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
