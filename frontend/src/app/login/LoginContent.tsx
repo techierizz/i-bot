@@ -96,11 +96,20 @@ export default function LoginPage() {
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8 relative min-h-screen bg-zinc-950">
-      {/* Elegant Background */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(139,92,246,0.25),rgba(24,24,27,0))]" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_10%,transparent_100%)]" />
+      {/* Premium Cinematic Ambient Background */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none bg-black">
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.15] mix-blend-overlay z-20" />
+        <motion.div
+          animate={{
+            transform: ["rotate(0deg) scale(1)", "rotate(180deg) scale(1.2)", "rotate(360deg) scale(1)"],
+          }}
+          transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+          className="absolute -top-[50%] -left-[50%] w-[200%] h-[200%] opacity-40 z-10 blur-[120px]"
+          style={{
+            background: "conic-gradient(from 90deg at 50% 50%, #09090b 0%, #4c1d95 25%, #09090b 50%, #0284c7 75%, #09090b 100%)",
+          }}
+        />
+        <div className="absolute inset-0 bg-black/50 z-10" />
       </div>
 
       {/* Top Left Branding */}
