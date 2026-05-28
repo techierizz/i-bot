@@ -233,9 +233,9 @@ export default function ProfilePage() {
               return (
                 <div key={tier.level} className="flex items-center shrink-0">
                   <div className={`flex flex-col items-center gap-1.5 ${isCurrent ? "scale-110" : ""} transition-transform`}>
-                    <div className={`relative min-w-[3.5rem] min-h-[3.5rem] w-14 h-14 rounded-full flex items-center justify-center text-sm font-extrabold border-2 transition-all overflow-hidden shrink-0 aspect-square shadow-lg ${
+                    <div className={`relative w-[56px] h-[56px] min-w-[56px] min-h-[56px] rounded-full flex items-center justify-center text-sm font-extrabold border-2 transition-all overflow-hidden shrink-0 aspect-square shadow-lg ${
                       isCurrent
-                        ? `border-white/70 shadow-[0_0_20px_rgba(139,92,246,0.8)] ring-4 ring-violet-500/20`
+                        ? `border-white/80 shadow-[0_0_20px_rgba(255,255,255,0.2)] ring-4 ring-white/10`
                         : unlocked
                         ? `border-white/20 opacity-90 hover:border-white/40`
                         : "border-white/5 opacity-50 grayscale hover:opacity-70"
