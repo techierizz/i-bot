@@ -113,6 +113,7 @@ export default function InterviewPage() {
     // Clear previous roadmap progress since this is a new interview
     localStorage.removeItem("hiremind_completed_tasks");
     localStorage.removeItem("hiremind_roadmap_reward_claimed");
+    localStorage.removeItem("hiremind_evaluation_result");
 
     // Load context from local storage
     const savedConfig = localStorage.getItem("hiremind_config");
@@ -744,7 +745,7 @@ export default function InterviewPage() {
           
           <div className="p-4 border-t border-white/5 bg-white/5">
              <p className="text-xs text-center text-amber-500 font-bold tracking-wide">
-               Speak clearly into your microphone
+               Speak clearly into your microphone. The AI will respond automatically.
              </p>
           </div>
         </div>
