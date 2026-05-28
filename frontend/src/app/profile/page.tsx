@@ -226,7 +226,7 @@ export default function ProfilePage() {
         >
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-violet-500/10 via-transparent to-transparent pointer-events-none" />
           <h3 className="relative z-10 text-xs font-black text-transparent bg-clip-text bg-gradient-to-r from-zinc-400 to-zinc-600 uppercase tracking-widest mb-8">Rank Progression Roadmap</h3>
-          <div className="flex items-center gap-0 overflow-x-auto pb-2">
+          <div className="flex items-center gap-0 overflow-x-auto py-6 px-4 -mx-4 -my-4">
             {XP_LEVELS.map((tier, i) => {
               const unlocked = (gData?.level ?? 1) >= tier.level;
               const isCurrent = (gData?.level ?? 1) === tier.level;
