@@ -156,22 +156,24 @@ export default function AdminDashboard() {
   return (
     <div className="flex-1 flex flex-col min-h-screen bg-zinc-950 text-white">
       {/* Header bar */}
-      <header className="sticky top-0 z-40 bg-zinc-950/75 backdrop-blur-md border-b border-white/5 px-6 py-4 flex justify-between items-center">
+      <header className="sticky top-0 z-40 bg-zinc-950/75 backdrop-blur-md border-b border-white/5 px-6 py-4 flex justify-between items-center relative">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-red-600 to-amber-600 flex items-center justify-center text-white">
-            <BrainCircuit className="w-6 h-6 animate-pulse" />
-          </div>
           <div>
-            <h1 className="text-lg font-bold text-white tracking-tight flex items-center gap-1.5">
-              HireMind <span className="text-red-500 font-light text-sm bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20 uppercase tracking-widest">Admin Portal</span>
+            <h1 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-zinc-100 via-red-400 to-zinc-600 tracking-tighter drop-shadow-sm">
+              HireMind
             </h1>
           </div>
         </div>
         
+        {/* Centered Admin Portal */}
+        <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center gap-2">
+          <ShieldAlert className="w-5 h-5 text-red-500/80 drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
+          <span className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-amber-500 uppercase tracking-[0.3em] drop-shadow-sm">Admin Portal</span>
+        </div>
+
         <div className="flex items-center gap-4">
           <div className="text-right hidden sm:block">
-            <p className="text-xs font-bold text-zinc-300">Welcome, {adminUser?.username || "Admin"}</p>
-            <p className="text-[10px] text-zinc-500">Security Access Level: root</p>
+            <p className="text-xs font-bold text-zinc-300 uppercase tracking-wider mt-1">Welcome, {adminUser?.username || "Admin"}</p>
           </div>
           <button
             onClick={handleLogout}
@@ -570,9 +572,6 @@ function MetricCard({ icon, title, value, sub }: MetricCardProps) {
     <div className="glass-card p-6 rounded-2xl border border-white/10 flex flex-col gap-2 hover:border-red-500/20 hover:bg-zinc-900/40 transition-all group">
       <div className="flex justify-between items-start">
         <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">{title}</span>
-        <div className="w-10 h-10 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center group-hover:scale-105 transition-transform">
-          {icon}
-        </div>
       </div>
       <p className="text-3xl font-extrabold text-white mt-2 group-hover:text-red-400 transition-colors">{value}</p>
       <span className="text-[10px] text-zinc-500 font-medium">{sub}</span>
