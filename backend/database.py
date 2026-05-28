@@ -85,6 +85,20 @@ def init_db():
     )
     """)
     
+    # Create system settings table
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS system_settings (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL
+    )
+    """)
+    
+    # Seed default settings if empty
+    cursor.execute("SELECT COUNT(*) as count FROM system_settings")
+    if cursor.fetchone()["count"] == 0:
+        cursor.execute("INSERT INTO system_settings (key, value) VALUES ('prompt_temp', '0.7')")
+        cursor.execute("INSERT INTO system_settings (key, value) VALUES ('system_prompt', '')")
+    
     # Seed or synchronize administrator credentials from environment
     admins = []
     
@@ -484,3 +498,22 @@ def get_leaderboard(limit: int = 10) -> List[Dict[str, Any]]:
             "streak":     r["streak"],
         })
     return board
+
+def get_system_settings() -> Dict[str, str]:
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    cursor.execute("SELECT key, value FROM system_settings")
+    rows = cursor.fetchall()
+    conn.close()
+    return {r["key"]: r["value"] for r in rows}
+
+def update_system_settings(settings: Dict[str, Any]):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    for k, v in settings.items():
+        cursor.execute(
+            "INSERT INTO system_settings (key, value) VALUES (%s, %s) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value",
+            (k, str(v))
+        )
+    conn.commit()
+    conn.close()
