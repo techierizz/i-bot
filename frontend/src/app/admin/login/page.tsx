@@ -58,6 +58,13 @@ export default function AdminLoginPage() {
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8 relative min-h-screen">
+      {/* Top Left Branding */}
+      <Link href="/" className="absolute top-6 left-6 md:top-8 md:left-8 z-20">
+        <span className="text-xl md:text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
+          HireMind <span className="text-red-500 font-light">Admin</span>
+        </span>
+      </Link>
+
       {/* Red Glowing Orbs */}
       <div className="absolute top-[20%] left-[15%] w-80 h-80 rounded-full blur-[110px] bg-red-600/10 pointer-events-none" />
       <div className="absolute bottom-[20%] right-[15%] w-80 h-80 rounded-full blur-[110px] bg-amber-600/10 pointer-events-none" />
@@ -68,16 +75,7 @@ export default function AdminLoginPage() {
         transition={{ duration: 0.5 }}
         className="w-full max-w-md z-10"
       >
-        {/* Branding header */}
-        <div className="flex flex-col items-center text-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-red-600 to-amber-600 flex items-center justify-center text-white mb-4 shadow-lg shadow-red-500/20">
-            <BrainCircuit className="w-8 h-8 animate-pulse" />
-          </div>
-          <h1 className="text-3xl font-extrabold text-white tracking-tight flex items-center gap-1">
-            HireMind <span className="text-red-500 font-light">Admin</span>
-          </h1>
-          <p className="text-xs text-zinc-400 mt-1">Management Portal & Performance Console</p>
-        </div>
+        {/* Removed center branding header */}
 
         {/* Form Card */}
         <div className="glass-card rounded-3xl p-6 md:p-8 relative overflow-hidden border border-white/10 shadow-[0_0_50px_rgba(239,68,68,0.12)]">
