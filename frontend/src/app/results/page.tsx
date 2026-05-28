@@ -37,18 +37,16 @@ interface RoadmapWeek {
   actions: string[];
 }
 
-interface ResumeBulletPoint {
-  before: string;
-  after: string;
-  rationale: string;
+interface ATSLineModification {
+  exact_line: string;
+  modification_reason: string;
+  suggested_change: string;
 }
 
 interface ResumeOptimizer {
   ats_score_impact: number;
-  what_to_add: string[];
-  what_to_delete: string[];
-  what_to_change: string[];
-  bullet_points: ResumeBulletPoint[];
+  line_modifications: ATSLineModification[];
+  top_tips: string[];
 }
 
 interface Achievement {
@@ -660,12 +658,12 @@ export default function ResultsPage() {
                     animate={{ opacity: 1, x: 0 }}
                     className="flex flex-col gap-5"
                   >
-                    {!data.resume_optimizer || (data.resume_optimizer.what_to_add.length === 0 && data.resume_optimizer.what_to_delete.length === 0 && data.resume_optimizer.what_to_change.length === 0) ? (
+                    {!data.resume_optimizer || (!data.resume_optimizer.line_modifications?.length && !data.resume_optimizer.top_tips?.length) ? (
                       <div className="p-10 text-center flex flex-col items-center justify-center bg-zinc-950/40 rounded-2xl border border-white/5 mt-4">
                         <FileText className="w-12 h-12 text-zinc-600 mb-4 opacity-50" />
                         <h3 className="text-zinc-300 font-bold mb-2">No Resume Optimizations</h3>
                         <p className="text-xs text-zinc-500 max-w-sm">
-                          We didn't gather enough data from your interview to suggest meaningful resume improvements. Try completing a full interview session!
+                          Please upload your resume to receive ATS optimizations.
                         </p>
                       </div>
                     ) : (
@@ -687,97 +685,62 @@ export default function ResultsPage() {
                           </div>
                         </div>
 
-                    {/* Add/Delete/Change Recommendations */}
-                    <div className="flex flex-col gap-4">
-                      {/* What to Add */}
-                      {data.resume_optimizer.what_to_add && data.resume_optimizer.what_to_add.length > 0 && (
-                        <div className="glass-card p-5 rounded-2xl border-l-4 border-l-emerald-500">
-                          <h4 className="text-xs font-extrabold text-emerald-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                            <span className="w-5 h-5 rounded-full bg-emerald-500/10 flex items-center justify-center">+</span> What To Add
-                          </h4>
-                          <ul className="space-y-2.5 text-xs text-zinc-300 list-none">
-                            {data.resume_optimizer.what_to_add.map((item, i) => (
-                              <li key={i} className="flex items-start gap-2.5 leading-relaxed">
-                                <span className="text-emerald-500/50 mt-0.5 font-bold">•</span>
-                                <span>{item}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-
-                      {/* What to Delete */}
-                      {data.resume_optimizer.what_to_delete && data.resume_optimizer.what_to_delete.length > 0 && (
-                        <div className="glass-card p-5 rounded-2xl border-l-4 border-l-red-500">
-                          <h4 className="text-xs font-extrabold text-red-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                            <span className="w-5 h-5 rounded-full bg-red-500/10 flex items-center justify-center">-</span> What To Delete
-                          </h4>
-                          <ul className="space-y-2.5 text-xs text-zinc-300 list-none">
-                            {data.resume_optimizer.what_to_delete.map((item, i) => (
-                              <li key={i} className="flex items-start gap-2.5 leading-relaxed">
-                                <span className="text-red-500/50 mt-0.5 font-bold">•</span>
-                                <span>{item}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-
-                      {/* What to Change */}
-                      {data.resume_optimizer.what_to_change && data.resume_optimizer.what_to_change.length > 0 && (
-                        <div className="glass-card p-5 rounded-2xl border-l-4 border-l-amber-500">
-                          <h4 className="text-xs font-extrabold text-amber-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                            <span className="w-5 h-5 rounded-full bg-amber-500/10 flex items-center justify-center">~</span> What To Change
-                          </h4>
-                          <ul className="space-y-2.5 text-xs text-zinc-300 list-none">
-                            {data.resume_optimizer.what_to_change.map((item, i) => (
-                              <li key={i} className="flex items-start gap-2.5 leading-relaxed">
-                                <span className="text-amber-500/50 mt-0.5 font-bold">•</span>
-                                <span>{item}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Before/After bullet point comparison */}
-                    <div className="flex flex-col gap-4">
-                      <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Bullet Point Rewrites</h4>
-                      {data.resume_optimizer.bullet_points.map((bp, i) => (
-                        <div key={i} className="glass-card p-5 rounded-2xl flex flex-col gap-3.5">
-                          
-                          {/* Before card */}
-                          <div className="p-3.5 rounded-xl bg-red-500/5 border border-red-500/10 flex items-start gap-3">
-                            <div className="w-5 h-5 rounded-full bg-red-500/15 border border-red-500/20 flex items-center justify-center text-red-400 shrink-0 text-[10px] font-bold">
-                              ✗
-                            </div>
-                            <div className="text-xs">
-                              <span className="text-[9px] text-red-400 uppercase tracking-wider font-extrabold block mb-0.5">Original (Vague)</span>
-                              <p className="text-zinc-400 line-through leading-relaxed">{bp.before}</p>
+                        {/* Top Tips (High Priority) */}
+                        {data.resume_optimizer.top_tips && data.resume_optimizer.top_tips.length > 0 && (
+                          <div className="flex flex-col gap-4 mt-2">
+                            <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
+                              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" /> Critical ATS Tips
+                            </h4>
+                            <div className="grid grid-cols-1 gap-3">
+                              {data.resume_optimizer.top_tips.map((tip, i) => (
+                                <div key={i} className="glass-card p-4 rounded-xl border-l-4 border-l-amber-500 flex items-start gap-3">
+                                  <div className="text-amber-500 mt-0.5">⚠️</div>
+                                  <p className="text-sm text-zinc-300 leading-relaxed">{tip}</p>
+                                </div>
+                              ))}
                             </div>
                           </div>
+                        )}
 
-                          {/* After card */}
-                          <div className="p-3.5 rounded-xl bg-emerald-500/5 border border-emerald-500/10 flex items-start gap-3">
-                            <div className="w-5 h-5 rounded-full bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0 text-[10px] font-bold">
-                              ✓
-                            </div>
-                            <div className="text-xs flex-1">
-                              <span className="text-[9px] text-emerald-400 uppercase tracking-wider font-extrabold block mb-0.5">Suggested (Quantified & Actionable)</span>
-                              <p className="text-zinc-200 font-medium leading-relaxed">{bp.after}</p>
-                            </div>
+                        {/* Line Modifications */}
+                        {data.resume_optimizer.line_modifications && data.resume_optimizer.line_modifications.length > 0 && (
+                          <div className="flex flex-col gap-4 mt-4">
+                            <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Surgical Line Edits</h4>
+                            {data.resume_optimizer.line_modifications.map((mod, i) => (
+                              <div key={i} className="glass-card p-5 rounded-2xl flex flex-col gap-3.5 border border-white/5 hover:border-primary-500/30 transition-colors">
+                                
+                                {/* Before card */}
+                                <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/10 flex items-start gap-3 relative overflow-hidden group">
+                                  <div className="absolute top-0 left-0 w-1 h-full bg-red-500/50" />
+                                  <div className="w-6 h-6 rounded-full bg-red-500/15 border border-red-500/20 flex items-center justify-center text-red-400 shrink-0 text-xs font-bold mt-1">
+                                    ✗
+                                  </div>
+                                  <div className="flex-1">
+                                    <span className="text-[10px] text-red-400 uppercase tracking-wider font-extrabold block mb-1">Found in your Resume</span>
+                                    <p className="text-zinc-400 text-sm italic font-medium leading-relaxed">"{mod.exact_line}"</p>
+                                    <div className="mt-3 p-2 rounded-lg bg-black/40 border border-white/5 inline-block">
+                                      <span className="text-[10px] text-zinc-500 font-bold uppercase block mb-0.5">Why it fails ATS</span>
+                                      <span className="text-xs text-zinc-300">{mod.modification_reason}</span>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* After card */}
+                                <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/10 flex items-start gap-3 relative overflow-hidden">
+                                  <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500/50" />
+                                  <div className="w-6 h-6 rounded-full bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0 text-xs font-bold mt-1">
+                                    ✓
+                                  </div>
+                                  <div className="flex-1">
+                                    <span className="text-[10px] text-emerald-400 uppercase tracking-wider font-extrabold block mb-1">Suggested ATS Rewrite</span>
+                                    <p className="text-white text-sm font-medium leading-relaxed">{mod.suggested_change}</p>
+                                  </div>
+                                </div>
+                                
+                              </div>
+                            ))}
                           </div>
-
-                          {/* Rationale explanation */}
-                          <div className="text-[11px] text-zinc-500 flex items-start gap-1.5 leading-relaxed bg-zinc-950 p-2.5 rounded-lg border border-white/5">
-                            <span className="font-bold text-primary-400 uppercase tracking-widest text-[9px] shrink-0 mt-0.5">Why this works:</span>
-                            <span>{bp.rationale}</span>
-                          </div>
-
-                        </div>
-                      ))}
-                    </div>
+                        )}
                       </>
                     )}
                   </motion.div>
