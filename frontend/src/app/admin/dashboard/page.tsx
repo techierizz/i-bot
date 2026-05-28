@@ -60,9 +60,7 @@ export default function AdminDashboard() {
   const [selectedRecord, setSelectedRecord] = useState<EvaluationRecord | null>(null);
   const [loading, setLoading] = useState(true);
   const [promptTemp, setPromptTemp] = useState(0.7);
-  const [systemPrompt, setSystemPrompt] = useState(
-    "You are a Senior Technical Interviewer assessing candidates on technical coding, architecture, confidence, and filler-word flags..."
-  );
+  const [systemPrompt, setSystemPrompt] = useState("");
 
   // Authenticate admin on mount
   useEffect(() => {
@@ -88,6 +86,14 @@ export default function AdminDashboard() {
       const candidatesData = await candidatesRes.json();
       if (candidatesRes.ok) setCandidates(candidatesData);
 
+      // Fetch settings
+      const settingsRes = await fetch(`${API_BASE_URL}/api/admin/settings`);
+      const settingsData = await settingsRes.json();
+      if (settingsRes.ok) {
+        setPromptTemp(settingsData.prompt_temp);
+        setSystemPrompt(settingsData.system_prompt);
+      }
+
     } catch (err) {
       console.error("Error loading admin data: ", err);
     } finally {
@@ -98,6 +104,43 @@ export default function AdminDashboard() {
   const handleLogout = () => {
     localStorage.removeItem("hiremind_admin");
     router.push("/admin/login");
+  };
+
+  const handleSaveSettings = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/admin/settings`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt_temp: promptTemp,
+          system_prompt: systemPrompt
+        })
+      });
+      if (res.ok) {
+        alert("System evaluation configurations successfully updated globally.");
+      }
+    } catch (err) {
+      console.error("Failed to save settings", err);
+    }
+  };
+
+  const handleClearPrompt = async () => {
+    setSystemPrompt("");
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/admin/settings`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt_temp: promptTemp,
+          system_prompt: ""
+        })
+      });
+      if (res.ok) {
+        alert("System prompt override cleared. Default instructions will be used.");
+      }
+    } catch (err) {
+      console.error("Failed to clear prompt", err);
+    }
   };
 
   const handleDeleteRecord = async (id: number) => {
@@ -353,13 +396,28 @@ export default function AdminDashboard() {
                       rows={4}
                       value={systemPrompt}
                       onChange={(e) => setSystemPrompt(e.target.value)}
+                      placeholder="Leave blank for default behavior..."
                       className="w-full bg-zinc-950 border border-white/5 rounded-xl p-3 text-xs text-zinc-300 placeholder-zinc-700 focus:outline-none focus:border-red-500 resize-none leading-relaxed"
                     />
+                    <div className="flex gap-2 mt-2">
+                      <button
+                        onClick={handleClearPrompt}
+                        className="flex-1 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white text-[10px] font-bold uppercase tracking-wider rounded-xl border border-white/5 transition-all cursor-pointer"
+                      >
+                        Clear
+                      </button>
+                      <button
+                        onClick={handleSaveSettings}
+                        className="flex-1 py-2 bg-zinc-800 hover:bg-zinc-700 text-white text-[10px] font-bold uppercase tracking-wider rounded-xl border border-white/10 transition-all cursor-pointer"
+                      >
+                        Apply
+                      </button>
+                    </div>
                   </div>
 
                   <button
-                    onClick={() => alert("System evaluation configurations successfully updated globally.")}
-                    className="w-full py-2.5 bg-red-600 hover:bg-red-500 text-white text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                    onClick={handleSaveSettings}
+                    className="w-full py-2.5 bg-red-600 hover:bg-red-500 text-white text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 mt-2 shadow-lg shadow-red-500/20"
                   >
                     <Sliders className="w-3.5 h-3.5" /> Save Configuration
                   </button>
