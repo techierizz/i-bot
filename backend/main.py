@@ -129,7 +129,7 @@ async def upload_resume(
                 "interview_mode": mode,
                 "persona": persona,
                 "extracted_context": extracted_context,
-                "raw_text_preview": resume_text[:200] + "..."
+                "raw_resume_text": resume_text
             }
         }
         
