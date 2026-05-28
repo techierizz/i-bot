@@ -4,6 +4,7 @@ from google import genai
 from dotenv import load_dotenv
 import json
 from datetime import datetime
+from database import get_system_settings
 
 load_dotenv()
 
@@ -69,6 +70,10 @@ def generate_interview_response(context: dict, chat_history: list, latest_user_r
         else:
             turn_instruction = "6. Ask exactly ONE follow-up or new question matching the NEW difficulty level. Keep your spoken response conversational, concise (under 3 sentences), and natural (it will be read aloud)."
         
+        settings = get_system_settings()
+        prompt_temp = float(settings.get("prompt_temp", 0.7))
+        system_prompt_override = settings.get("system_prompt", "").strip()
+        
         system_prompt = f"""
         You are an expert technical interviewer. 
         Interview Mode: {mode}
@@ -116,9 +121,15 @@ def generate_interview_response(context: dict, chat_history: list, latest_user_r
         }}
         """
         
+        if system_prompt_override:
+            system_prompt = f"ADMINISTRATOR OVERRIDE INSTRUCTION: {system_prompt_override}\n\n" + system_prompt
+        
         response = client.models.generate_content(
             model='gemini-2.5-flash',
-            contents=system_prompt
+            contents=system_prompt,
+            config=genai.types.GenerateContentConfig(
+                temperature=prompt_temp
+            )
         )
         text_response = response.text
         
@@ -280,6 +291,10 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
         # Optimize context by taking the last 10 turns of history if large
         recent_history = chat_history[-10:] if len(chat_history) > 10 else chat_history
         
+        settings = get_system_settings()
+        prompt_temp = float(settings.get("prompt_temp", 0.7))
+        system_prompt_override = settings.get("system_prompt", "").strip()
+        
         system_prompt = f"""
         You are an expert technical interviewer and an expert ATS Resume Optimizer.
         You have two tasks:
@@ -375,9 +390,15 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
         }}
         """
 
+        if system_prompt_override:
+            system_prompt = f"ADMINISTRATOR OVERRIDE INSTRUCTION: {system_prompt_override}\n\n" + system_prompt
+
         response = client.models.generate_content(
             model='gemini-2.5-flash',
-            contents=system_prompt
+            contents=system_prompt,
+            config=genai.types.GenerateContentConfig(
+                temperature=prompt_temp
+            )
         )
         text_response = response.text
         
