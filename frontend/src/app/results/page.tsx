@@ -165,10 +165,21 @@ export default function ResultsPage() {
           return;
         }
         const loggedUser = JSON.parse(session);
-
         const savedConfig = localStorage.getItem("hiremind_config");
         const savedContext = localStorage.getItem("hiremind_context");
         const savedChatHistory = localStorage.getItem("hiremind_chat_history");
+        const cachedEvaluation = localStorage.getItem("hiremind_evaluation_result");
+
+        if (cachedEvaluation) {
+           const parsed = JSON.parse(cachedEvaluation);
+           setData(parsed.evaluation_data);
+           if (parsed.gamification) {
+             setGamification(parsed.gamification);
+           }
+           setLoadingStep(loadingSteps.length - 1);
+           setTimeout(() => setLoading(false), 500);
+           return;
+        }
 
         const config = savedConfig ? JSON.parse(savedConfig) : { interview_mode: "General", persona: "Friendly" };
         const context = savedContext ? JSON.parse(savedContext) : { skills: ["React", "Python"], experience_level: "Mid" };
@@ -199,17 +210,26 @@ export default function ResultsPage() {
           throw new Error("Failed to contact the evaluation server.");
         }
 
-        const resJson = await response.json();
-        if (resJson.status === "success" && resJson.data) {
-          setData(resJson.data);
-          if (resJson.gamification) {
-            setGamification(resJson.gamification);
-            if (resJson.gamification.level_up) {
-              setTimeout(() => setShowLevelUpModal(true), 1800);
+        const result = await response.json();
+        
+        if (result.status === "success") {
+          setData(result.data.evaluation_data);
+          
+          if (result.data.gamification) {
+            setGamification(result.data.gamification);
+            if (result.data.gamification.level_up) {
+              setShowLevelUpModal(true);
             }
           }
+          
+          // Cache the evaluation so returning to this page doesn't re-evaluate
+          localStorage.setItem("hiremind_evaluation_result", JSON.stringify(result.data));
+          
+          setLoadingStep(loadingSteps.length - 1);
+          setTimeout(() => setLoading(false), 500);
         } else {
-          throw new Error("Invalid response format received from server.");
+          setError(result.message || "An error occurred during evaluation.");
+          setLoading(false);
         }
       } catch (err: any) {
         console.error("Evaluation error:", err);
