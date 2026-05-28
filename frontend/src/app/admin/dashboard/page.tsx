@@ -580,7 +580,8 @@ export default function AdminDashboard() {
         </AnimatePresence>
 
       </div>
-      );
+    </div>
+  );
 }
 
       interface MetricCardProps {
