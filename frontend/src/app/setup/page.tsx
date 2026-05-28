@@ -102,6 +102,7 @@ export default function SetupPage() {
       
       localStorage.setItem("hiremind_context", JSON.stringify({
         ...data.data.extracted_context,
+        raw_resume_text: data.data.raw_resume_text,
         user_id: candidateUser?.id,
         username: candidateUser?.username
       }));
