@@ -313,8 +313,9 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
         3. Generate a personalized 3-week roadmap tailored to their weaknesses shown in the interview.
         4. Provide ATS Resume Optimizer recommendations based STRICTLY on the Raw Resume Text above:
            - Scan all the lines in the raw resume.
-           - Provide line_modifications: find 2-3 exact sentences/lines from the resume that are poorly written or not ATS-friendly, and provide a suggested change along with a modification reason.
-           - Provide top_tips: 2-3 general tips to make the resume "ATS Level" (like poor design, informal design, missing keywords, incorrect formatting).
+           - Provide ats_score_impact: An integer between 20 and 85 representing the projected POSITIVE percentage score boost (do NOT use negative numbers).
+           - Provide line_modifications: find 3-5 exact sentences/lines from the resume that are poorly written or not ATS-friendly, and provide a suggested change along with a modification reason.
+           - Provide top_tips: Provide exactly 5 highly critical ATS formatting/content tips tailored to this resume. Do NOT use markdown bolding (**), asterisks, or bullet points in the strings. Provide plain text only.
            - This resume optimization MUST be provided even if the interview transcript is empty.
         5. Award achievements/badges from the following list (choose 2-4 that best fit their interview behavior):
            - id: "fluent_speaker",   name: "Fluent Communicator",  icon: "MessageSquare"
