@@ -172,9 +172,14 @@ export default function ResultsPage() {
 
         if (cachedEvaluation) {
            const parsed = JSON.parse(cachedEvaluation);
-           setData(parsed.evaluation_data);
-           if (parsed.gamification) {
-             setGamification(parsed.gamification);
+           if (parsed.evaluation_data) {
+             setData(parsed.evaluation_data);
+             if (parsed.gamification) {
+               setGamification(parsed.gamification);
+             }
+           } else if (parsed.scores) {
+             // Fallback for old cache format
+             setData(parsed);
            }
            setLoadingStep(loadingSteps.length - 1);
            setTimeout(() => setLoading(false), 500);
@@ -213,17 +218,20 @@ export default function ResultsPage() {
         const result = await response.json();
         
         if (result.status === "success") {
-          setData(result.data.evaluation_data);
+          setData(result.data);
           
-          if (result.data.gamification) {
-            setGamification(result.data.gamification);
-            if (result.data.gamification.level_up) {
+          if (result.gamification) {
+            setGamification(result.gamification);
+            if (result.gamification.level_up) {
               setShowLevelUpModal(true);
             }
           }
           
           // Cache the evaluation so returning to this page doesn't re-evaluate
-          localStorage.setItem("hiremind_evaluation_result", JSON.stringify(result.data));
+          localStorage.setItem("hiremind_evaluation_result", JSON.stringify({
+            evaluation_data: result.data,
+            gamification: result.gamification
+          }));
           
           setLoadingStep(loadingSteps.length - 1);
           setTimeout(() => setLoading(false), 500);
