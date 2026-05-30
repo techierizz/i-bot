@@ -268,16 +268,22 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
         }
     }
 
+    try:
+        question_limit = int(context.get("question_limit", 10))
+    except (ValueError, TypeError):
+        question_limit = 10
+
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key or api_key == "YOUR_API_KEY_HERE":
         print("WARNING: GEMINI_API_KEY not found or invalid. Returning mock evaluation data.")
-        if user_turns < 3:
+        if user_turns < question_limit:
             mock_data["scores"] = {"technical": 0, "communication": 0, "confidence": 0, "problem_solving": 0, "overall": 0}
-            mock_data["feedback"]["overall_summary"] = "Interview ended early. Evaluation unavailable."
+            mock_data["feedback"]["overall_summary"] = f"Interview ended early. You answered {user_turns} out of {question_limit} questions. You must complete all questions to earn evaluation and XP."
             mock_data["xp_earned"] = 0
             mock_data["achievements"] = []
             mock_data["roadmap"] = []
             mock_data["resume_optimizer"] = {"ats_score_impact": 0, "line_modifications": [], "top_tips": []}
+            mock_data["xp_breakdown"] = {"base": 0, "score_bonus": 0, "achievement_bonus": 0, "total": 0}
         return mock_data
 
     try:
@@ -344,10 +350,10 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
            - id: "deep_diver",       name: "Deep Diver",            icon: "BookOpen"
            - id: "team_player",      name: "Team Player",           icon: "Users"
         6. Calculate XP earned using this formula:
-           - Base XP: Count the number of candidate responses in the chat history. Award 200 Base XP per candidate response, up to a maximum of 1000 Base XP (5+ responses).
+           - Base XP: {question_limit * 200} Base XP
            - Score bonus: add up to +500 based on overall score (score * 5)
            - Achievement bonus: +100 per badge awarded
-           - Maximum total: 2500
+           - Maximum total: {(question_limit * 200) + 500 + 400}
 
         You must return your output strictly in the following JSON format:
         {{
@@ -415,21 +421,21 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
         # If the interview was aborted early (e.g. they only said "yes"),
         # zero out the evaluation scores to avoid giving unearned mock XP,
         # but keep the ATS resume_optimizer which operates independently.
-        if user_turns == 0:
+        if user_turns < question_limit:
             base_xp = 0
             parsed_response["scores"] = {"technical": 0, "communication": 0, "confidence": 0, "problem_solving": 0, "overall": 0}
-            parsed_response["feedback"]["overall_summary"] = "Interview ended before answering any questions. Evaluation unavailable, but ATS Resume Optimization has been provided below based on your resume."
+            parsed_response["feedback"]["overall_summary"] = f"Interview ended before completion ({user_turns}/{question_limit} questions answered). Evaluation unavailable, but ATS Resume Optimization has been provided below based on your resume."
             parsed_response["achievements"] = []
             parsed_response["roadmap"] = []
             parsed_response["xp_earned"] = base_xp
             parsed_response["xp_breakdown"] = {"base": base_xp, "score_bonus": 0, "achievement_bonus": 0, "total": base_xp}
 
         # Recalculate XP accurately to avoid LLM math errors
-        if user_turns > 0:
-            base_xp = min(user_turns * 200, 1000)
+        if user_turns >= question_limit:
+            base_xp = question_limit * 200
             score_bonus = int(parsed_response.get("scores", {}).get("overall", 0)) * 5
             achievement_bonus = len(parsed_response.get("achievements", [])) * 100
-            total_xp = min(base_xp + score_bonus + achievement_bonus, 2500)
+            total_xp = base_xp + score_bonus + achievement_bonus
             
             parsed_response["xp_earned"] = total_xp
             parsed_response["xp_breakdown"] = {
@@ -444,7 +450,7 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
     except Exception as e:
         print(f"Error executing Gemini evaluation: {e}")
         
-        if user_turns == 0:
+        if user_turns < question_limit:
             base_xp = 0
             return {
                 "scores": {
