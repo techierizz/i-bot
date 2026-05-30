@@ -106,10 +106,17 @@ export default function SetupPage() {
         user_id: candidateUser?.id,
         username: candidateUser?.username
       }));
+      let finalQuestionLimit = questionLimit;
+      if (questionLimit === 10) {
+        finalQuestionLimit = Math.floor(Math.random() * 3) + 8; // random between 8 and 10
+      } else if (questionLimit === 15) {
+        finalQuestionLimit = Math.floor(Math.random() * 3) + 13; // random between 13 and 15
+      }
+
       localStorage.setItem("hiremind_config", JSON.stringify({ 
         mode: selectedMode, 
         persona: selectedPersona,
-        question_limit: questionLimit,
+        question_limit: finalQuestionLimit,
         user_id: candidateUser?.id,
         username: candidateUser?.username
       }));
