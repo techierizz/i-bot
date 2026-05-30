@@ -47,6 +47,13 @@ export default function InterviewPage() {
   const [fillerCount, setFillerCount] = useState(0);
   const [lieAlerts, setLieAlerts] = useState<{ flagged: boolean; reason: string } | null>(null);
   
+  // Analytics Telemetry Trackers
+  const totalSecondsRef = useRef(0);
+  const lookAwaySecondsRef = useRef(0);
+  const fidgetySecondsRef = useRef(0);
+  const gazeStatusRef = useRef<"Focused" | "Looking Away">("Focused");
+  const stressStatusRef = useRef<"Calm" | "Fidgety" | "Highly Fidgety">("Calm");
+  
   const recognitionRef = useRef<any>(null);
   const synthRef = useRef<SpeechSynthesis | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -245,8 +252,10 @@ export default function InterviewPage() {
 
           if (gazeOffset > 0.22) {
             setGazeStatus("Looking Away");
+            gazeStatusRef.current = "Looking Away";
           } else {
             setGazeStatus("Focused");
+            gazeStatusRef.current = "Focused";
           }
         }
 
@@ -268,10 +277,13 @@ export default function InterviewPage() {
               
               if (avgMovement > 2.5) {
                 setStressStatus("Highly Fidgety");
+                stressStatusRef.current = "Highly Fidgety";
               } else if (avgMovement > 0.9) {
                 setStressStatus("Fidgety");
+                stressStatusRef.current = "Fidgety";
               } else {
                 setStressStatus("Calm");
+                stressStatusRef.current = "Calm";
               }
             }
           }
@@ -322,6 +334,16 @@ export default function InterviewPage() {
       setStressStatus("Calm");
     };
   }, [scriptsLoaded]);
+  
+  // Telemetry Timer for Deductions
+  useEffect(() => {
+    const timer = setInterval(() => {
+      totalSecondsRef.current += 1;
+      if (gazeStatusRef.current === "Looking Away") lookAwaySecondsRef.current += 1;
+      if (stressStatusRef.current === "Highly Fidgety") fidgetySecondsRef.current += 1;
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
   
   // Auto-scroll on new messages
   useEffect(() => {
@@ -466,6 +488,16 @@ export default function InterviewPage() {
     if (synthRef.current) synthRef.current.cancel();
     if (recognitionRef.current) recognitionRef.current.stop();
     localStorage.setItem("hiremind_chat_history", JSON.stringify(chatHistory));
+    
+    // Save Telemetry for Gamification Deductions
+    localStorage.setItem("hiremind_interview_metrics", JSON.stringify({
+      totalSeconds: totalSecondsRef.current,
+      lookAwaySeconds: lookAwaySecondsRef.current,
+      fidgetySeconds: fidgetySecondsRef.current,
+      fillerCount,
+      lieFlagged: lieAlerts ? lieAlerts.flagged : false
+    }));
+    
     router.push("/results");
   };
 
