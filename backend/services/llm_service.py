@@ -36,11 +36,31 @@ def extract_resume_context(resume_text: str) -> dict:
         Return ONLY valid JSON.
         """
         
-        response = client.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=prompt
-        )
-        text_response = response.text
+        try:
+            response = client.models.generate_content(
+                model='gemini-2.5-flash',
+                contents=prompt
+            )
+            text_response = response.text
+        except Exception as gemini_e:
+            print(f"Gemini API failed during resume parsing: {gemini_e}. Attempting Groq fallback...")
+            groq_api_key = os.getenv("GROQ_API_KEY")
+            if not groq_api_key:
+                raise gemini_e
+                
+            import groq
+            groq_client = groq.Groq(api_key=groq_api_key)
+            completion = groq_client.chat.completions.create(
+                model="llama3-70b-8192",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": prompt
+                    }
+                ],
+                response_format={"type": "json_object"}
+            )
+            text_response = completion.choices[0].message.content
         
         # Clean up markdown JSON wrappers safely
         if "```json" in text_response:
