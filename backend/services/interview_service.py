@@ -124,14 +124,35 @@ def generate_interview_response(context: dict, chat_history: list, latest_user_r
         if system_prompt_override:
             system_prompt = f"ADMINISTRATOR OVERRIDE INSTRUCTION: {system_prompt_override}\n\n" + system_prompt
         
-        response = client.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=system_prompt,
-            config=genai.types.GenerateContentConfig(
-                temperature=prompt_temp
+        try:
+            response = client.models.generate_content(
+                model='gemini-2.5-flash',
+                contents=system_prompt,
+                config=genai.types.GenerateContentConfig(
+                    temperature=prompt_temp
+                )
             )
-        )
-        text_response = response.text
+            text_response = response.text
+        except Exception as gemini_e:
+            print(f"Gemini API failed: {gemini_e}. Attempting Groq fallback...")
+            groq_api_key = os.getenv("GROQ_API_KEY")
+            if not groq_api_key:
+                raise gemini_e
+                
+            import groq
+            groq_client = groq.Groq(api_key=groq_api_key)
+            completion = groq_client.chat.completions.create(
+                model="llama3-70b-8192",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": system_prompt
+                    }
+                ],
+                temperature=prompt_temp,
+                response_format={"type": "json_object"}
+            )
+            text_response = completion.choices[0].message.content
         
         # Clean up markdown JSON wrappers safely
         if "```json" in text_response:
@@ -447,14 +468,35 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
         if system_prompt_override:
             system_prompt = f"ADMINISTRATOR OVERRIDE INSTRUCTION: {system_prompt_override}\n\n" + system_prompt
 
-        response = client.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=system_prompt,
-            config=genai.types.GenerateContentConfig(
-                temperature=prompt_temp
+        try:
+            response = client.models.generate_content(
+                model='gemini-2.5-flash',
+                contents=system_prompt,
+                config=genai.types.GenerateContentConfig(
+                    temperature=prompt_temp
+                )
             )
-        )
-        text_response = response.text
+            text_response = response.text
+        except Exception as gemini_e:
+            print(f"Gemini API failed during evaluation: {gemini_e}. Attempting Groq fallback...")
+            groq_api_key = os.getenv("GROQ_API_KEY")
+            if not groq_api_key:
+                raise gemini_e
+                
+            import groq
+            groq_client = groq.Groq(api_key=groq_api_key)
+            completion = groq_client.chat.completions.create(
+                model="llama3-70b-8192",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": system_prompt
+                    }
+                ],
+                temperature=prompt_temp,
+                response_format={"type": "json_object"}
+            )
+            text_response = completion.choices[0].message.content
         
         # Clean up markdown JSON wrappers safely
         if "```json" in text_response:
