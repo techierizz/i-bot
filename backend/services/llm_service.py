@@ -51,7 +51,7 @@ def extract_resume_context(resume_text: str) -> dict:
             import groq
             groq_client = groq.Groq(api_key=groq_api_key)
             completion = groq_client.chat.completions.create(
-                model="llama3-70b-8192",
+                model="llama-3.3-70b-versatile",
                 messages=[
                     {
                         "role": "system",
