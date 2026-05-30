@@ -437,7 +437,37 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
             base_xp = question_limit * 200
             score_bonus = int(parsed_response.get("scores", {}).get("overall", 0)) * 5
             achievement_bonus = len(parsed_response.get("achievements", [])) * 100
-            total_xp = base_xp + score_bonus + achievement_bonus
+            
+            # Deductions from telemetry metrics
+            deductions = 0
+            deduction_reasons = []
+            
+            metrics = context.get("metrics", {})
+            filler_count = metrics.get("fillerCount", 0)
+            if filler_count >= 16:
+                deductions -= 100
+                deduction_reasons.append(f"Frequent filler words (-100)")
+            elif filler_count >= 6:
+                deductions -= 50
+                deduction_reasons.append(f"Frequent filler words (-50)")
+                
+            total_sec = max(metrics.get("totalSeconds", 1), 1)
+            look_away_sec = metrics.get("lookAwaySeconds", 0)
+            if (look_away_sec / total_sec) > 0.2:
+                deductions -= 100
+                deduction_reasons.append("Poor eye contact (-100)")
+                
+            fidgety_sec = metrics.get("fidgetySeconds", 0)
+            if (fidgety_sec / total_sec) > 0.3:
+                deductions -= 100
+                deduction_reasons.append("Highly Fidgety/Nervous (-100)")
+                
+            if metrics.get("lieFlagged", False):
+                deductions -= 250
+                deduction_reasons.append("Inconsistency Flagged (-250)")
+            
+            # Calculate total and floor at 0
+            total_xp = max(0, base_xp + score_bonus + achievement_bonus + deductions)
             
             parsed_response["xp_earned"] = total_xp
             parsed_response["xp_breakdown"] = {
@@ -446,6 +476,9 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
                 "achievement_bonus": achievement_bonus,
                 "total": total_xp
             }
+            if deductions < 0:
+                parsed_response["xp_breakdown"]["deductions"] = abs(deductions)
+                parsed_response["xp_breakdown"]["deduction_reason"] = ", ".join(deduction_reasons)
 
         return parsed_response
         
