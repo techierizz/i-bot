@@ -517,6 +517,11 @@ export default function InterviewPage() {
       lieFlagged: lieAlerts ? lieAlerts.flagged : false
     }));
     
+    // Auto-exit fullscreen if active
+    if (document.fullscreenElement) {
+      document.exitFullscreen().catch(err => console.error(err));
+    }
+    
     router.push("/results");
   };
 
@@ -713,9 +718,9 @@ export default function InterviewPage() {
       {/* Header */}
       <header className="w-full p-6 flex justify-between items-center z-10 glass-panel border-b border-white/5">
         <div>
-          <Link href="/" className="text-xl font-bold text-white flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <span className="text-xl font-bold text-white flex items-center gap-2">
             HireMind
-          </Link>
+          </span>
           <p className="text-xs text-zinc-400 mt-1">
             {context?.interview_mode} • {context?.persona} Persona
           </p>
