@@ -34,6 +34,7 @@ export default function InterviewPage() {
   const [isAiSpeaking, setIsAiSpeaking] = useState(false);
   
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
+  const chatHistoryRef = useRef<ChatMessage[]>([]);
   const [transcript, setTranscript] = useState("");
 
   // Phase 4 State
@@ -354,7 +355,9 @@ export default function InterviewPage() {
   useEffect(() => {
     if (context && chatHistory.length === 0) {
       const greeting = `Hello! I'm your ${context.persona} AI interviewer for today's ${context.interview_mode} interview. I've reviewed your resume. Are you ready to begin?`;
-      setChatHistory([{ role: "ai", content: greeting }]);
+      const initialChat = [{ role: "ai", content: greeting } as ChatMessage];
+      setChatHistory(initialChat);
+      chatHistoryRef.current = initialChat;
       speakText(greeting);
     }
   }, [context]);
@@ -423,8 +426,9 @@ export default function InterviewPage() {
     const userText = transcript.trim();
     setTranscript("");
     
-    const newChatHistory = [...chatHistory, { role: "user", content: userText } as ChatMessage];
+    const newChatHistory = [...chatHistoryRef.current, { role: "user", content: userText } as ChatMessage];
     setChatHistory(newChatHistory);
+    chatHistoryRef.current = newChatHistory;
     
     const userMessageCount = newChatHistory.filter(msg => msg.role === "user").length;
     // Exclude the initial greeting ("Are you ready?") from the question limit
@@ -453,7 +457,11 @@ export default function InterviewPage() {
       
       if (result.status === "success") {
         const aiText = result.data.ai_response;
-        setChatHistory(prev => [...prev, { role: "ai", content: aiText }]);
+        
+        const finalHistory = [...chatHistoryRef.current, { role: "ai", content: aiText } as ChatMessage];
+        setChatHistory(finalHistory);
+        chatHistoryRef.current = finalHistory;
+        
         speakText(aiText);
 
         // Update Phase 4 Live metrics
@@ -477,7 +485,9 @@ export default function InterviewPage() {
     } catch (error) {
       console.error("Error communicating with AI:", error);
       const errorMsg = "Sorry, I lost connection to my server. Let's try that again.";
-      setChatHistory(prev => [...prev, { role: "ai", content: errorMsg }]);
+      const errorHistory = [...chatHistoryRef.current, { role: "ai", content: errorMsg } as ChatMessage];
+      setChatHistory(errorHistory);
+      chatHistoryRef.current = errorHistory;
       speakText(errorMsg);
     } finally {
       setIsAiThinking(false);
@@ -487,7 +497,7 @@ export default function InterviewPage() {
   const endInterview = () => {
     if (synthRef.current) synthRef.current.cancel();
     if (recognitionRef.current) recognitionRef.current.stop();
-    localStorage.setItem("hiremind_chat_history", JSON.stringify(chatHistory));
+    localStorage.setItem("hiremind_chat_history", JSON.stringify(chatHistoryRef.current));
     
     // Save Telemetry for Gamification Deductions
     localStorage.setItem("hiremind_interview_metrics", JSON.stringify({
