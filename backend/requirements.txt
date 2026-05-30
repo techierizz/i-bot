@@ -5,3 +5,4 @@ google-genai
 pydantic==2.13.4
 uvicorn[standard]==0.34.3
 psycopg2-binary==2.9.12
+groq
