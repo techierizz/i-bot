@@ -80,7 +80,7 @@ interface EvaluationData {
   resume_optimizer: ResumeOptimizer;
   achievements: Achievement[];
   xp_earned: number;
-  xp_breakdown?: { base: number; score_bonus: number; achievement_bonus: number; total: number };
+  xp_breakdown?: { base: number; score_bonus: number; achievement_bonus: number; deductions?: number; deduction_reason?: string; total: number };
 }
 
 export default function ResultsPage() {
@@ -168,6 +168,7 @@ export default function ResultsPage() {
         const savedConfig = localStorage.getItem("hiremind_config");
         const savedContext = localStorage.getItem("hiremind_context");
         const savedChatHistory = localStorage.getItem("hiremind_chat_history");
+        const savedMetrics = localStorage.getItem("hiremind_interview_metrics");
         const cachedEvaluation = localStorage.getItem("hiremind_evaluation_result");
 
         if (cachedEvaluation) {
@@ -205,7 +206,8 @@ export default function ResultsPage() {
               ...config,
               extracted_context: context,
               user_id: loggedUser.id,
-              username: loggedUser.username
+              username: loggedUser.username,
+              metrics: savedMetrics ? JSON.parse(savedMetrics) : {}
             },
             chat_history: chatHistory
           })
@@ -527,8 +529,47 @@ export default function ResultsPage() {
                 </p>
               </div>
 
-
-
+              {/* Gamification Receipt Panel */}
+              {data.xp_breakdown && (
+                <div className="relative p-6 rounded-3xl border border-white/5 bg-zinc-950/40 backdrop-blur-md shadow-xl flex flex-col gap-4">
+                  <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-2">
+                    <Award className="w-4 h-4 text-violet-400" /> XP Breakdown Receipt
+                  </h3>
+                  
+                  <div className="flex flex-col gap-2 font-mono text-xs sm:text-sm">
+                    <div className="flex justify-between items-center text-zinc-300">
+                      <span>Base XP:</span>
+                      <span className="text-emerald-400 font-bold">+{data.xp_breakdown.base}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-zinc-300">
+                      <span>Score Bonus:</span>
+                      <span className="text-emerald-400 font-bold">+{data.xp_breakdown.score_bonus}</span>
+                    </div>
+                    {data.xp_breakdown.achievement_bonus > 0 && (
+                      <div className="flex justify-between items-center text-zinc-300">
+                        <span>Badges:</span>
+                        <span className="text-emerald-400 font-bold">+{data.xp_breakdown.achievement_bonus}</span>
+                      </div>
+                    )}
+                    {data.xp_breakdown.deductions ? (
+                      <div className="flex justify-between items-start text-zinc-300 pt-2 border-t border-white/5 mt-1">
+                        <div className="flex flex-col">
+                          <span className="text-red-400 font-bold">Deductions:</span>
+                          <span className="text-[10px] text-zinc-500 max-w-[200px] mt-1 leading-relaxed">
+                            (Reason: {data.xp_breakdown.deduction_reason})
+                          </span>
+                        </div>
+                        <span className="text-red-400 font-bold mt-0.5">-{data.xp_breakdown.deductions}</span>
+                      </div>
+                    ) : null}
+                    
+                    <div className="flex justify-between items-center text-white font-black text-base pt-3 border-t border-white/10 mt-2">
+                      <span>Total:</span>
+                      <span className="text-violet-400">{data.xp_breakdown.total} XP</span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* RIGHT COLUMN: Navigation Tabs + Details Widgets */}
