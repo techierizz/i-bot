@@ -343,7 +343,7 @@ export default function InterviewPage() {
       setGazeStatus("Focused");
       setStressStatus("Calm");
     };
-  }, [scriptsLoaded]);
+  }, [scriptsLoaded, phase]);
   
   // Telemetry Timer for Deductions
   useEffect(() => {
@@ -628,9 +628,21 @@ export default function InterviewPage() {
           <div className="absolute top-[-20%] left-[-10%] w-[300px] h-[300px] bg-secondary-500/10 blur-[100px] rounded-full pointer-events-none" />
           <h2 className="text-xl font-black text-white text-center mb-4 uppercase tracking-[0.1em]">System Pre-Checks</h2>
           
-          <div className={`flex items-center justify-between p-4 rounded-xl transition-colors ${isFullscreen ? "bg-emerald-500/10 border border-emerald-500/20" : "bg-zinc-950/50 border border-white/5"}`}>
+          <div className={`flex items-center justify-between p-4 rounded-xl transition-colors ${isScreenShared ? "bg-emerald-500/10 border border-emerald-500/20" : "bg-zinc-950/50 border border-white/5"}`}>
             <div className="flex flex-col">
-              <span className="text-sm font-bold text-white">1. Fullscreen Access</span>
+              <span className="text-sm font-bold text-white">1. Screen Share</span>
+              <span className="text-[10px] text-zinc-500 uppercase tracking-widest mt-0.5">Select "Entire Screen"</span>
+            </div>
+            {isScreenShared ? (
+              <CheckCircle2 className="text-emerald-400 w-5 h-5" />
+            ) : (
+              <button onClick={requestScreenShare} className="px-4 py-2 rounded-lg bg-white text-black text-xs font-bold hover:bg-zinc-200 cursor-pointer transition-colors">Share</button>
+            )}
+          </div>
+
+          <div className={`flex items-center justify-between p-4 rounded-xl transition-all ${isFullscreen ? "bg-emerald-500/10 border border-emerald-500/20" : isScreenShared ? "bg-zinc-950/50 border border-white/5" : "opacity-30 pointer-events-none bg-zinc-950/50 border border-white/5"}`}>
+            <div className="flex flex-col">
+              <span className="text-sm font-bold text-white">2. Fullscreen Access</span>
               <span className="text-[10px] text-zinc-500 uppercase tracking-widest mt-0.5">Focus environment</span>
             </div>
             {isFullscreen ? (
@@ -640,19 +652,7 @@ export default function InterviewPage() {
             )}
           </div>
           
-          <div className={`flex items-center justify-between p-4 rounded-xl transition-colors ${isScreenShared ? "bg-emerald-500/10 border border-emerald-500/20" : "bg-zinc-950/50 border border-white/5"}`}>
-            <div className="flex flex-col">
-              <span className="text-sm font-bold text-white">2. Screen Share</span>
-              <span className="text-[10px] text-zinc-500 uppercase tracking-widest mt-0.5">Select "Entire Screen"</span>
-            </div>
-            {isScreenShared ? (
-              <CheckCircle2 className="text-emerald-400 w-5 h-5" />
-            ) : (
-              <button onClick={requestScreenShare} className="px-4 py-2 rounded-lg bg-white text-black text-xs font-bold hover:bg-zinc-200 cursor-pointer transition-colors">Share</button>
-            )}
-          </div>
-          
-          <div className={`flex items-center justify-between p-4 rounded-xl transition-colors ${isMicCameraGranted ? "bg-emerald-500/10 border border-emerald-500/20" : "bg-zinc-950/50 border border-white/5"}`}>
+          <div className={`flex items-center justify-between p-4 rounded-xl transition-all ${isMicCameraGranted ? "bg-emerald-500/10 border border-emerald-500/20" : isFullscreen ? "bg-zinc-950/50 border border-white/5" : "opacity-30 pointer-events-none bg-zinc-950/50 border border-white/5"}`}>
             <div className="flex flex-col">
               <span className="text-sm font-bold text-white">3. Mic & Camera</span>
               <span className="text-[10px] text-zinc-500 uppercase tracking-widest mt-0.5">AI Interaction</span>
