@@ -229,7 +229,12 @@ async def evaluate_endpoint(request: EvaluationRequest):
                 elif "user" in msg or "candidate" in msg:
                     user_turns += 1
         
-        MIN_USER_TURNS = 1  # Must answer at least 1 question to earn XP
+        try:
+            question_limit = int(request.context.get("question_limit", 10))
+        except (ValueError, TypeError):
+            question_limit = 10
+            
+        MIN_USER_TURNS = question_limit
         is_meaningful = user_turns >= MIN_USER_TURNS
         
         gamification_result = None
@@ -252,7 +257,7 @@ async def evaluate_endpoint(request: EvaluationRequest):
                 
                 # Only award XP if the interview was meaningful
                 if is_meaningful:
-                    xp_earned = evaluation_data.get("xp_earned", 1000)
+                    xp_earned = evaluation_data.get("xp_earned", question_limit * 200)
                     new_badges = [a["id"] for a in evaluation_data.get("achievements", [])]
                     gamification_result = add_xp_to_user(
                         user_id=int(user_id),
