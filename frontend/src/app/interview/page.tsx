@@ -14,7 +14,8 @@ import {
   Eye, 
   Activity, 
   MessageSquare, 
-  AlertTriangle 
+  AlertTriangle,
+  CheckCircle2
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "../config";
@@ -43,6 +44,14 @@ export default function InterviewPage() {
   const [scriptsError, setScriptsError] = useState(false);
   const [gazeStatus, setGazeStatus] = useState<"Focused" | "Looking Away">("Focused");
   const [stressStatus, setStressStatus] = useState<"Calm" | "Fidgety" | "Highly Fidgety">("Calm");
+  
+  // Phase 5 Pre-check States
+  const [phase, setPhase] = useState<"instructions" | "precheck" | "interview">("instructions");
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isScreenShared, setIsScreenShared] = useState(false);
+  const [isMicCameraGranted, setIsMicCameraGranted] = useState(false);
+  const [violationWarning, setViolationWarning] = useState<{type: "fullscreen" | "screenshare", active: boolean}>({type: "fullscreen", active: false});
+  const screenStreamRef = useRef<MediaStream | null>(null);
   
   const [difficulty, setDifficulty] = useState<"Easy" | "Medium" | "Hard">("Medium");
   const [fillerCount, setFillerCount] = useState(0);
@@ -184,7 +193,7 @@ export default function InterviewPage() {
       if (recognitionRef.current) recognitionRef.current.stop();
       if (synthRef.current) synthRef.current.cancel();
     };
-  }, []);
+  }, [phase]); // Re-run effect when phase changes, but we'll gate inside
 
   // Real-Time Gaze & Stress Face Mesh Tracking
   useEffect(() => {
@@ -344,23 +353,23 @@ export default function InterviewPage() {
       if (stressStatusRef.current === "Highly Fidgety") fidgetySecondsRef.current += 1;
     }, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [phase]);
   
   // Auto-scroll on new messages
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chatHistory, transcript]);
+  }, [chatHistory]);
 
   // Initial greeting
   useEffect(() => {
-    if (context && chatHistory.length === 0) {
+    if (phase === "interview" && context && chatHistory.length === 0) {
       const greeting = `Hello! I'm your ${context.persona} AI interviewer for today's ${context.interview_mode} interview. I've reviewed your resume. Are you ready to begin?`;
       const initialChat = [{ role: "ai", content: greeting } as ChatMessage];
       setChatHistory(initialChat);
       chatHistoryRef.current = initialChat;
       speakText(greeting);
     }
-  }, [context]);
+  }, [context, phase]);
 
   const speakText = (text: string) => {
     if (!synthRef.current) return;
@@ -511,10 +520,195 @@ export default function InterviewPage() {
     router.push("/results");
   };
 
+  const requestFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
+      }
+      setIsFullscreen(true);
+    } catch (err) {
+      console.error("Fullscreen request failed", err);
+    }
+  };
+
+  const requestScreenShare = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+      screenStreamRef.current = stream;
+      setIsScreenShared(true);
+      
+      stream.getVideoTracks()[0].onended = () => {
+        setIsScreenShared(false);
+        if (phase === "interview") {
+          setViolationWarning({ type: "screenshare", active: true });
+        }
+      };
+    } catch (err) {
+      console.error("Screen share request failed", err);
+    }
+  };
+
+  const requestMicCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      setIsMicCameraGranted(true);
+      stream.getTracks().forEach(track => track.stop());
+    } catch (err) {
+      console.error("Mic/Camera request failed", err);
+    }
+  };
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement) {
+        setIsFullscreen(false);
+        if (phase === "interview") {
+          setViolationWarning({ type: "fullscreen", active: true });
+        }
+      } else {
+        setIsFullscreen(true);
+      }
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, [phase]);
+
+  const resolveViolation = async () => {
+    if (violationWarning.type === "fullscreen") {
+      await requestFullscreen();
+      if (document.fullscreenElement) {
+        setViolationWarning({ ...violationWarning, active: false });
+      }
+    } else if (violationWarning.type === "screenshare") {
+      await requestScreenShare();
+      if (screenStreamRef.current && screenStreamRef.current.active) {
+        setViolationWarning({ ...violationWarning, active: false });
+      }
+    }
+  };
+
+  if (phase === "instructions") {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen w-full bg-background p-6">
+        <div className="max-w-2xl w-full glass-card p-10 rounded-[2rem] border border-white/10 relative overflow-hidden shadow-2xl">
+          <div className="absolute top-[-20%] right-[-10%] w-[400px] h-[400px] bg-primary-500/10 blur-[100px] rounded-full pointer-events-none" />
+          <h2 className="text-2xl font-black text-white mb-8 uppercase tracking-[0.15em] flex items-center gap-3">
+            <AlertTriangle className="text-amber-400 w-7 h-7" /> Interview Rules
+          </h2>
+          <div className="space-y-6 text-zinc-300 text-sm font-medium leading-relaxed">
+            <div className="flex items-start gap-4">
+              <div className="w-8 h-8 rounded-full bg-primary-500/10 text-primary-400 flex items-center justify-center shrink-0 border border-primary-500/20 font-bold">1</div>
+              <p className="mt-1">The interview is strictly conducted in <span className="text-white font-bold">Fullscreen mode</span>. Exiting fullscreen will flag a security violation and instantly pause the interview.</p>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="w-8 h-8 rounded-full bg-primary-500/10 text-primary-400 flex items-center justify-center shrink-0 border border-primary-500/20 font-bold">2</div>
+              <p className="mt-1">You must share your <span className="text-white font-bold">Entire Screen</span>. We actively monitor the feed to ensure no cheating tools are used. Stopping the stream will pause the interview.</p>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="w-8 h-8 rounded-full bg-primary-500/10 text-primary-400 flex items-center justify-center shrink-0 border border-primary-500/20 font-bold">3</div>
+              <p className="mt-1">AI <span className="text-white font-bold">Eye-tracking and Posture</span> algorithms are active. Looking away or fidgeting excessively will result in heavy XP deductions.</p>
+            </div>
+          </div>
+          <button 
+            onClick={() => setPhase("precheck")}
+            className="mt-10 w-full py-4 rounded-xl bg-gradient-to-r from-primary-600 to-secondary-600 text-white font-black uppercase tracking-[0.2em] shadow-[0_0_30px_rgba(139,92,246,0.3)] hover:opacity-90 hover:scale-[1.02] transition-all cursor-pointer"
+          >
+            I Understand the Rules
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (phase === "precheck") {
+    const allPassed = isFullscreen && isScreenShared && isMicCameraGranted;
+    return (
+      <div className="flex flex-col items-center justify-center h-screen w-full bg-background p-6">
+        <div className="max-w-md w-full glass-card p-8 rounded-3xl border border-white/10 relative overflow-hidden flex flex-col gap-5 shadow-2xl">
+          <div className="absolute top-[-20%] left-[-10%] w-[300px] h-[300px] bg-secondary-500/10 blur-[100px] rounded-full pointer-events-none" />
+          <h2 className="text-xl font-black text-white text-center mb-4 uppercase tracking-[0.1em]">System Pre-Checks</h2>
+          
+          <div className={`flex items-center justify-between p-4 rounded-xl transition-colors ${isFullscreen ? "bg-emerald-500/10 border border-emerald-500/20" : "bg-zinc-950/50 border border-white/5"}`}>
+            <div className="flex flex-col">
+              <span className="text-sm font-bold text-white">1. Fullscreen Access</span>
+              <span className="text-[10px] text-zinc-500 uppercase tracking-widest mt-0.5">Focus environment</span>
+            </div>
+            {isFullscreen ? (
+              <CheckCircle2 className="text-emerald-400 w-5 h-5" />
+            ) : (
+              <button onClick={requestFullscreen} className="px-4 py-2 rounded-lg bg-white text-black text-xs font-bold hover:bg-zinc-200 cursor-pointer transition-colors">Grant</button>
+            )}
+          </div>
+          
+          <div className={`flex items-center justify-between p-4 rounded-xl transition-colors ${isScreenShared ? "bg-emerald-500/10 border border-emerald-500/20" : "bg-zinc-950/50 border border-white/5"}`}>
+            <div className="flex flex-col">
+              <span className="text-sm font-bold text-white">2. Screen Share</span>
+              <span className="text-[10px] text-zinc-500 uppercase tracking-widest mt-0.5">Select "Entire Screen"</span>
+            </div>
+            {isScreenShared ? (
+              <CheckCircle2 className="text-emerald-400 w-5 h-5" />
+            ) : (
+              <button onClick={requestScreenShare} className="px-4 py-2 rounded-lg bg-white text-black text-xs font-bold hover:bg-zinc-200 cursor-pointer transition-colors">Share</button>
+            )}
+          </div>
+          
+          <div className={`flex items-center justify-between p-4 rounded-xl transition-colors ${isMicCameraGranted ? "bg-emerald-500/10 border border-emerald-500/20" : "bg-zinc-950/50 border border-white/5"}`}>
+            <div className="flex flex-col">
+              <span className="text-sm font-bold text-white">3. Mic & Camera</span>
+              <span className="text-[10px] text-zinc-500 uppercase tracking-widest mt-0.5">AI Interaction</span>
+            </div>
+            {isMicCameraGranted ? (
+              <CheckCircle2 className="text-emerald-400 w-5 h-5" />
+            ) : (
+              <button onClick={requestMicCamera} className="px-4 py-2 rounded-lg bg-white text-black text-xs font-bold hover:bg-zinc-200 cursor-pointer transition-colors">Allow</button>
+            )}
+          </div>
+
+          <button 
+            onClick={() => setPhase("interview")}
+            disabled={!allPassed}
+            className={`mt-6 w-full py-4 rounded-xl font-black uppercase tracking-[0.2em] transition-all ${allPassed ? "bg-gradient-to-r from-emerald-500 to-emerald-400 text-black shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:opacity-90 cursor-pointer transform hover:scale-[1.02]" : "bg-zinc-900 border border-zinc-800 text-zinc-600 cursor-not-allowed"}`}
+          >
+            Start Interview
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-screen w-full bg-background overflow-hidden relative">
       
-      {/* Background removed as per request */}
+      {/* Violation Modal */}
+      <AnimatePresence>
+        {violationWarning.active && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/90 backdrop-blur-xl">
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="max-w-md w-full bg-zinc-950 border border-red-500/30 p-8 rounded-3xl text-center shadow-[0_0_80px_rgba(239,68,68,0.2)]"
+            >
+              <div className="w-20 h-20 mx-auto bg-red-500/10 border border-red-500/20 rounded-full flex items-center justify-center mb-6">
+                <AlertTriangle className="text-red-500 w-10 h-10 animate-pulse" />
+              </div>
+              <h2 className="text-2xl font-black text-white mb-3">Security Violation</h2>
+              <p className="text-zinc-400 text-sm mb-8 leading-relaxed font-medium">
+                {violationWarning.type === "fullscreen" 
+                  ? "You exited fullscreen mode. This is a strict violation of the interview rules. The interview is paused until you return to fullscreen."
+                  : "You stopped sharing your screen. This is a strict violation of the interview rules. The interview is paused until you re-share your entire screen."
+                }
+              </p>
+              <button 
+                onClick={resolveViolation}
+                className="w-full py-3.5 rounded-xl bg-red-500 text-white font-black uppercase tracking-widest hover:bg-red-600 transition-colors shadow-[0_0_20px_rgba(239,68,68,0.4)]"
+              >
+                {violationWarning.type === "fullscreen" ? "Return to Fullscreen" : "Re-share Screen"}
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Header */}
       <header className="w-full p-6 flex justify-between items-center z-10 glass-panel border-b border-white/5">
