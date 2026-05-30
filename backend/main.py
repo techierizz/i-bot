@@ -234,8 +234,9 @@ async def evaluate_endpoint(request: EvaluationRequest):
         except (ValueError, TypeError):
             question_limit = 10
             
+        actual_user_turns = max(0, user_turns - 1)
         MIN_USER_TURNS = question_limit
-        is_meaningful = user_turns >= MIN_USER_TURNS
+        is_meaningful = actual_user_turns >= MIN_USER_TURNS
         
         gamification_result = None
         if user_id:
@@ -253,7 +254,7 @@ async def evaluate_endpoint(request: EvaluationRequest):
                     transcript=request.chat_history,
                     evaluation_data=evaluation_data
                 )
-                print(f"[*] Evaluation logged for user_id={user_id} (user_turns={user_turns})")
+                print(f"[*] Evaluation logged for user_id={user_id} (actual_user_turns={actual_user_turns})")
                 
                 # Only award XP if the interview was meaningful
                 if is_meaningful:
@@ -279,7 +280,7 @@ async def evaluate_endpoint(request: EvaluationRequest):
                         "level_up": False,
                         "new_badges": [],
                         "all_badges": current_state.get("badges", []),
-                        "skipped_reason": f"Interview too short ({user_turns} answers, need {MIN_USER_TURNS}+)"
+                        "skipped_reason": f"Interview too short ({actual_user_turns} answers, need {MIN_USER_TURNS}+)"
                     }
                     # Override evaluation XP to 0 for the frontend
                     evaluation_data["xp_earned"] = 0
