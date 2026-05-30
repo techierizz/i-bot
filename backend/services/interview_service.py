@@ -286,6 +286,52 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
             mock_data["roadmap"] = []
             mock_data["resume_optimizer"] = {"ats_score_impact": 0, "line_modifications": [], "top_tips": []}
             mock_data["xp_breakdown"] = {"base": 0, "score_bonus": 0, "achievement_bonus": 0, "total": 0}
+            return mock_data
+            
+        # Apply deductions to mock data
+        base_xp = question_limit * 200
+        score_bonus = 84 * 5
+        achievement_bonus = len(mock_data["achievements"]) * 100
+        
+        deductions = 0
+        deduction_reasons = []
+        metrics = context.get("metrics", {})
+        filler_count = metrics.get("fillerCount", 0)
+        if filler_count >= 16:
+            deductions -= 100
+            deduction_reasons.append(f"Frequent filler words (-100)")
+        elif filler_count >= 6:
+            deductions -= 50
+            deduction_reasons.append(f"Frequent filler words (-50)")
+            
+        total_sec = max(metrics.get("totalSeconds", 1), 1)
+        look_away_sec = metrics.get("lookAwaySeconds", 0)
+        if (look_away_sec / total_sec) > 0.2:
+            deductions -= 100
+            deduction_reasons.append("Poor eye contact (-100)")
+            
+        fidgety_sec = metrics.get("fidgetySeconds", 0)
+        if (fidgety_sec / total_sec) > 0.3:
+            deductions -= 100
+            deduction_reasons.append("Highly Fidgety/Nervous (-100)")
+            
+        if metrics.get("lieFlagged", False):
+            deductions -= 250
+            deduction_reasons.append("Inconsistency Flagged (-250)")
+        
+        total_xp = max(0, base_xp + score_bonus + achievement_bonus + deductions)
+        
+        mock_data["xp_earned"] = total_xp
+        mock_data["xp_breakdown"] = {
+            "base": base_xp,
+            "score_bonus": score_bonus,
+            "achievement_bonus": achievement_bonus,
+            "total": total_xp
+        }
+        if deductions < 0:
+            mock_data["xp_breakdown"]["deductions"] = abs(deductions)
+            mock_data["xp_breakdown"]["deduction_reason"] = ", ".join(deduction_reasons)
+            
         return mock_data
 
     try:
