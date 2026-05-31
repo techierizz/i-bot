@@ -146,6 +146,15 @@ def get_user_best_interview(user_id: int):
         
     return {"status": "success", "data": best}
 
+@app.get("/api/user/{user_id}/stats")
+def get_user_statistics(user_id: int):
+    from database import get_user_stats
+    try:
+        stats = get_user_stats(user_id)
+        return {"status": "success", "data": stats}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 # Candidate Resume setup
 @app.post("/api/setup/upload")
 async def upload_resume(
