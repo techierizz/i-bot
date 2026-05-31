@@ -650,11 +650,11 @@ export default function AdminDashboard() {
                 </button>
 
                 <div className="mb-8 relative z-10">
-                  <span className="px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-[10px] font-black tracking-widest uppercase shadow-[0_0_15px_rgba(147,51,234,0.2)]">
+                  <span className="px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-black tracking-[0.2em] uppercase shadow-[0_0_15px_rgba(147,51,234,0.2)]">
                     Report Inspection
                   </span>
-                  <h2 className="text-3xl font-black text-white mt-4 tracking-wide">{selectedRecord.username}</h2>
-                  <p className="text-xs text-indigo-300/80 mt-1 uppercase tracking-widest font-semibold">Completed a {selectedRecord.mode} Simulation</p>
+                  <h2 className="text-4xl font-black text-white mt-5 tracking-wide">{selectedRecord.username}</h2>
+                  <p className="text-sm text-indigo-300/90 mt-2 uppercase tracking-[0.15em] font-bold">Completed a {selectedRecord.mode} Simulation</p>
                 </div>
 
                 {/* Scrollable container for inspection columns */}
@@ -662,8 +662,8 @@ export default function AdminDashboard() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
 
                     {/* Radar Chart */}
-                    <div className="flex flex-col items-center justify-center bg-[#13111C]/60 p-6 rounded-3xl border border-white/5 shadow-inner hover:border-purple-500/30 transition-all duration-500">
-                      <h3 className="text-[10px] font-black text-indigo-300/70 uppercase tracking-widest mb-6">Competency Map</h3>
+                    <div className="flex flex-col items-center justify-center bg-gradient-to-br from-[#13111C]/90 to-[#0A0910]/95 p-8 rounded-[2rem] border border-white/5 shadow-inner hover:border-purple-500/30 transition-all duration-500">
+                      <h3 className="text-xs font-black text-indigo-300/80 uppercase tracking-[0.2em] mb-8">Competency Map</h3>
                       <svg viewBox="0 0 340 300" className="w-full max-w-[280px] h-auto overflow-visible">
                         <defs>
                           <radialGradient id="radarGlow" cx="50%" cy="50%" r="50%">
@@ -729,7 +729,7 @@ export default function AdminDashboard() {
                         ))}
 
                         {/* Outer dimension Labels */}
-                        {getCoordinates({ technical: 100, communication: 100, confidence: 100, problem_solving: 100, overall: 100 }, 1.14).map((c, i) => {
+                        {getCoordinates({ technical: 100, communication: 100, confidence: 100, problem_solving: 100, overall: 100 }, 1.18).map((c, i) => {
                           const isLeft = c.x < center;
                           return (
                             <text
@@ -737,7 +737,7 @@ export default function AdminDashboard() {
                               x={c.x}
                               y={c.y + 4}
                               textAnchor={Math.abs(c.x - center) < 10 ? "middle" : isLeft ? "end" : "start"}
-                              className="fill-indigo-300/60 font-bold text-[8px] uppercase tracking-[0.2em]"
+                              className="fill-indigo-300/70 font-bold text-[9.5px] uppercase tracking-[0.2em]"
                             >
                               {dimensions[i].label}
                             </text>
@@ -746,37 +746,37 @@ export default function AdminDashboard() {
                       </svg>
 
                       {/* Numeric breakdown list */}
-                      <div className="grid grid-cols-2 gap-x-6 gap-y-2 mt-4 w-full text-[10px] text-indigo-300/60 font-mono">
+                      <div className="grid grid-cols-2 gap-x-6 gap-y-3 mt-6 w-full text-xs text-indigo-300/70 font-mono">
                         {dimensions.map((d) => (
-                          <div key={d.key} className="flex justify-between border-b border-white/5 py-1.5">
-                            <span className="uppercase tracking-wider">{d.label}:</span>
-                            <span className="font-bold text-white tracking-widest">{(selectedRecord as any)[d.key]}/100</span>
+                          <div key={d.key} className="flex justify-between border-b border-white/5 py-2">
+                            <span className="uppercase tracking-[0.15em]">{d.label}:</span>
+                            <span className="font-bold text-white tracking-widest text-[13px]">{(selectedRecord as any)[d.key]}/100</span>
                           </div>
                         ))}
                       </div>
                     </div>
 
                     {/* Summary & transcript review */}
-                    <div className="space-y-5">
-                      <div className="bg-[#13111C]/60 p-6 rounded-3xl border border-white/5 space-y-3 hover:border-purple-500/30 transition-all duration-500 shadow-inner">
-                        <h4 className="text-[10px] font-black text-indigo-300/70 uppercase tracking-widest flex items-center gap-2">
-                          <FileText className="w-3.5 h-3.5 text-purple-400" /> Executive Summary
+                    <div className="space-y-6">
+                      <div className="bg-gradient-to-br from-[#13111C]/90 to-[#0A0910]/95 p-8 rounded-[2rem] border border-white/5 space-y-4 hover:border-purple-500/30 transition-all duration-500 shadow-inner">
+                        <h4 className="text-xs font-black text-indigo-300/80 uppercase tracking-[0.2em] flex items-center gap-2.5">
+                          <FileText className="w-4 h-4 text-purple-400 drop-shadow-[0_0_8px_rgba(147,51,234,0.5)]" /> Executive Summary
                         </h4>
-                        <p className="text-sm text-zinc-300 leading-relaxed font-light">
+                        <p className="text-[15px] text-zinc-300 leading-relaxed font-light">
                           {selectedRecord.evaluation_data?.feedback?.overall_summary ||
                             "Demonstrated consistent competence, though optimization pathways are suggested below."}
                         </p>
                       </div>
 
-                      <div className="bg-[#13111C]/60 p-6 rounded-3xl border border-white/5 space-y-3 hover:border-purple-500/30 transition-all duration-500 shadow-inner">
-                        <h4 className="text-[10px] font-black text-indigo-300/70 uppercase tracking-widest">Compensatory feedback</h4>
-                        <div className="space-y-3 max-h-[160px] overflow-y-auto pr-1">
+                      <div className="bg-gradient-to-br from-[#13111C]/90 to-[#0A0910]/95 p-8 rounded-[2rem] border border-white/5 space-y-4 hover:border-purple-500/30 transition-all duration-500 shadow-inner">
+                        <h4 className="text-xs font-black text-indigo-300/80 uppercase tracking-[0.2em]">Compensatory feedback</h4>
+                        <div className="space-y-4 max-h-[180px] overflow-y-auto pr-2">
                           {dimensions.slice(0, 4).map((dim) => {
                             const detail = selectedRecord.evaluation_data?.feedback?.[dim.key];
                             return detail ? (
-                              <div key={dim.key} className="text-[11px]">
-                                <span className="font-black text-white/90 uppercase tracking-wider">{dim.label}</span>:{" "}
-                                <span className="text-zinc-400 leading-relaxed font-light">{detail}</span>
+                              <div key={dim.key} className="text-[13px] leading-relaxed">
+                                <span className="font-black text-white/90 uppercase tracking-[0.1em] text-[11px] bg-white/5 px-2 py-1 rounded mr-2">{dim.label}</span>
+                                <span className="text-zinc-400 font-light block mt-1.5">{detail}</span>
                               </div>
                             ) : null;
                           })}
@@ -787,18 +787,18 @@ export default function AdminDashboard() {
                   </div>
 
                   {/* Interview Transcript logs */}
-                  <div className="bg-[#13111C]/60 p-6 rounded-3xl border border-white/5 space-y-4 hover:border-purple-500/30 transition-all duration-500 shadow-inner">
-                    <h3 className="text-[10px] font-black text-indigo-300/70 uppercase tracking-widest border-b border-white/5 pb-3">
+                  <div className="bg-gradient-to-br from-[#13111C]/90 to-[#0A0910]/95 p-8 rounded-[2rem] border border-white/5 space-y-5 hover:border-purple-500/30 transition-all duration-500 shadow-inner">
+                    <h3 className="text-xs font-black text-indigo-300/80 uppercase tracking-[0.2em] border-b border-white/5 pb-4">
                       Simulation Transcript Log ({selectedRecord.transcript.length} turns)
                     </h3>
-                    <div className="space-y-4 max-h-[220px] overflow-y-auto pr-2 text-xs">
+                    <div className="space-y-5 max-h-[250px] overflow-y-auto pr-3">
                       {selectedRecord.transcript.map((t, idx) => (
-                        <div key={idx} className="space-y-1.5">
-                          <p className={`font-black uppercase tracking-[0.15em] text-[9px] ${t.role === "assistant" || t.role === "interviewer" ? "text-purple-400 drop-shadow-[0_0_8px_rgba(147,51,234,0.4)]" : "text-blue-400 drop-shadow-[0_0_8px_rgba(59,130,246,0.4)]"
+                        <div key={idx} className="space-y-2">
+                          <p className={`font-black uppercase tracking-[0.2em] text-[10px] ${t.role === "assistant" || t.role === "interviewer" ? "text-purple-400 drop-shadow-[0_0_8px_rgba(147,51,234,0.5)]" : "text-blue-400 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]"
                             }`}>
                             {t.role === "assistant" || t.role === "interviewer" ? "Interviewer" : "Candidate"}
                           </p>
-                          <p className="text-zinc-300 leading-relaxed pl-3 border-l-2 border-white/5 bg-[#0B0914]/50 p-2.5 rounded-r-xl font-light">{t.content}</p>
+                          <p className="text-[14px] text-zinc-300 leading-relaxed pl-4 border-l-2 border-white/10 bg-[#0B0914]/80 p-3.5 rounded-r-2xl font-light">{t.content}</p>
                         </div>
                       ))}
                     </div>
