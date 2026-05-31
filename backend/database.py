@@ -382,6 +382,28 @@ def delete_evaluation(eval_id: int) -> bool:
     conn.close()
     return deleted
 
+def get_user_stats(user_id: int) -> Dict[str, Any]:
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    
+    cursor.execute("SELECT COUNT(*) as count, MAX(overall) as max_score FROM evaluations WHERE user_id = %s", (user_id,))
+    eval_stats = cursor.fetchone()
+    
+    cursor.execute("SELECT total_xp, badges FROM user_gamification WHERE user_id = %s", (user_id,))
+    gam_stats = cursor.fetchone()
+    
+    conn.close()
+    
+    total_xp = gam_stats["total_xp"] if gam_stats else 0
+    badges = json.loads(gam_stats["badges"]) if gam_stats and gam_stats["badges"] else []
+    
+    return {
+        "total_interviews": eval_stats["count"] or 0,
+        "highest_score": eval_stats["max_score"] or 0,
+        "total_xp": total_xp,
+        "badges_count": len(badges)
+    }
+
 # ─────────────────────────────────────────────────────────────────────────────
 # GAMIFICATION SYSTEM
 # ─────────────────────────────────────────────────────────────────────────────
