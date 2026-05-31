@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   BrainCircuit, ArrowLeft, Trophy, Flame, Star, Zap, Eye,
   MessageSquare, Code, TrendingUp, Users, Target, BookOpen,
-  Lock, Crown, Medal, Award, User, RefreshCw
+  Lock, Crown, Medal, Award, User, RefreshCw, IdCard
 } from "lucide-react";
 import Image from "next/image";
 import { API_BASE_URL } from "../config";
@@ -83,6 +83,8 @@ export default function ProfilePage() {
   const [showAllBadgesModal, setShowAllBadgesModal] = useState(false);
   const [bestInterview, setBestInterview] = useState<any>(null);
   const [showBestModal, setShowBestModal] = useState(false);
+  const [stats, setStats] = useState<any>(null);
+  const [showICardModal, setShowICardModal] = useState(false);
 
   useEffect(() => {
     const session = localStorage.getItem("hiremind_user");
@@ -94,11 +96,15 @@ export default function ProfilePage() {
       fetch(`${API_BASE_URL}/api/gamification/${loggedUser.id}`).then(r => r.json()),
       fetch(`${API_BASE_URL}/api/leaderboard`).then(r => r.json()),
       fetch(`${API_BASE_URL}/api/user/${loggedUser.id}/best_interview`).then(r => r.json()),
-    ]).then(([gam, lb, best]) => {
+      fetch(`${API_BASE_URL}/api/user/${loggedUser.id}/stats`).then(r => r.json()),
+    ]).then(([gam, lb, best, userStats]) => {
       setGData(gam);
       setLeaderboard(lb);
       if (best && best.status === "success" && best.data) {
         setBestInterview(best.data);
+      }
+      if (userStats && userStats.status === "success" && userStats.data) {
+        setStats(userStats.data);
       }
     }).catch(console.error)
       .finally(() => setLoading(false));
@@ -138,6 +144,14 @@ export default function ProfilePage() {
             <h1 className="text-lg font-bold text-white">My Progress Profile</h1>
           </div>
         </div>
+
+        <button
+          onClick={() => setShowICardModal(true)}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white text-xs font-bold uppercase tracking-wider shadow-[0_0_15px_rgba(139,92,246,0.3)] hover:shadow-[0_0_25px_rgba(139,92,246,0.5)] transition-all cursor-pointer"
+        >
+          <IdCard className="w-4 h-4" />
+          <span className="hidden sm:inline">View I-Card</span>
+        </button>
       </header>
 
       <main className="max-w-5xl mx-auto px-4 md:px-8 py-10 space-y-8">
@@ -688,6 +702,171 @@ export default function ProfilePage() {
           </div>
         )}
       </AnimatePresence>
+      
+      {/* 3D Holographic I-Card Modal */}
+      <AnimatePresence>
+        {showICardModal && (
+          <HolographicICard 
+            user={user} 
+            gData={gData} 
+            stats={stats} 
+            bestInterview={bestInterview} 
+            onClose={() => setShowICardModal(false)} 
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
+
+// ── Holographic I-Card Component ────────────────────────────────────────────────
+const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) => {
+  const [rotateX, setRotateX] = useState(0);
+  const [rotateY, setRotateY] = useState(0);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = e.currentTarget;
+    const box = card.getBoundingClientRect();
+    const x = e.clientX - box.left;
+    const y = e.clientY - box.top;
+    const centerX = box.width / 2;
+    const centerY = box.height / 2;
+    
+    const rotateXValue = ((y - centerY) / centerY) * -15;
+    const rotateYValue = ((x - centerX) / centerX) * 15;
+    
+    setRotateX(rotateXValue);
+    setRotateY(rotateYValue);
+  };
+
+  const handleMouseLeave = () => {
+    setRotateX(0);
+    setRotateY(0);
+  };
+
+  const getTechSavvyTitle = () => {
+    if (!bestInterview) return "Code Ninja";
+    const scores = bestInterview.evaluation_data?.scores;
+    if (!scores) return "Digital Recruit";
+    
+    const s = [
+      { key: "technical", name: "System Design Titan", val: scores.technical },
+      { key: "communication", name: "Fluent Orator", val: scores.communication },
+      { key: "problem_solving", name: "Algorithm Architect", val: scores.problem_solving },
+      { key: "confidence", name: "Unshakable Professional", val: scores.confidence },
+    ];
+    s.sort((a, b) => b.val - a.val);
+    
+    if (s[0].val >= 85) return s[0].name;
+    const lvl = gData?.level ?? 1;
+    if (lvl >= 7) return "Data Prodigy";
+    if (lvl >= 4) return "Code Ninja";
+    return "Tech Enthusiast";
+  };
+
+  const title = getTechSavvyTitle();
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+        className="absolute inset-0 bg-black/90 backdrop-blur-xl"
+      />
+      
+      {/* 3D Container */}
+      <div className="relative z-10 perspective-[1000px]">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8, rotateY: -90 }}
+          animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+          exit={{ opacity: 0, scale: 0.8, rotateY: 90 }}
+          transition={{ type: "spring", damping: 20, stiffness: 100 }}
+          style={{ transformStyle: "preserve-3d" }}
+          className="relative w-full max-w-[360px] aspect-[1/1.5] flex items-center justify-center"
+        >
+          <motion.div
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            animate={{ rotateX, rotateY }}
+            transition={{ type: "spring", damping: 20, stiffness: 300, mass: 0.5 }}
+            style={{ transformStyle: "preserve-3d" }}
+            className="w-full h-full relative rounded-3xl overflow-hidden border border-violet-500/30 bg-zinc-950 shadow-[0_0_50px_rgba(139,92,246,0.3)] cursor-pointer"
+          >
+            {/* Holographic background layers */}
+            <div className="absolute inset-0 bg-gradient-to-br from-violet-900/50 via-zinc-950 to-fuchsia-900/50" />
+            <div className="absolute inset-0 opacity-30 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
+            
+            {/* Glossy shine effect that moves with mouse */}
+            <div 
+              className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/10 to-white/0 pointer-events-none"
+              style={{
+                transform: `translateZ(20px) translateX(${rotateY * 2}px) translateY(${rotateX * -2}px)`
+              }}
+            />
+
+            {/* Content layered in 3D */}
+            <div className="relative z-10 w-full h-full p-6 flex flex-col justify-between" style={{ transform: "translateZ(30px)" }}>
+              {/* Header */}
+              <div className="flex justify-between items-start">
+                <div>
+                  <h2 className="text-[10px] font-black text-violet-400 uppercase tracking-widest">HireMind</h2>
+                  <p className="text-[8px] text-zinc-500 uppercase tracking-widest">Official Candidate I-Card</p>
+                </div>
+                <IdCard className="w-5 h-5 text-violet-400 opacity-50" />
+              </div>
+
+              {/* Center Profile */}
+              <div className="flex flex-col items-center flex-1 justify-center space-y-4">
+                <div 
+                  style={{ transform: "translateZ(50px)" }}
+                  className="w-24 h-24 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-600 p-[2px] shadow-[0_0_30px_rgba(139,92,246,0.6)]"
+                >
+                  <div className="w-full h-full rounded-full bg-zinc-950 flex items-center justify-center border-4 border-zinc-950 relative overflow-hidden">
+                    <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-violet-400 to-fuchsia-400">
+                      {user?.username.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="text-center" style={{ transform: "translateZ(40px)" }}>
+                  <h3 className="text-2xl font-black text-white">{user?.username}</h3>
+                  <div className="inline-block mt-1 px-3 py-1 rounded-full bg-violet-500/20 border border-violet-500/30">
+                    <span className="text-[10px] font-black text-violet-300 uppercase tracking-widest">{title}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Stats Grid */}
+              <div className="grid grid-cols-2 gap-3" style={{ transform: "translateZ(25px)" }}>
+                <div className="bg-zinc-900/60 p-2.5 rounded-xl border border-white/5 flex flex-col items-center">
+                  <span className="text-xs font-black text-emerald-400">{gData?.total_xp?.toLocaleString() || 0}</span>
+                  <span className="text-[8px] text-zinc-500 uppercase tracking-wider">Total XP</span>
+                </div>
+                <div className="bg-zinc-900/60 p-2.5 rounded-xl border border-white/5 flex flex-col items-center">
+                  <span className="text-xs font-black text-amber-400">{gData?.badges?.length || 0}</span>
+                  <span className="text-[8px] text-zinc-500 uppercase tracking-wider">Badges</span>
+                </div>
+                <div className="bg-zinc-900/60 p-2.5 rounded-xl border border-white/5 flex flex-col items-center">
+                  <span className="text-xs font-black text-cyan-400">{stats?.total_interviews || 0}</span>
+                  <span className="text-[8px] text-zinc-500 uppercase tracking-wider">Interviews</span>
+                </div>
+                <div className="bg-zinc-900/60 p-2.5 rounded-xl border border-white/5 flex flex-col items-center">
+                  <span className="text-xs font-black text-fuchsia-400">{bestInterview?.overall || stats?.highest_score || 0}</span>
+                  <span className="text-[8px] text-zinc-500 uppercase tracking-wider">Best Score</span>
+                </div>
+              </div>
+
+            </div>
+          </motion.div>
+        </motion.div>
+      </div>
+      
+      {/* Close Hint */}
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 text-zinc-500 text-xs tracking-widest font-medium pointer-events-none">
+        Click anywhere to close
+      </div>
+    </div>
+  );
+};
