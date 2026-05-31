@@ -481,8 +481,9 @@ export default function AdminDashboard() {
                     </tbody>
                   </table>
                 </div>
-                </>
-              ) : (
+              )}
+              </>
+            ) : (
                 <div className="overflow-x-auto">
                   {leaderboard.length === 0 ? (
                     <div className="text-center py-20 border border-dashed border-white/5 rounded-2xl bg-zinc-900/10">
