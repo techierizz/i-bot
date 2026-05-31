@@ -321,7 +321,7 @@ export default function AdminDashboard() {
             {/* Tabs for Candidates Log / Leaderboard */}
             <div className="lg:col-span-2 glass-card rounded-2xl p-6 border border-white/10 flex flex-col gap-6">
               
-              <div className="flex gap-2 bg-zinc-900/60 p-1.5 rounded-2xl border border-white/5 w-full max-w-sm mb-2">
+              <div className="flex bg-zinc-900/60 p-1.5 rounded-2xl border border-white/5 w-full max-w-sm mb-2">
                 {[
                   { id: "logs", label: "Simulation Logs", icon: FileText },
                   { id: "leaderboard", label: "Global Leaderboard", icon: Crown },
@@ -333,7 +333,7 @@ export default function AdminDashboard() {
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id as any)}
                       className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[10px] font-bold tracking-wider uppercase transition-all cursor-pointer ${
-                        isActive ? "bg-red-500/10 text-red-400 shadow border border-red-500/20" : "text-zinc-500 hover:text-zinc-300"
+                        isActive ? "bg-zinc-800 text-white shadow" : "text-zinc-500 hover:text-zinc-300"
                       }`}
                     >
                       <Icon className={`w-3.5 h-3.5 ${isActive ? "text-red-400" : ""}`} />
@@ -823,54 +823,59 @@ export default function AdminDashboard() {
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                className="relative w-full max-w-lg bg-[#0a0a0a] border border-white/10 rounded-3xl overflow-hidden z-10 shadow-[0_0_50px_rgba(255,255,255,0.05)]"
+                className="relative w-full max-w-lg bg-zinc-950/90 backdrop-blur-2xl border border-red-500/20 rounded-3xl overflow-hidden z-10 shadow-[0_0_50px_rgba(239,68,68,0.15)]"
               >
                 {/* Glowing borders */}
-                <div className="absolute inset-0 pointer-events-none rounded-3xl border border-transparent [background:linear-gradient(45deg,rgba(255,255,255,0.1),rgba(255,0,0,0.1))_border-box] [mask:linear-gradient(#fff_0_0)_padding-box,linear-gradient(#fff_0_0)] mask-composite-exclude shadow-[inset_0_0_20px_rgba(255,255,255,0.05)]" />
+                <div className="absolute inset-0 pointer-events-none rounded-3xl border border-transparent [background:linear-gradient(45deg,rgba(239,68,68,0.2),rgba(139,92,246,0.1))_border-box] [mask:linear-gradient(#fff_0_0)_padding-box,linear-gradient(#fff_0_0)] mask-composite-exclude shadow-[inset_0_0_20px_rgba(239,68,68,0.1)]" />
                 
-                <div className="relative z-10 p-6 flex flex-col items-center">
+                <div className="relative z-10 p-8 flex flex-col items-center">
                   <button
                     onClick={() => setSelectedNeonCandidate(null)}
-                    className="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors"
+                    className="absolute top-4 right-4 text-zinc-500 hover:text-red-400 transition-colors"
                   >
                     <X className="w-5 h-5" />
                   </button>
 
-                  <div className="w-20 h-20 rounded-full border-2 border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.1)] flex items-center justify-center bg-gradient-to-br from-zinc-900 to-black mb-4 mt-2">
-                    <span className="text-3xl font-black text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]">
+                  <div className="w-20 h-20 rounded-full border border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.3)] flex items-center justify-center bg-gradient-to-br from-red-950/80 to-zinc-950 mb-4 mt-2">
+                    <span className="text-4xl font-black text-red-400 drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]">
                       {selectedNeonCandidate.username.charAt(0).toUpperCase()}
                     </span>
                   </div>
                   
-                  <h3 className="text-2xl font-black text-white">{selectedNeonCandidate.username}</h3>
-                  <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-zinc-300 text-[10px] font-bold uppercase tracking-widest mt-2 mb-8">
+                  <h3 className="text-3xl font-black text-white">{selectedNeonCandidate.username}</h3>
+                  <span className="px-4 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-black uppercase tracking-widest mt-2 mb-8 shadow-[0_0_15px_rgba(239,68,68,0.2)]">
                     {selectedNeonCandidate.rank_title}
                   </span>
 
                   {neonStatsLoading ? (
-                    <div className="py-12 flex justify-center items-center w-full min-h-[196px]">
-                      <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <div className="grid grid-cols-2 gap-4 w-full">
+                      {[1, 2, 3, 4].map(i => (
+                        <div key={i} className="bg-zinc-900/50 rounded-2xl p-5 border border-white/5 flex flex-col justify-center items-center h-[90px]">
+                          <div className="w-6 h-6 border-2 border-red-500/30 border-t-red-500 rounded-full animate-spin mb-2" />
+                          <div className="h-2 w-16 bg-white/10 rounded animate-pulse" />
+                        </div>
+                      ))}
                     </div>
                   ) : selectedNeonCandidate.stats ? (
                     <div className="grid grid-cols-2 gap-4 w-full">
-                      <div className="bg-[#111] rounded-2xl p-5 border border-white/5 text-center flex flex-col justify-center items-center group hover:border-white/20 transition-all h-[90px]">
-                        <span className="text-[9px] text-zinc-500 uppercase tracking-widest mb-1">Interviews</span>
-                        <span className="text-2xl font-black text-white">{selectedNeonCandidate.stats.total_interviews}</span>
+                      <div className="bg-zinc-900/50 rounded-2xl p-5 border border-white/5 text-center flex flex-col justify-center items-center group hover:border-red-500/30 hover:bg-red-500/5 transition-all h-[90px]">
+                        <span className="text-[9px] text-zinc-500 group-hover:text-red-400/70 font-bold uppercase tracking-widest mb-1 transition-colors">Interviews</span>
+                        <span className="text-3xl font-black text-white">{selectedNeonCandidate.stats.total_interviews}</span>
                       </div>
                       
-                      <div className="bg-[#111] rounded-2xl p-5 border border-white/5 text-center flex flex-col justify-center items-center group hover:border-white/20 transition-all h-[90px]">
-                        <span className="text-[9px] text-zinc-500 uppercase tracking-widest mb-1">Total XP</span>
-                        <span className="text-2xl font-black text-white">{selectedNeonCandidate.stats.total_xp.toLocaleString()}</span>
+                      <div className="bg-zinc-900/50 rounded-2xl p-5 border border-white/5 text-center flex flex-col justify-center items-center group hover:border-red-500/30 hover:bg-red-500/5 transition-all h-[90px]">
+                        <span className="text-[9px] text-zinc-500 group-hover:text-red-400/70 font-bold uppercase tracking-widest mb-1 transition-colors">Total XP</span>
+                        <span className="text-3xl font-black text-white">{selectedNeonCandidate.stats.total_xp.toLocaleString()}</span>
                       </div>
                       
-                      <div className="bg-[#111] rounded-2xl p-5 border border-white/5 text-center flex flex-col justify-center items-center group hover:border-white/20 transition-all h-[90px]">
-                        <span className="text-[9px] text-zinc-500 uppercase tracking-widest mb-1">Badges</span>
-                        <span className="text-2xl font-black text-white">{selectedNeonCandidate.stats.badges_count}</span>
+                      <div className="bg-zinc-900/50 rounded-2xl p-5 border border-white/5 text-center flex flex-col justify-center items-center group hover:border-red-500/30 hover:bg-red-500/5 transition-all h-[90px]">
+                        <span className="text-[9px] text-zinc-500 group-hover:text-red-400/70 font-bold uppercase tracking-widest mb-1 transition-colors">Badges</span>
+                        <span className="text-3xl font-black text-white">{selectedNeonCandidate.stats.badges_count}</span>
                       </div>
                       
-                      <div className="bg-[#111] rounded-2xl p-5 border border-white/5 text-center flex flex-col justify-center items-center group hover:border-white/20 transition-all h-[90px]">
-                        <span className="text-[9px] text-zinc-500 uppercase tracking-widest mb-1">Best Score</span>
-                        <span className="text-2xl font-black text-white">{selectedNeonCandidate.stats.highest_score}</span>
+                      <div className="bg-zinc-900/50 rounded-2xl p-5 border border-white/5 text-center flex flex-col justify-center items-center group hover:border-red-500/30 hover:bg-red-500/5 transition-all h-[90px]">
+                        <span className="text-[9px] text-zinc-500 group-hover:text-red-400/70 font-bold uppercase tracking-widest mb-1 transition-colors">Best Score</span>
+                        <span className="text-3xl font-black text-white">{selectedNeonCandidate.stats.highest_score}</span>
                       </div>
                     </div>
                   ) : (
