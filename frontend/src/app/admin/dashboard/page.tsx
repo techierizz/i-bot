@@ -26,6 +26,8 @@ import {
   Download
 } from "lucide-react";
 import { API_BASE_URL } from "../../config";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 interface EvaluationScores {
   technical: number;
@@ -120,6 +122,84 @@ export default function AdminDashboard() {
   const handleLogout = () => {
     localStorage.removeItem("hiremind_admin");
     router.push("/admin/login");
+  };
+
+  const handleDownloadPDF = (record: any) => {
+    if (!record) return;
+
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.width;
+    
+    // Title & Header
+    doc.setFontSize(22);
+    doc.setTextColor(20, 20, 20);
+    doc.text("Simulation Evaluation Report", 14, 22);
+
+    doc.setFontSize(12);
+    doc.setTextColor(100, 100, 100);
+    doc.text(`Candidate: ${record.username}`, 14, 32);
+    doc.text(`Simulation Mode: ${record.mode}`, 14, 38);
+    
+    // Scores Section
+    doc.setFontSize(16);
+    doc.setTextColor(0, 0, 0);
+    doc.text("Score Distribution", 14, 52);
+
+    autoTable(doc, {
+      startY: 56,
+      head: [["Metric", "Score / 100"]],
+      body: [
+        ["Overall Performance", `${record.overall}`],
+        ["Technical Skill", `${record.technical}`],
+        ["Communication", `${record.communication}`],
+        ["Confidence", `${record.confidence}`],
+        ["Problem Solving", `${record.problem_solving}`]
+      ],
+      theme: "grid",
+      headStyles: { fillColor: [147, 51, 234], textColor: 255, fontStyle: "bold" },
+      alternateRowStyles: { fillColor: [250, 250, 250] },
+      styles: { fontSize: 11, cellPadding: 4 }
+    });
+
+    // Executive Summary
+    const finalY = (doc as any).lastAutoTable.finalY || 56;
+    doc.setFontSize(16);
+    doc.setTextColor(0, 0, 0);
+    doc.text("Executive Summary", 14, finalY + 16);
+    
+    doc.setFontSize(11);
+    doc.setTextColor(60, 60, 60);
+    const summaryText = record.evaluation_data?.feedback?.overall_summary || "No executive summary available for this simulation run.";
+    const splitSummary = doc.splitTextToSize(summaryText, pageWidth - 28);
+    doc.text(splitSummary, 14, finalY + 24);
+
+    const summaryHeight = splitSummary.length * 5;
+    
+    // Transcript Log
+    doc.setFontSize(16);
+    doc.setTextColor(0, 0, 0);
+    doc.text("Simulation Transcript Log", 14, finalY + 24 + summaryHeight + 10);
+
+    const transcriptBody = record.transcript.map((t: any) => [
+      t.role === "assistant" || t.role === "interviewer" ? "Interviewer" : "Candidate",
+      t.content
+    ]);
+
+    autoTable(doc, {
+      startY: finalY + 24 + summaryHeight + 16,
+      head: [["Role", "Message"]],
+      body: transcriptBody,
+      theme: "grid",
+      styles: { cellPadding: 5, overflow: "linebreak", fontSize: 10 },
+      columnStyles: {
+        0: { cellWidth: 32, fontStyle: "bold", textColor: [147, 51, 234] },
+        1: { cellWidth: "auto", textColor: [60, 60, 60] }
+      },
+      headStyles: { fillColor: [15, 23, 42], textColor: 255 },
+      alternateRowStyles: { fillColor: [248, 250, 252] },
+    });
+
+    doc.save(`${record.username}_Simulation_Report.pdf`);
   };
 
   const handleSaveSettings = async () => {
@@ -645,7 +725,7 @@ export default function AdminDashboard() {
                 {/* Actions */}
                 <div className="absolute top-6 right-6 flex items-center gap-2 z-20">
                   <button
-                    onClick={() => window.print()}
+                    onClick={() => handleDownloadPDF(selectedRecord)}
                     className="p-2.5 rounded-full hover:bg-purple-500/10 border border-transparent hover:border-purple-500/30 hover:text-purple-400 text-zinc-500 transition-all cursor-pointer shadow-inner"
                     title="Download PDF Report"
                   >
