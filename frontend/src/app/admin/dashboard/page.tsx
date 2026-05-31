@@ -22,7 +22,8 @@ import {
   Trophy,
   Crown,
   Medal,
-  Award
+  Award,
+  Download
 } from "lucide-react";
 import { API_BASE_URL } from "../../config";
 
@@ -641,13 +642,23 @@ export default function AdminDashboard() {
                 {/* Glowing borders */}
                 <div className="absolute inset-0 pointer-events-none rounded-3xl border border-transparent [background:linear-gradient(45deg,rgba(59,130,246,0.15),rgba(147,51,234,0.15))_border-box] [mask:linear-gradient(#fff_0_0)_padding-box,linear-gradient(#fff_0_0)] mask-composite-exclude shadow-[inset_0_0_30px_rgba(147,51,234,0.05)]" />
 
-                {/* Close trigger */}
-                <button
-                  onClick={() => setSelectedRecord(null)}
-                  className="absolute top-6 right-6 p-2 rounded-full hover:bg-purple-500/10 border border-transparent hover:border-purple-500/30 hover:text-purple-400 text-zinc-500 transition-all cursor-pointer z-20"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+                {/* Actions */}
+                <div className="absolute top-6 right-6 flex items-center gap-2 z-20">
+                  <button
+                    onClick={() => window.print()}
+                    className="p-2.5 rounded-full hover:bg-purple-500/10 border border-transparent hover:border-purple-500/30 hover:text-purple-400 text-zinc-500 transition-all cursor-pointer shadow-inner"
+                    title="Download PDF Report"
+                  >
+                    <Download className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => setSelectedRecord(null)}
+                    className="p-2.5 rounded-full hover:bg-red-500/10 border border-transparent hover:border-red-500/30 hover:text-red-400 text-zinc-500 transition-all cursor-pointer shadow-inner"
+                    title="Close"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
 
                 <div className="mb-8 relative z-10">
                   <span className="px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-black tracking-[0.2em] uppercase shadow-[0_0_15px_rgba(147,51,234,0.2)]">
