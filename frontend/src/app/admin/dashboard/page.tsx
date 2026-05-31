@@ -345,29 +345,32 @@ export default function AdminDashboard() {
 
               {activeTab === "logs" ? (
                 <>
-                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div>
-                  <h2 className="text-md font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                    Candidate Simulation Logs
-                    {selectedCandidate && (
-                      <span className="text-red-400 text-[10px] bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20">/ {selectedCandidate}</span>
-                    )}
-                  </h2>
-                  <p className="text-xs text-zinc-500 mt-1">Review, monitor, and delete candidate evaluation runs</p>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div className="flex items-center gap-3">
+                  {selectedCandidate ? (
+                    <>
+                      <button
+                        onClick={() => {
+                          setSelectedCandidate(null);
+                          setSearchQuery("");
+                        }}
+                        className="text-zinc-500 hover:text-white transition-colors cursor-pointer text-2xl font-black mb-1"
+                        title="Back"
+                      >
+                        ←
+                      </button>
+                      <h2 className="text-xl font-black text-white uppercase tracking-widest">{selectedCandidate}</h2>
+                    </>
+                  ) : (
+                    <h2 className="text-md font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                      Candidate Simulation Logs
+                    </h2>
+                  )}
                 </div>
 
                 {/* Search - Only show if a candidate is selected */}
                 {selectedCandidate && (
                   <div className="flex items-center gap-3 w-full sm:w-auto">
-                    <button
-                      onClick={() => {
-                        setSelectedCandidate(null);
-                        setSearchQuery("");
-                      }}
-                      className="px-3 py-2 bg-zinc-900 border border-white/5 rounded-xl text-xs font-bold text-zinc-400 hover:text-white hover:border-white/20 transition-all cursor-pointer whitespace-nowrap"
-                    >
-                      ⬅ Back
-                    </button>
                     <div className="relative w-full sm:w-64">
                       <Search className="absolute left-3 w-4 h-4 text-zinc-500 top-1/2 -translate-y-1/2" />
                       <input
@@ -630,39 +633,42 @@ export default function AdminDashboard() {
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
 
               <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="w-full max-w-4xl bg-zinc-900 border border-white/10 rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden flex flex-col max-h-[85vh]"
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                className="w-full max-w-4xl bg-[#0B0914]/95 backdrop-blur-3xl border border-purple-500/20 rounded-3xl p-6 md:p-8 shadow-[0_0_60px_rgba(147,51,234,0.15)] relative overflow-hidden flex flex-col max-h-[85vh]"
               >
+                {/* Glowing borders */}
+                <div className="absolute inset-0 pointer-events-none rounded-3xl border border-transparent [background:linear-gradient(45deg,rgba(59,130,246,0.15),rgba(147,51,234,0.15))_border-box] [mask:linear-gradient(#fff_0_0)_padding-box,linear-gradient(#fff_0_0)] mask-composite-exclude shadow-[inset_0_0_30px_rgba(147,51,234,0.05)]" />
+
                 {/* Close trigger */}
                 <button
                   onClick={() => setSelectedRecord(null)}
-                  className="absolute top-4 right-4 p-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-white/5 hover:text-white text-zinc-400 transition-all cursor-pointer"
+                  className="absolute top-6 right-6 p-2 rounded-full hover:bg-purple-500/10 border border-transparent hover:border-purple-500/30 hover:text-purple-400 text-zinc-500 transition-all cursor-pointer z-20"
                 >
                   <X className="w-5 h-5" />
                 </button>
 
-                <div className="mb-6">
-                  <span className="px-2.5 py-0.5 rounded bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-bold tracking-widest uppercase">
-                    Candidate Report Inspection
+                <div className="mb-8 relative z-10">
+                  <span className="px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-[10px] font-black tracking-widest uppercase shadow-[0_0_15px_rgba(147,51,234,0.2)]">
+                    Report Inspection
                   </span>
-                  <h2 className="text-2xl font-bold text-white mt-1">{selectedRecord.username}</h2>
-                  <p className="text-xs text-zinc-500">Completed a {selectedRecord.mode} Simulation</p>
+                  <h2 className="text-3xl font-black text-white mt-4 tracking-wide">{selectedRecord.username}</h2>
+                  <p className="text-xs text-indigo-300/80 mt-1 uppercase tracking-widest font-semibold">Completed a {selectedRecord.mode} Simulation</p>
                 </div>
 
                 {/* Scrollable container for inspection columns */}
-                <div className="flex-1 overflow-y-auto pr-2 space-y-6">
+                <div className="flex-1 overflow-y-auto pr-2 space-y-6 relative z-10 custom-scrollbar">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
 
                     {/* Radar Chart */}
-                    <div className="flex flex-col items-center justify-center bg-zinc-950/40 p-4 rounded-2xl border border-white/5">
-                      <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-4">Competency Map</h3>
+                    <div className="flex flex-col items-center justify-center bg-[#13111C]/60 p-6 rounded-3xl border border-white/5 shadow-inner hover:border-purple-500/30 transition-all duration-500">
+                      <h3 className="text-[10px] font-black text-indigo-300/70 uppercase tracking-widest mb-6">Competency Map</h3>
                       <svg viewBox="0 0 340 300" className="w-full max-w-[280px] h-auto overflow-visible">
                         <defs>
                           <radialGradient id="radarGlow" cx="50%" cy="50%" r="50%">
-                            <stop offset="0%" stopColor="#ef4444" stopOpacity="0.25" />
-                            <stop offset="100%" stopColor="#f59e0b" stopOpacity="0" />
+                            <stop offset="0%" stopColor="#9333ea" stopOpacity="0.4" />
+                            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
                           </radialGradient>
                         </defs>
 
@@ -693,7 +699,7 @@ export default function AdminDashboard() {
                             y1={center}
                             x2={c.x}
                             y2={c.y}
-                            stroke="rgba(255, 255, 255, 0.08)"
+                            stroke="rgba(255, 255, 255, 0.05)"
                             strokeWidth="1"
                           />
                         ))}
@@ -706,9 +712,9 @@ export default function AdminDashboard() {
                               .join(" ") + " Z"
                           }
                           fill="url(#radarGlow)"
-                          stroke="rgba(239, 68, 68, 0.7)"
+                          stroke="rgba(147, 51, 234, 0.8)"
                           strokeWidth="2"
-                          className="transition-all duration-1000"
+                          className="transition-all duration-1000 drop-shadow-[0_0_8px_rgba(147,51,234,0.5)]"
                         />
 
                         {/* Score vertices */}
@@ -718,7 +724,7 @@ export default function AdminDashboard() {
                             cx={c.x}
                             cy={c.y}
                             r="4"
-                            className="fill-zinc-950 stroke-red-500 stroke-2"
+                            className="fill-[#0B0914] stroke-blue-400 stroke-[2.5px]"
                           />
                         ))}
 
@@ -731,7 +737,7 @@ export default function AdminDashboard() {
                               x={c.x}
                               y={c.y + 4}
                               textAnchor={Math.abs(c.x - center) < 10 ? "middle" : isLeft ? "end" : "start"}
-                              className="fill-zinc-400 font-semibold text-[8px] uppercase tracking-wide"
+                              className="fill-indigo-300/60 font-bold text-[8px] uppercase tracking-[0.2em]"
                             >
                               {dimensions[i].label}
                             </text>
@@ -740,37 +746,37 @@ export default function AdminDashboard() {
                       </svg>
 
                       {/* Numeric breakdown list */}
-                      <div className="grid grid-cols-2 gap-x-6 gap-y-2 mt-4 w-full text-[10px] text-zinc-400 font-mono">
+                      <div className="grid grid-cols-2 gap-x-6 gap-y-2 mt-4 w-full text-[10px] text-indigo-300/60 font-mono">
                         {dimensions.map((d) => (
-                          <div key={d.key} className="flex justify-between border-b border-white/5 py-1">
-                            <span className="uppercase">{d.label}:</span>
-                            <span className="font-bold text-white">{(selectedRecord as any)[d.key]}/100</span>
+                          <div key={d.key} className="flex justify-between border-b border-white/5 py-1.5">
+                            <span className="uppercase tracking-wider">{d.label}:</span>
+                            <span className="font-bold text-white tracking-widest">{(selectedRecord as any)[d.key]}/100</span>
                           </div>
                         ))}
                       </div>
                     </div>
 
                     {/* Summary & transcript review */}
-                    <div className="space-y-4">
-                      <div className="bg-zinc-950/40 p-5 rounded-2xl border border-white/5 space-y-2">
-                        <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-1.5">
-                          <FileText className="w-4 h-4 text-red-400" /> Executive Summary
+                    <div className="space-y-5">
+                      <div className="bg-[#13111C]/60 p-6 rounded-3xl border border-white/5 space-y-3 hover:border-purple-500/30 transition-all duration-500 shadow-inner">
+                        <h4 className="text-[10px] font-black text-indigo-300/70 uppercase tracking-widest flex items-center gap-2">
+                          <FileText className="w-3.5 h-3.5 text-purple-400" /> Executive Summary
                         </h4>
-                        <p className="text-xs text-zinc-300 leading-relaxed font-light">
+                        <p className="text-sm text-zinc-300 leading-relaxed font-light">
                           {selectedRecord.evaluation_data?.feedback?.overall_summary ||
                             "Demonstrated consistent competence, though optimization pathways are suggested below."}
                         </p>
                       </div>
 
-                      <div className="bg-zinc-950/40 p-5 rounded-2xl border border-white/5 space-y-2">
-                        <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Compensatory feedback</h4>
-                        <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
+                      <div className="bg-[#13111C]/60 p-6 rounded-3xl border border-white/5 space-y-3 hover:border-purple-500/30 transition-all duration-500 shadow-inner">
+                        <h4 className="text-[10px] font-black text-indigo-300/70 uppercase tracking-widest">Compensatory feedback</h4>
+                        <div className="space-y-3 max-h-[160px] overflow-y-auto pr-1">
                           {dimensions.slice(0, 4).map((dim) => {
                             const detail = selectedRecord.evaluation_data?.feedback?.[dim.key];
                             return detail ? (
                               <div key={dim.key} className="text-[11px]">
-                                <span className="font-bold text-white uppercase">{dim.label}</span>:{" "}
-                                <span className="text-zinc-400 leading-relaxed">{detail}</span>
+                                <span className="font-black text-white/90 uppercase tracking-wider">{dim.label}</span>:{" "}
+                                <span className="text-zinc-400 leading-relaxed font-light">{detail}</span>
                               </div>
                             ) : null;
                           })}
@@ -781,18 +787,18 @@ export default function AdminDashboard() {
                   </div>
 
                   {/* Interview Transcript logs */}
-                  <div className="bg-zinc-950/40 p-5 rounded-2xl border border-white/5 space-y-3">
-                    <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-widest border-b border-white/5 pb-2">
+                  <div className="bg-[#13111C]/60 p-6 rounded-3xl border border-white/5 space-y-4 hover:border-purple-500/30 transition-all duration-500 shadow-inner">
+                    <h3 className="text-[10px] font-black text-indigo-300/70 uppercase tracking-widest border-b border-white/5 pb-3">
                       Simulation Transcript Log ({selectedRecord.transcript.length} turns)
                     </h3>
-                    <div className="space-y-3 max-h-[220px] overflow-y-auto pr-1 text-xs">
+                    <div className="space-y-4 max-h-[220px] overflow-y-auto pr-2 text-xs">
                       {selectedRecord.transcript.map((t, idx) => (
-                        <div key={idx} className="space-y-1">
-                          <p className={`font-bold uppercase tracking-wider text-[9px] ${t.role === "assistant" || t.role === "interviewer" ? "text-red-400" : "text-amber-500"
+                        <div key={idx} className="space-y-1.5">
+                          <p className={`font-black uppercase tracking-[0.15em] text-[9px] ${t.role === "assistant" || t.role === "interviewer" ? "text-purple-400 drop-shadow-[0_0_8px_rgba(147,51,234,0.4)]" : "text-blue-400 drop-shadow-[0_0_8px_rgba(59,130,246,0.4)]"
                             }`}>
                             {t.role === "assistant" || t.role === "interviewer" ? "Interviewer" : "Candidate"}
                           </p>
-                          <p className="text-zinc-300 leading-relaxed pl-2 border-l border-white/10 bg-zinc-900/10 py-1">{t.content}</p>
+                          <p className="text-zinc-300 leading-relaxed pl-3 border-l-2 border-white/5 bg-[#0B0914]/50 p-2.5 rounded-r-xl font-light">{t.content}</p>
                         </div>
                       ))}
                     </div>
