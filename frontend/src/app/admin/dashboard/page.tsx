@@ -854,11 +854,11 @@ export default function AdminDashboard() {
                       </svg>
 
                       {/* Numeric breakdown list */}
-                      <div className="grid grid-cols-2 gap-x-6 gap-y-3 mt-6 w-full text-xs text-indigo-300/70 font-mono">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 mt-6 w-full text-xs text-indigo-300/70 font-mono">
                         {dimensions.map((d) => (
-                          <div key={d.key} className="flex justify-between border-b border-white/5 py-2">
+                          <div key={d.key} className="flex justify-between items-center border-b border-white/5 py-2">
                             <span className="uppercase tracking-[0.15em]">{d.label}:</span>
-                            <span className="font-bold text-white tracking-widest text-[13px]">{(selectedRecord as any)[d.key]}/100</span>
+                            <span className="font-bold text-white tracking-widest text-[13px] whitespace-nowrap">{(selectedRecord as any)[d.key]}/100</span>
                           </div>
                         ))}
                       </div>
