@@ -303,31 +303,9 @@ export default function AdminDashboard() {
 
   const uniqueCandidates = Array.from(new Set(candidates.map(c => c.username)));
 
-  // Dynamic SVG Radar scaling via ResizeObserver
-  const radarRef = useRef<HTMLDivElement>(null);
-  const [radarDims, setRadarDims] = useState({ center: 170, radius: 80, width: 340, height: 300 });
-
-  useEffect(() => {
-    if (!selectedRecord) return; // Only observe when inspection modal is open
-    const node = radarRef.current;
-    if (!node) return;
-    
-    const observer = new ResizeObserver((entries) => {
-      if (entries[0]) {
-        const { width } = entries[0].contentRect;
-        // Only trigger state update if width changes significantly to prevent infinite vertical expansion loops
-        if (width > 0 && Math.abs(width - radarDims.width) > 5) {
-          const center = width / 2;
-          const radius = center * 0.47; // Leave roughly 50% room for outer labels
-          // Force height to equal width to maintain a perfect square
-          setRadarDims({ center, radius, width, height: width });
-        }
-      }
-    });
-    
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [selectedRecord]);
+  // SVG Radar grid formulas
+  const center = 170;
+  const radius = 80;
 
   const dimensions = [
     { key: "technical", label: "Technical Skill" },
@@ -342,11 +320,9 @@ export default function AdminDashboard() {
     return keys.map((key, i) => {
       const angle = (i * 72 - 90) * (Math.PI / 180);
       const val = scores ? (scores[key] || 0) : 0;
-      const dist = (val / 100) * radarDims.radius * offsetMultiplier;
-      return {
-        x: radarDims.center + dist * Math.cos(angle),
-        y: radarDims.center + dist * Math.sin(angle),
-      };
+      const x = center + radius * (val / 100) * Math.cos(angle) * offsetMultiplier;
+      const y = center + radius * (val / 100) * Math.sin(angle) * offsetMultiplier;
+      return { x, y };
     });
   };
 
@@ -794,9 +770,9 @@ export default function AdminDashboard() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
 
                     {/* Radar Chart */}
-                    <div ref={radarRef} className="flex flex-col items-center justify-center bg-gradient-to-br from-[#13111C]/90 to-[#0A0910]/95 p-8 rounded-[2rem] border border-white/5 shadow-inner hover:border-purple-500/30 transition-all duration-500 min-h-[300px]">
+                    <div className="flex flex-col items-center justify-center bg-gradient-to-br from-[#13111C]/90 to-[#0A0910]/95 p-8 rounded-[2rem] border border-white/5 shadow-inner hover:border-purple-500/30 transition-all duration-500">
                       <h3 className="text-xs font-black text-indigo-300/80 uppercase tracking-[0.2em] mb-8">Competency Map</h3>
-                      <svg width={radarDims.width} height={radarDims.height} className="overflow-visible">
+                      <svg viewBox="0 0 340 300" className="w-full max-w-[280px] h-auto overflow-visible">
                         <defs>
                           <radialGradient id="radarGlow" cx="50%" cy="50%" r="50%">
                             <stop offset="0%" stopColor="#9333ea" stopOpacity="0.4" />
@@ -827,8 +803,8 @@ export default function AdminDashboard() {
                         {getCoordinates({ technical: 100, communication: 100, confidence: 100, problem_solving: 100, overall: 100 }).map((c, i) => (
                           <line
                             key={i}
-                            x1={radarDims.center}
-                            y1={radarDims.center}
+                            x1={center}
+                            y1={center}
                             x2={c.x}
                             y2={c.y}
                             stroke="rgba(255, 255, 255, 0.05)"
@@ -862,13 +838,13 @@ export default function AdminDashboard() {
 
                         {/* Outer dimension Labels */}
                         {getCoordinates({ technical: 100, communication: 100, confidence: 100, problem_solving: 100, overall: 100 }, 1.18).map((c, i) => {
-                          const isLeft = c.x < radarDims.center;
+                          const isLeft = c.x < center;
                           return (
                             <text
                               key={i}
                               x={c.x}
                               y={c.y + 4}
-                              textAnchor={Math.abs(c.x - radarDims.center) < 10 ? "middle" : isLeft ? "end" : "start"}
+                              textAnchor={Math.abs(c.x - center) < 10 ? "middle" : isLeft ? "end" : "start"}
                               className="fill-indigo-300/70 font-bold text-[9.5px] uppercase tracking-[0.2em]"
                             >
                               {dimensions[i].label}
