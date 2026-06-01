@@ -475,10 +475,12 @@ export default function AdminDashboard() {
               ) : selectedCandidate === null ? (
                 <div className="flex flex-wrap gap-4 pt-4">
                   {uniqueCandidates.map(username => (
-                    <div 
+                    <button 
+                      type="button"
+                      aria-label={`View simulation logs for ${username}`}
                       key={username}
                       onClick={() => setSelectedCandidate(username)}
-                      className="inline-flex items-center gap-3 px-4 py-2.5 rounded-full bg-zinc-900/80 border border-white/5 hover:border-red-500/50 hover:bg-red-500/10 hover:shadow-[0_0_15px_rgba(239,68,68,0.2)] transition-all cursor-pointer group/pill"
+                      className="inline-flex items-center gap-3 px-4 py-2.5 rounded-full bg-zinc-900/80 border border-white/5 hover:border-red-500/50 hover:bg-red-500/10 hover:shadow-[0_0_15px_rgba(239,68,68,0.2)] transition-all cursor-pointer group/pill focus:outline-none focus:ring-2 focus:ring-red-500 text-left"
                     >
                       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center text-xs font-black text-white shadow-[0_0_10px_rgba(239,68,68,0.6)] group-hover/pill:animate-pulse">
                         {username.charAt(0).toUpperCase()}
@@ -486,7 +488,7 @@ export default function AdminDashboard() {
                       <span className="font-bold text-white text-sm tracking-wide group-hover/pill:text-red-300 transition-colors pr-2">
                         {username}
                       </span>
-                    </div>
+                    </button>
                   ))}
                   {uniqueCandidates.length === 0 && (
                     <div className="w-full text-center py-20 border border-dashed border-white/5 rounded-2xl bg-zinc-900/10">
@@ -516,10 +518,12 @@ export default function AdminDashboard() {
                       {filteredCandidates.map((c) => (
                         <tr key={c.id} className="group hover:bg-white/[0.02] transition-colors border-b border-white/5 last:border-0">
                           <td className="py-4 px-2">
-                            <div 
+                            <button 
+                              type="button"
                               onClick={() => setSearchQuery(c.username)}
                               title="Click to filter by this candidate"
-                              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-900/80 border border-white/5 hover:border-red-500/50 hover:bg-red-500/10 hover:shadow-[0_0_15px_rgba(239,68,68,0.2)] transition-all cursor-pointer group/pill"
+                              aria-label={`Filter logs by candidate ${c.username}`}
+                              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-900/80 border border-white/5 hover:border-red-500/50 hover:bg-red-500/10 hover:shadow-[0_0_15px_rgba(239,68,68,0.2)] transition-all cursor-pointer group/pill focus:outline-none focus:ring-2 focus:ring-red-500 text-left"
                             >
                               <div className="w-5 h-5 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center text-[10px] font-black text-white shadow-[0_0_8px_rgba(239,68,68,0.8)] group-hover/pill:animate-pulse">
                                 {c.username.charAt(0).toUpperCase()}
@@ -527,7 +531,7 @@ export default function AdminDashboard() {
                               <span className="font-bold text-white text-xs tracking-wide group-hover/pill:text-red-300 transition-colors">
                                 {c.username}
                               </span>
-                            </div>
+                            </button>
                           </td>
                           <td className="py-4 px-2">
                             <span className="px-2.5 py-1 bg-white/5 border border-white/10 rounded-md text-[10px] text-zinc-300 font-medium tracking-wide">
@@ -586,7 +590,20 @@ export default function AdminDashboard() {
                       </thead>
                       <tbody className="divide-y divide-white/5">
                         {leaderboard.map((c, i) => (
-                          <tr key={c.user_id} onClick={() => handleOpenNeonModal(c)} className="group hover:bg-white/[0.04] transition-all border-b border-white/5 last:border-0 cursor-pointer">
+                          <tr 
+                            key={c.user_id} 
+                            onClick={() => handleOpenNeonModal(c)} 
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                handleOpenNeonModal(c);
+                              }
+                            }}
+                            tabIndex={0}
+                            role="button"
+                            aria-label={`View statistics for ${c.username}`}
+                            className="group hover:bg-white/[0.04] transition-all border-b border-white/5 last:border-0 cursor-pointer focus:outline-none focus:bg-white/[0.08]"
+                          >
                             <td className="py-4 px-2 text-center">
                               {i === 0 ? <Crown className="w-5 h-5 mx-auto text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]" /> :
                                i === 1 ? <Medal className="w-5 h-5 mx-auto text-zinc-300 drop-shadow-[0_0_8px_rgba(212,212,216,0.6)]" /> :
