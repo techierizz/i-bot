@@ -56,6 +56,7 @@ export default function InterviewPage() {
   const [difficulty, setDifficulty] = useState<"Easy" | "Medium" | "Hard">("Medium");
   const [fillerCount, setFillerCount] = useState(0);
   const [lieAlerts, setLieAlerts] = useState<{ flagged: boolean; reason: string } | null>(null);
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
   
   // Analytics Telemetry Trackers
   const totalSecondsRef = useRef(0);
@@ -194,6 +195,18 @@ export default function InterviewPage() {
       if (synthRef.current) synthRef.current.cancel();
     };
   }, [phase]); // Re-run effect when phase changes, but we'll gate inside
+
+  // Detect Mobile Device to bypass unsupported APIs (Screen Share / Fullscreen)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+      setIsMobileDevice(isMobile);
+      if (isMobile) {
+        setIsScreenShared(true); // Mobile browsers lack getDisplayMedia
+        setIsFullscreen(true);   // iOS Safari lacks document Fullscreen API
+      }
+    }
+  }, []);
 
   // Real-Time Gaze & Stress Face Mesh Tracking
   useEffect(() => {
@@ -636,7 +649,9 @@ export default function InterviewPage() {
           <div className={`flex items-center justify-between p-4 rounded-xl transition-colors ${isScreenShared ? "bg-emerald-500/10 border border-emerald-500/20" : "bg-zinc-950/50 border border-white/5"}`}>
             <div className="flex flex-col">
               <span className="text-sm font-bold text-white">1. Screen Share</span>
-              <span className="text-[10px] text-zinc-500 uppercase tracking-widest mt-0.5">Select "Entire Screen"</span>
+              <span className="text-[10px] text-zinc-500 uppercase tracking-widest mt-0.5">
+                {isMobileDevice ? "Auto-bypassed on Mobile" : "Select \"Entire Screen\""}
+              </span>
             </div>
             {isScreenShared ? (
               <CheckCircle2 className="text-emerald-400 w-5 h-5" />
@@ -648,7 +663,9 @@ export default function InterviewPage() {
           <div className={`flex items-center justify-between p-4 rounded-xl transition-all ${isFullscreen ? "bg-emerald-500/10 border border-emerald-500/20" : isScreenShared ? "bg-zinc-950/50 border border-white/5" : "opacity-30 pointer-events-none bg-zinc-950/50 border border-white/5"}`}>
             <div className="flex flex-col">
               <span className="text-sm font-bold text-white">2. Fullscreen Access</span>
-              <span className="text-[10px] text-zinc-500 uppercase tracking-widest mt-0.5">Focus environment</span>
+              <span className="text-[10px] text-zinc-500 uppercase tracking-widest mt-0.5">
+                {isMobileDevice ? "Auto-bypassed on Mobile" : "Focus environment"}
+              </span>
             </div>
             {isFullscreen ? (
               <CheckCircle2 className="text-emerald-400 w-5 h-5" />
