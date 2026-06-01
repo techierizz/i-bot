@@ -165,11 +165,18 @@ export default function InterviewPage() {
       recognition.interimResults = true;
       
       recognition.onresult = (event: any) => {
-        let fullTranscript = "";
+        let finalTrans = "";
+        let interimTrans = "";
         for (let i = 0; i < event.results.length; i++) {
-          fullTranscript += event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalTrans += event.results[i][0].transcript + " ";
+          } else {
+            // Android Chrome bug fix: overwrite interimTrans instead of appending 
+            // so we only keep the very latest interim guess.
+            interimTrans = event.results[i][0].transcript;
+          }
         }
-        setTranscript(fullTranscript);
+        setTranscript((finalTrans + interimTrans).trim());
       };
       
       recognition.onerror = (event: any) => {
