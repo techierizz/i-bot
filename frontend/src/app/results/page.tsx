@@ -347,15 +347,13 @@ export default function ResultsPage() {
 
   return (
     <div className="flex-1 flex flex-col w-full bg-background min-h-screen relative overflow-x-hidden p-4 md:p-8">
-      {!loading && <UserBox forceShow />}
       {/* Background glow flares */}
       <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full blur-[140px] bg-primary-600/10 pointer-events-none" />
       <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full blur-[140px] bg-secondary-600/10 pointer-events-none" />
 
-      {/* Header bar */}
       {!loading && (
-        <header className="max-w-6xl mx-auto w-full flex justify-between items-center mb-8 z-10">
-          <div className="flex items-center gap-3">
+        <header className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0 z-20 relative">
+          <div className="flex items-center gap-4 w-full md:w-auto">
             <button 
               onClick={() => router.push("/setup")}
               className="p-2 rounded-xl bg-zinc-900 border border-white/5 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all flex items-center justify-center cursor-pointer"
@@ -363,26 +361,28 @@ export default function ResultsPage() {
               <ArrowLeft className="w-5 h-5" />
             </button>
             <div>
-              <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+              <h1 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
                 Dashboard
               </h1>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full md:w-auto">
             {/* Map Modal trigger button */}
             <button 
               onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-zinc-900 border border-white/10 text-zinc-300 rounded-xl font-medium hover:text-white hover:bg-zinc-800 transition-all cursor-pointer text-sm"
+              className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-zinc-900 border border-white/10 text-zinc-300 rounded-xl font-medium hover:text-white hover:bg-zinc-800 transition-all cursor-pointer text-xs sm:text-sm"
             >
-              <Map className="w-4 h-4 text-primary-400 animate-pulse" /> View Map
+              <Map className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary-400 animate-pulse" /> View Map
             </button>
+
+            <UserBox forceShow className="flex items-center gap-2" />
 
             <button 
               onClick={() => router.push("/interview")}
-              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-white to-zinc-200 text-zinc-950 rounded-xl font-extrabold shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(255,255,255,0.25)] transition-all transform hover:scale-[1.05] active:scale-95 text-sm cursor-pointer"
+              className="flex items-center gap-1.5 sm:gap-2 px-4 sm:px-5 py-1.5 sm:py-2.5 bg-gradient-to-r from-white to-zinc-200 text-zinc-950 rounded-xl font-extrabold shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(255,255,255,0.25)] transition-all transform hover:scale-[1.05] active:scale-95 text-xs sm:text-sm cursor-pointer whitespace-nowrap"
             >
-              <RefreshCw className="w-4 h-4" /> Another interview
+              <RefreshCw className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Another interview
             </button>
           </div>
         </header>
@@ -842,7 +842,7 @@ export default function ResultsPage() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 25 }}
               transition={{ type: "spring", duration: 0.45 }}
-              className="relative max-w-5xl w-full rounded-3xl border border-white/10 bg-zinc-950/90 p-6 md:p-8 flex flex-col md:flex-row gap-8 overflow-hidden shadow-[0_0_60px_rgba(139,92,246,0.2)] z-10 max-h-[90vh] overflow-y-auto scrollbar-thin"
+              className="relative max-w-5xl w-full rounded-3xl border border-white/10 bg-zinc-950/90 p-4 md:p-8 flex flex-col md:flex-row gap-4 md:gap-8 overflow-hidden shadow-[0_0_60px_rgba(139,92,246,0.2)] z-10 max-h-[85vh] overflow-y-auto scrollbar-thin"
             >
               {/* Internal neon blurs for high aesthetic overlay */}
               <div className="absolute top-[-20%] left-[-20%] w-[350px] h-[350px] rounded-full blur-[100px] bg-primary-500/10 pointer-events-none" />
@@ -865,8 +865,8 @@ export default function ResultsPage() {
                   <p className="text-xs text-zinc-500 mt-1">Graphed dimensional competency analysis</p>
                 </div>
 
-                <div className="relative w-full max-w-[320px] aspect-square flex items-center justify-center">
-                  <svg className="w-[340px] h-[300px]" viewBox="0 0 340 300">
+                <div className="relative w-full max-w-[220px] md:max-w-[320px] aspect-square flex items-center justify-center">
+                  <svg className="w-full h-full" viewBox="0 0 340 300">
                     <defs>
                       <radialGradient id="modalRadarGlow" cx="50%" cy="50%" r="50%">
                         <stop offset="0%" stopColor="var(--color-primary-500)" stopOpacity="0.45" />
@@ -967,7 +967,7 @@ export default function ResultsPage() {
               </div>
 
               {/* Right Column: Skills Feedback lists */}
-              <div className="md:w-1/2 flex flex-col gap-4 max-h-[70vh] overflow-y-auto pr-2 scrollbar-thin">
+              <div className="md:w-1/2 flex flex-col gap-4 max-h-[50vh] md:max-h-[70vh] overflow-y-auto pr-2 scrollbar-thin pb-6 md:pb-0">
                 <div className="mb-2">
                   <h3 className="text-lg font-bold text-white flex items-center gap-2">
                     <Sparkles className="w-5 h-5 text-secondary-400 animate-pulse" /> Detailed Skills Review
