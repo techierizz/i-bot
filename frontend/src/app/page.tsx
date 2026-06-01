@@ -157,37 +157,37 @@ export default function Home() {
             </span>
           </Link>
 
-          <nav className="flex items-center gap-4">
+          <nav className="flex items-center gap-2 sm:gap-4">
             {adminUser ? (
               <>
                 <Link href="/admin/dashboard">
-                  <button className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 rounded-xl text-sm font-bold uppercase tracking-wider flex items-center gap-2 transition-all hover:scale-105 active:scale-95">
-                    <Shield className="w-4 h-4" /> Admin Console
+                  <button className="px-3 sm:px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 rounded-xl text-[10px] sm:text-sm font-bold uppercase tracking-wider flex items-center gap-1.5 sm:gap-2 transition-all hover:scale-105 active:scale-95 whitespace-nowrap">
+                    <Shield className="w-3 h-3 sm:w-4 sm:h-4" /> Admin
                   </button>
                 </Link>
-                <button onClick={handleLogout} className="p-2.5 bg-zinc-900 border border-white/10 hover:border-red-500/50 hover:text-red-400 hover:bg-zinc-800 rounded-xl text-zinc-400 transition-all hover:scale-105 active:scale-95">
+                <button onClick={handleLogout} className="p-2 sm:p-2.5 bg-zinc-900 border border-white/10 hover:border-red-500/50 hover:text-red-400 hover:bg-zinc-800 rounded-xl text-zinc-400 transition-all hover:scale-105 active:scale-95">
                   <LogOut className="w-4 h-4" />
                 </button>
               </>
             ) : candidateUser ? (
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 sm:gap-4">
                 <Link href="/profile">
-                  <button className="text-sm font-bold text-zinc-300 flex items-center gap-2 bg-zinc-900/50 glass px-3 py-1.5 rounded-lg border border-white/5 hover:border-primary-500/30 hover:bg-zinc-800/80 transition-all hover:scale-105 active:scale-95 cursor-pointer">
-                    <User className="w-4 h-4 text-primary-400" /> {candidateUser.username}
+                  <button className="text-xs sm:text-sm font-bold text-zinc-300 flex items-center gap-1.5 sm:gap-2 bg-zinc-900/50 glass px-2 sm:px-3 py-1.5 rounded-lg border border-white/5 hover:border-primary-500/30 hover:bg-zinc-800/80 transition-all hover:scale-105 active:scale-95 cursor-pointer whitespace-nowrap">
+                    <User className="w-3 h-3 sm:w-4 sm:h-4 text-primary-400" /> {candidateUser.username}
                   </button>
                 </Link>
-                <button onClick={handleLogout} className="px-4 py-2 bg-zinc-900 border border-white/10 hover:border-red-500/50 hover:bg-zinc-800 rounded-xl text-sm font-bold uppercase tracking-wider text-zinc-400 hover:text-red-400 transition-all flex items-center gap-2 hover:scale-105 active:scale-95">
-                  <LogOut className="w-4 h-4" /> Logout
+                <button onClick={handleLogout} className="px-3 sm:px-4 py-1.5 sm:py-2 bg-zinc-900 border border-white/10 hover:border-red-500/50 hover:bg-zinc-800 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider text-zinc-400 hover:text-red-400 transition-all flex items-center gap-1.5 sm:gap-2 hover:scale-105 active:scale-95 whitespace-nowrap">
+                  <LogOut className="w-3 h-3 sm:w-4 sm:h-4" /> <span className="hidden sm:inline">Logout</span>
                 </button>
               </div>
             ) : (
               <>
                 <Link href="/login">
-                  <span className="text-sm font-bold text-zinc-400 hover:text-white transition-all px-3 py-2">Sign In</span>
+                  <span className="text-xs sm:text-sm font-bold text-zinc-400 hover:text-white transition-all px-2 sm:px-3 py-2 whitespace-nowrap">Sign In</span>
                 </Link>
                 <Link href="/login?mode=register">
-                  <button className="relative px-6 py-2.5 bg-white text-zinc-950 hover:bg-zinc-200 rounded-xl text-sm font-extrabold uppercase tracking-wider shadow-[0_0_20px_rgba(255,255,255,0.1)] transition-all hover:scale-105 active:scale-95 overflow-hidden group">
-                    <span className="relative z-10">Get Started</span>
+                  <button className="relative px-4 sm:px-6 py-2 sm:py-2.5 bg-white text-zinc-950 hover:bg-zinc-200 rounded-xl text-xs sm:text-sm font-extrabold uppercase tracking-wider shadow-[0_0_20px_rgba(255,255,255,0.1)] transition-all hover:scale-105 active:scale-95 overflow-hidden group">
+                    <span className="relative z-10 whitespace-nowrap">Get Started</span>
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] pointer-events-none" />
                   </button>
                 </Link>
