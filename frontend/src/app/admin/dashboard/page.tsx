@@ -415,7 +415,7 @@ export default function AdminDashboard() {
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id as any)}
                       className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[10px] font-bold tracking-wider uppercase transition-all cursor-pointer ${
-                        isActive ? "bg-zinc-800 text-white shadow" : "text-zinc-500 hover:text-zinc-300"
+                        isActive ? "bg-zinc-800 text-white shadow" : "text-zinc-400 hover:text-zinc-300"
                       }`}
                     >
                       <Icon className={`w-3.5 h-3.5 ${isActive ? "text-red-400" : ""}`} />
@@ -436,7 +436,7 @@ export default function AdminDashboard() {
                           setSelectedCandidate(null);
                           setSearchQuery("");
                         }}
-                        className="text-zinc-500 hover:text-white transition-colors cursor-pointer text-2xl font-black mb-1"
+                        className="text-zinc-400 hover:text-white transition-colors cursor-pointer text-2xl font-black mb-1"
                         title="Back"
                       >
                         ←
@@ -454,13 +454,13 @@ export default function AdminDashboard() {
                 {selectedCandidate && (
                   <div className="flex items-center gap-3 w-full sm:w-auto">
                     <div className="relative w-full sm:w-64">
-                      <Search className="absolute left-3 w-4 h-4 text-zinc-500 top-1/2 -translate-y-1/2" />
+                      <Search className="absolute left-3 w-4 h-4 text-zinc-400 top-1/2 -translate-y-1/2" />
                       <input
                         type="text"
                         placeholder="search runs..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full bg-zinc-950/80 border border-white/5 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-red-500 transition-colors"
+                        className="w-full bg-zinc-950/80 border border-white/5 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-red-500 transition-colors"
                       />
                     </div>
                   </div>
@@ -470,7 +470,7 @@ export default function AdminDashboard() {
               {loading ? (
                 <div className="flex flex-col items-center justify-center py-20 gap-3">
                   <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
-                  <p className="text-xs text-zinc-500">Querying candidate tables...</p>
+                  <p className="text-xs text-zinc-400">Querying candidate tables...</p>
                 </div>
               ) : selectedCandidate === null ? (
                 <div className="flex flex-wrap gap-4 pt-4">
@@ -492,19 +492,19 @@ export default function AdminDashboard() {
                   ))}
                   {uniqueCandidates.length === 0 && (
                     <div className="w-full text-center py-20 border border-dashed border-white/5 rounded-2xl bg-zinc-900/10">
-                      <p className="text-sm text-zinc-500">No candidates have completed simulations yet.</p>
+                      <p className="text-sm text-zinc-400">No candidates have completed simulations yet.</p>
                     </div>
                   )}
                 </div>
               ) : filteredCandidates.length === 0 ? (
                 <div className="text-center py-20 border border-dashed border-white/5 rounded-2xl bg-zinc-900/10">
-                  <p className="text-sm text-zinc-500">No matching simulation records found.</p>
+                  <p className="text-sm text-zinc-400">No matching simulation records found.</p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs border-collapse">
                     <thead>
-                      <tr className="border-b border-white/5 text-[10px] text-zinc-500 uppercase tracking-wider">
+                      <tr className="border-b border-white/5 text-[10px] text-zinc-400 uppercase tracking-wider">
                         <th className="pb-3 font-semibold">Candidate</th>
                         <th className="pb-3 font-semibold">Mode</th>
                         <th className="pb-3 font-semibold text-center">Overall</th>
@@ -548,7 +548,7 @@ export default function AdminDashboard() {
                           </td>
                           <td className="py-4 px-2 text-center text-zinc-400 font-mono text-[10px]">{c.technical}</td>
                           <td className="py-4 px-2 text-center text-zinc-400 font-mono text-[10px]">{c.communication}</td>
-                          <td className="py-4 px-2 text-center text-zinc-500 text-[10px]">{new Date(c.created_at).toLocaleDateString()}</td>
+                          <td className="py-4 px-2 text-center text-zinc-400 text-[10px]">{new Date(c.created_at).toLocaleDateString()}</td>
                           <td className="py-4 px-2 text-right flex items-center justify-end gap-2">
                             <button
                               onClick={() => setSelectedRecord(c)}
@@ -576,12 +576,12 @@ export default function AdminDashboard() {
                 <div className="overflow-x-auto">
                   {leaderboard.length === 0 ? (
                     <div className="text-center py-20 border border-dashed border-white/5 rounded-2xl bg-zinc-900/10">
-                      <p className="text-sm text-zinc-500">No candidates on the global leaderboard yet.</p>
+                      <p className="text-sm text-zinc-400">No candidates on the global leaderboard yet.</p>
                     </div>
                   ) : (
                     <table className="w-full text-left text-xs border-collapse">
                       <thead>
-                        <tr className="border-b border-white/5 text-[10px] text-zinc-500 uppercase tracking-wider">
+                        <tr className="border-b border-white/5 text-[10px] text-zinc-400 uppercase tracking-wider">
                           <th className="pb-3 font-semibold text-center w-16">Rank</th>
                           <th className="pb-3 font-semibold">Candidate</th>
                           <th className="pb-3 font-semibold">Title</th>
@@ -608,7 +608,7 @@ export default function AdminDashboard() {
                               {i === 0 ? <Crown className="w-5 h-5 mx-auto text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]" /> :
                                i === 1 ? <Medal className="w-5 h-5 mx-auto text-zinc-300 drop-shadow-[0_0_8px_rgba(212,212,216,0.6)]" /> :
                                i === 2 ? <Award className="w-5 h-5 mx-auto text-amber-700 drop-shadow-[0_0_8px_rgba(180,83,9,0.6)]" /> :
-                              <span className="text-sm font-black text-zinc-500">#{i + 1}</span>}
+                              <span className="text-sm font-black text-zinc-400">#{i + 1}</span>}
                             </td>
                             <td className="py-4 px-2">
                               <span className="font-bold text-white text-xs tracking-wide">
@@ -704,7 +704,7 @@ export default function AdminDashboard() {
                   </span>
                   Engine Integrity status
                 </h3>
-                <div className="space-y-2 text-[11px] text-zinc-500">
+                <div className="space-y-2 text-[11px] text-zinc-400">
                   <div className="flex justify-between">
                     <span>SQLite database</span>
                     <span className="text-emerald-400 font-medium">CONNECTED (hiremind.db)</span>
@@ -744,14 +744,14 @@ export default function AdminDashboard() {
                 <div className="absolute top-6 right-6 flex items-center gap-2 z-20">
                   <button
                     onClick={() => handleDownloadPDF(selectedRecord)}
-                    className="p-2.5 rounded-full hover:bg-purple-500/10 border border-transparent hover:border-purple-500/30 hover:text-purple-400 text-zinc-500 transition-all cursor-pointer shadow-inner"
+                    className="p-2.5 rounded-full hover:bg-purple-500/10 border border-transparent hover:border-purple-500/30 hover:text-purple-400 text-zinc-400 transition-all cursor-pointer shadow-inner"
                     title="Download PDF Report"
                   >
                     <Download className="w-5 h-5" />
                   </button>
                   <button
                     onClick={() => setSelectedRecord(null)}
-                    className="p-2.5 rounded-full hover:bg-red-500/10 border border-transparent hover:border-red-500/30 hover:text-red-400 text-zinc-500 transition-all cursor-pointer shadow-inner"
+                    className="p-2.5 rounded-full hover:bg-red-500/10 border border-transparent hover:border-red-500/30 hover:text-red-400 text-zinc-400 transition-all cursor-pointer shadow-inner"
                     title="Close"
                   >
                     <X className="w-5 h-5" />
@@ -946,7 +946,7 @@ export default function AdminDashboard() {
                 <div className="relative z-10 p-10 flex flex-col items-center">
                   <button
                     onClick={() => setSelectedNeonCandidate(null)}
-                    className="absolute top-6 right-6 p-2 rounded-full hover:bg-[#ff4500]/10 text-zinc-500 hover:text-[#ff4500] transition-colors z-20"
+                    className="absolute top-6 right-6 p-2 rounded-full hover:bg-[#ff4500]/10 text-zinc-400 hover:text-[#ff4500] transition-colors z-20"
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -1025,10 +1025,10 @@ export default function AdminDashboard() {
 
         <div className="relative z-10 flex flex-col gap-2">
           <div className="flex justify-between items-start">
-            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{title}</span>
+            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">{title}</span>
           </div>
           <p className="text-4xl font-black text-white mt-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-red-300 group-hover:to-red-600 transition-all duration-500">{value}</p>
-          <span className="text-[10px] text-zinc-500 font-medium tracking-wide mt-1">{sub}</span>
+          <span className="text-[10px] text-zinc-400 font-medium tracking-wide mt-1">{sub}</span>
         </div>
       </div>
       );
