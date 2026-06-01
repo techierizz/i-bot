@@ -5,6 +5,7 @@ from typing import List, Dict, Any, Optional
 import pypdf
 import io
 import json
+from datetime import datetime
 from services.llm_service import extract_resume_context
 from services.interview_service import generate_interview_response, evaluate_interview
 from database import (
@@ -44,6 +45,9 @@ app.add_middleware(
 @app.on_event("startup")
 def on_startup():
     init_db()
+
+# In-memory store to track active sessions (user_id -> last_activity_datetime)
+active_sessions: Dict[int, datetime] = {}
 
 # Request schemas
 class ChatRequest(BaseModel):
@@ -195,6 +199,20 @@ async def upload_resume(
 @app.post("/api/interview/chat")
 async def chat_endpoint(request: ChatRequest):
     try:
+        # Extract user_id to track active session
+        extracted_context = request.context.get("extracted_context", {})
+        user_id = (
+            request.context.get("user_id") or 
+            request.context.get("user", {}).get("id") or 
+            extracted_context.get("user_id") or
+            extracted_context.get("user", {}).get("id")
+        )
+        if user_id:
+            try:
+                active_sessions[int(user_id)] = datetime.now()
+            except (ValueError, TypeError):
+                pass
+                
         response_data = generate_interview_response(
             context=request.context,
             chat_history=request.chat_history,
@@ -334,7 +352,22 @@ def fetch_leaderboard():
 @app.get("/api/admin/metrics")
 def fetch_admin_metrics():
     try:
-        return get_admin_metrics()
+        metrics = get_admin_metrics()
+        
+        # Calculate active sessions based on last 2 minutes (120 seconds)
+        now = datetime.now()
+        active_count = 0
+        
+        # We need to iterate over a copy of items since we might delete
+        for uid, last_time in list(active_sessions.items()):
+            if (now - last_time).total_seconds() < 120:
+                active_count += 1
+            else:
+                # cleanup inactive sessions
+                del active_sessions[uid]
+                
+        metrics["active_sessions"] = active_count
+        return metrics
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
