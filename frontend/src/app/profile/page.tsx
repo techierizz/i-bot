@@ -6,10 +6,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   BrainCircuit, ArrowLeft, Trophy, Flame, Star, Zap, Eye,
   MessageSquare, Code, TrendingUp, Users, Target, BookOpen,
-  Lock, Crown, Medal, Award, User, RefreshCw, IdCard
+  Lock, Crown, Medal, Award, User, RefreshCw, IdCard, Download, Share2, Share, CheckCircle2
 } from "lucide-react";
 import Image from "next/image";
 import { API_BASE_URL } from "../config";
+import html2canvas from "html2canvas";
+import { useRef } from "react";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 interface GamificationData {
@@ -723,6 +725,7 @@ export default function ProfilePage() {
 const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) => {
   const [rotateX, setRotateX] = useState(0);
   const [rotateY, setRotateY] = useState(0);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const card = e.currentTarget;
@@ -745,7 +748,7 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
   };
 
   const getTechSavvyTitle = () => {
-    if (!bestInterview) return "Code Ninja";
+    if (!bestInterview) return "Digital Recruit";
     const scores = bestInterview.evaluation_data?.scores;
     if (!scores) return "Digital Recruit";
     
@@ -764,10 +767,58 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
     return "Tech Enthusiast";
   };
 
+  const captureCard = async (): Promise<File | null> => {
+    if (!cardRef.current) return null;
+    const canvas = await html2canvas(cardRef.current, { scale: 3, backgroundColor: null, useCORS: true });
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => {
+        if (!blob) { resolve(null); return; }
+        const file = new File([blob], "HireMind_ICard.png", { type: "image/png" });
+        resolve(file);
+      }, "image/png");
+    });
+  };
+
+  const handleDownload = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!cardRef.current) return;
+    const canvas = await html2canvas(cardRef.current, { scale: 3, backgroundColor: null, useCORS: true });
+    const link = document.createElement('a');
+    link.download = 'HireMind_ICard.png';
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  };
+
+  const shareToApp = async (platform: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const file = await captureCard();
+    if (!file) return;
+
+    const shareData = {
+      title: "My HireMind I-Card",
+      text: "🚀 Just crushed an AI interview on HireMind! Check out my official candidate card. Think you can beat my score? 🔥 #HireMind #AIInterview",
+      files: [file],
+    };
+
+    try {
+      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+      } else {
+        alert(`Your browser doesn't support direct image sharing. The image has been downloaded instead so you can post it to ${platform}!`);
+        const link = document.createElement('a');
+        link.download = 'HireMind_ICard.png';
+        link.href = URL.createObjectURL(file);
+        link.click();
+      }
+    } catch (err) {
+      console.log("Error sharing:", err);
+    }
+  };
+
   const title = getTechSavvyTitle();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center p-4">
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -776,86 +827,105 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
         className="absolute inset-0 bg-black/90 backdrop-blur-xl"
       />
       
-      {/* 3D Container */}
-      <div className="relative z-10 perspective-[1000px]">
+      {/* 3D Container for the Card */}
+      <div className="relative z-10 perspective-[1000px] mb-8">
         <motion.div
           initial={{ opacity: 0, scale: 0.8, rotateY: -90 }}
           animate={{ opacity: 1, scale: 1, rotateY: 0 }}
           exit={{ opacity: 0, scale: 0.8, rotateY: 90 }}
           transition={{ type: "spring", damping: 20, stiffness: 100 }}
           style={{ transformStyle: "preserve-3d" }}
-          className="relative w-full max-w-[360px] aspect-[1/1.5] flex items-center justify-center"
+          className="relative w-full max-w-[340px] aspect-[1/1.65] flex items-center justify-center"
         >
+          {/* We attach the ref to this inner div so html2canvas renders a flat, unrotated version by temporarily ignoring transforms, or we can just capture it as is (html2canvas ignores 3D transforms mostly, which is good for 2D capture). */}
           <motion.div
+            ref={cardRef}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             animate={{ rotateX, rotateY }}
             transition={{ type: "spring", damping: 20, stiffness: 300, mass: 0.5 }}
             style={{ transformStyle: "preserve-3d" }}
-            className="w-full h-full relative rounded-3xl overflow-hidden border border-violet-500/30 bg-zinc-950 shadow-[0_0_50px_rgba(139,92,246,0.3)] cursor-pointer"
+            className="w-full h-full relative rounded-3xl overflow-hidden bg-zinc-950 border border-violet-500/50 shadow-[0_0_50px_rgba(139,92,246,0.5)] cursor-pointer flex flex-col"
           >
             {/* Holographic background layers */}
-            <div className="absolute inset-0 bg-gradient-to-br from-violet-900/50 via-zinc-950 to-fuchsia-900/50" />
-            <div className="absolute inset-0 opacity-30 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
-            
-            {/* Glossy shine effect that moves with mouse */}
+            <div className="absolute inset-0 bg-gradient-to-br from-violet-900/80 via-zinc-950 to-fuchsia-900/80" />
+            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-40 mix-blend-overlay" />
+            <div className="absolute top-[-20%] right-[-20%] w-[200px] h-[200px] bg-fuchsia-500/30 blur-[60px] rounded-full pointer-events-none" />
+            <div className="absolute bottom-[-20%] left-[-20%] w-[200px] h-[200px] bg-violet-500/30 blur-[60px] rounded-full pointer-events-none" />
+
+            {/* Glossy shine effect */}
             <div 
-              className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/10 to-white/0 pointer-events-none"
-              style={{
-                transform: `translateZ(20px) translateX(${rotateY * 2}px) translateY(${rotateX * -2}px)`
-              }}
+              className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/20 to-white/0 pointer-events-none"
+              style={{ transform: `translateZ(20px) translateX(${rotateY * 3}px) translateY(${rotateX * -3}px)` }}
             />
 
-            {/* Content layered in 3D */}
-            <div className="relative z-10 w-full h-full p-6 flex flex-col justify-between" style={{ transform: "translateZ(30px)" }}>
+            <div className="relative z-10 p-6 flex flex-col h-full" style={{ transform: "translateZ(30px)" }}>
               {/* Header */}
-              <div className="flex justify-between items-start">
-                <div>
-                  <h2 className="text-[10px] font-black text-violet-400 uppercase tracking-widest">HireMind</h2>
-                  <p className="text-[8px] text-zinc-500 uppercase tracking-widest">Official Candidate I-Card</p>
+              <div className="flex justify-between items-center mb-6">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center shadow-lg">
+                    <BrainCircuit className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-xs font-black text-white uppercase tracking-widest leading-none">HireMind</h2>
+                    <p className="text-[9px] text-violet-300 uppercase tracking-wider font-semibold">Official ID</p>
+                  </div>
                 </div>
-                <IdCard className="w-5 h-5 text-violet-400 opacity-50" />
+                <IdCard className="w-6 h-6 text-violet-400 opacity-60" />
               </div>
 
-              {/* Center Profile */}
+              {/* Center Profile Info */}
               <div className="flex flex-col items-center flex-1 justify-center space-y-4">
                 <div 
-                  style={{ transform: "translateZ(50px)" }}
-                  className="w-24 h-24 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-600 p-[2px] shadow-[0_0_30px_rgba(139,92,246,0.6)]"
+                  className="w-24 h-24 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-600 p-1 shadow-[0_0_40px_rgba(139,92,246,0.6)]"
+                  style={{ transform: "translateZ(40px)" }}
                 >
-                  <div className="w-full h-full rounded-full bg-zinc-950 flex items-center justify-center border-4 border-zinc-950 relative overflow-hidden">
-                    <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-violet-400 to-fuchsia-400">
+                  <div className="w-full h-full rounded-full bg-zinc-950 flex items-center justify-center border-[3px] border-zinc-950 relative overflow-hidden">
+                    <span className="text-[40px] font-black text-transparent bg-clip-text bg-gradient-to-br from-violet-300 to-fuchsia-300 drop-shadow-md">
                       {user?.username.charAt(0).toUpperCase()}
                     </span>
                   </div>
                 </div>
 
-                <div className="text-center" style={{ transform: "translateZ(40px)" }}>
-                  <h3 className="text-2xl font-black text-white">{user?.username}</h3>
-                  <div className="inline-block mt-1 px-3 py-1 rounded-full bg-violet-500/20 border border-violet-500/30">
-                    <span className="text-[10px] font-black text-violet-300 uppercase tracking-widest">{title}</span>
+                <div className="text-center w-full" style={{ transform: "translateZ(35px)" }}>
+                  <h3 className="text-3xl font-black text-white tracking-tight break-words">{user?.username}</h3>
+                  <div className="inline-flex items-center justify-center mt-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 border border-violet-500/40 shadow-inner">
+                    <span className="text-xs font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-300 to-fuchsia-300 uppercase tracking-widest">{title}</span>
                   </div>
                 </div>
               </div>
 
-              {/* Stats Grid */}
-              <div className="grid grid-cols-2 gap-3" style={{ transform: "translateZ(25px)" }}>
-                <div className="bg-zinc-900/60 p-2.5 rounded-xl border border-white/5 flex flex-col items-center">
-                  <span className="text-xs font-black text-emerald-400">{gData?.total_xp?.toLocaleString() || 0}</span>
-                  <span className="text-[8px] text-zinc-500 uppercase tracking-wider">Total XP</span>
+              {/* Data Grid Section */}
+              <div className="bg-zinc-950/50 backdrop-blur-md rounded-2xl p-4 border border-white/10 mt-6" style={{ transform: "translateZ(25px)" }}>
+                
+                {/* Level & Rank Strip */}
+                <div className="flex justify-between items-center border-b border-white/10 pb-3 mb-3">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] text-zinc-400 uppercase tracking-wider font-bold">Current Rank</span>
+                    <span className="text-sm font-black text-white uppercase tracking-wider">{gData?.rank_title || "Recruit"}</span>
+                  </div>
+                  <div className="flex flex-col items-end">
+                    <span className="text-[10px] text-zinc-400 uppercase tracking-wider font-bold">Level</span>
+                    <span className="text-xl font-black text-violet-400 leading-none">{gData?.level || 1}</span>
+                  </div>
                 </div>
-                <div className="bg-zinc-900/60 p-2.5 rounded-xl border border-white/5 flex flex-col items-center">
-                  <span className="text-xs font-black text-amber-400">{gData?.badges?.length || 0}</span>
-                  <span className="text-[8px] text-zinc-500 uppercase tracking-wider">Badges</span>
+
+                {/* 3 Stats */}
+                <div className="grid grid-cols-3 gap-2 divide-x divide-white/10">
+                  <div className="flex flex-col items-center justify-center">
+                    <span className="text-lg font-black text-fuchsia-400">{gData?.total_xp?.toLocaleString() || 0}</span>
+                    <span className="text-[8px] text-zinc-500 uppercase tracking-wider font-bold mt-1">Total XP</span>
+                  </div>
+                  <div className="flex flex-col items-center justify-center">
+                    <span className="text-lg font-black text-emerald-400">{gData?.badges?.length || 0}</span>
+                    <span className="text-[8px] text-zinc-500 uppercase tracking-wider font-bold mt-1">Badges</span>
+                  </div>
+                  <div className="flex flex-col items-center justify-center">
+                    <span className="text-lg font-black text-amber-400">{bestInterview?.overall || stats?.highest_score || 0}</span>
+                    <span className="text-[8px] text-zinc-500 uppercase tracking-wider font-bold mt-1">Best Score</span>
+                  </div>
                 </div>
-                <div className="bg-zinc-900/60 p-2.5 rounded-xl border border-white/5 flex flex-col items-center">
-                  <span className="text-xs font-black text-cyan-400">{stats?.total_interviews || 0}</span>
-                  <span className="text-[8px] text-zinc-500 uppercase tracking-wider">Interviews</span>
-                </div>
-                <div className="bg-zinc-900/60 p-2.5 rounded-xl border border-white/5 flex flex-col items-center">
-                  <span className="text-xs font-black text-fuchsia-400">{bestInterview?.overall || stats?.highest_score || 0}</span>
-                  <span className="text-[8px] text-zinc-500 uppercase tracking-wider">Best Score</span>
-                </div>
+
               </div>
 
             </div>
@@ -863,9 +933,65 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
         </motion.div>
       </div>
       
+      {/* Social Actions Panel */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
+        transition={{ delay: 0.2 }}
+        className="relative z-20 flex flex-col items-center space-y-4"
+      >
+        <div className="text-xs font-bold text-violet-300 uppercase tracking-widest drop-shadow-md">Share your story</div>
+        <div className="flex items-center gap-4 bg-zinc-900/80 backdrop-blur-xl p-3 rounded-2xl border border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+          {/* WhatsApp / Message */}
+          <button 
+            onClick={(e) => shareToApp("WhatsApp", e)}
+            className="w-12 h-12 rounded-xl bg-zinc-800 border border-white/5 hover:border-emerald-500/50 hover:bg-emerald-500/20 text-zinc-300 hover:text-emerald-400 flex items-center justify-center transition-all group"
+            title="Share to WhatsApp"
+          >
+            <MessageSquare className="w-5 h-5 group-hover:scale-110 transition-transform" />
+          </button>
+
+          {/* Instagram */}
+          <button 
+            onClick={(e) => shareToApp("Instagram", e)}
+            className="w-12 h-12 rounded-xl bg-zinc-800 border border-white/5 hover:border-fuchsia-500/50 hover:bg-fuchsia-500/20 text-zinc-300 hover:text-fuchsia-400 flex items-center justify-center transition-all group"
+            title="Share to Instagram"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 group-hover:scale-110 transition-transform">
+              <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+              <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+            </svg>
+          </button>
+
+          {/* Facebook */}
+          <button 
+            onClick={(e) => shareToApp("Facebook", e)}
+            className="w-12 h-12 rounded-xl bg-zinc-800 border border-white/5 hover:border-blue-500/50 hover:bg-blue-500/20 text-zinc-300 hover:text-blue-400 flex items-center justify-center transition-all group"
+            title="Share to Facebook"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 group-hover:scale-110 transition-transform">
+              <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+            </svg>
+          </button>
+
+          <div className="w-px h-8 bg-white/10 mx-1" />
+
+          {/* Download */}
+          <button 
+            onClick={handleDownload}
+            className="w-12 h-12 rounded-xl bg-violet-600 hover:bg-violet-500 text-white flex items-center justify-center transition-all group shadow-[0_0_15px_rgba(139,92,246,0.4)]"
+            title="Download Image"
+          >
+            <Download className="w-5 h-5 group-hover:-translate-y-1 transition-transform" />
+          </button>
+        </div>
+      </motion.div>
+
       {/* Close Hint */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 text-zinc-500 text-xs tracking-widest font-medium pointer-events-none">
-        Click anywhere to close
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-zinc-500 text-[10px] uppercase tracking-widest font-bold pointer-events-none">
+        Click background to close
       </div>
     </div>
   );
