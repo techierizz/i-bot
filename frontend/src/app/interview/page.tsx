@@ -731,7 +731,7 @@ export default function InterviewPage() {
           <button
             onClick={() => setIsWebcamVisible(prev => !prev)}
             disabled={scriptsError}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all text-xs font-semibold ${
+            className={`hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all text-xs font-semibold ${
               isWebcamVisible 
                 ? "bg-teal-500/10 text-teal-400 border-teal-500/20 shadow-[0_0_15px_rgba(20,184,166,0.1)] hover:bg-teal-500/20" 
                 : "bg-zinc-800 text-zinc-400 border-zinc-700 hover:bg-zinc-700"
@@ -751,10 +751,10 @@ export default function InterviewPage() {
       </header>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col md:flex-row p-6 gap-6 z-10 h-full overflow-hidden max-w-7xl mx-auto w-full">
+      <div className="flex-1 flex flex-col-reverse md:flex-row p-4 md:p-6 gap-4 md:gap-6 z-10 h-full overflow-hidden max-w-7xl mx-auto w-full">
         
         {/* Left: AI Visualizer, WebCam HUD, and Analytics Telemetry */}
-        <div className="flex-1 flex flex-col items-center justify-between glass-card rounded-2xl relative p-6 overflow-y-auto scrollbar-thin">
+        <div className="w-full md:flex-1 flex flex-col items-center justify-between glass-card rounded-2xl relative p-4 sm:p-6 overflow-y-auto scrollbar-thin shrink-0 md:shrink">
           
           <div className="w-full flex-1 flex flex-col items-center justify-center">
             
@@ -763,7 +763,9 @@ export default function InterviewPage() {
               
               {/* Central AI Orb */}
               <div className={`flex flex-col items-center justify-center transition-all duration-500 ${isWebcamVisible ? "lg:w-1/2" : "w-full"}`}>
-                <div className={`relative flex items-center justify-center mb-6 transition-all ${isWebcamVisible ? "w-48 h-48" : "w-60 h-60"}`}>
+                
+                {/* Desktop-only Radial Orb */}
+                <div className={`hidden sm:flex relative items-center justify-center mb-6 transition-all ${isWebcamVisible ? "w-48 h-48" : "w-60 h-60"}`}>
                   <div 
                     className={`absolute inset-0 rounded-full border-2 ${
                       isListening ? "border-green-500 opacity-20" : "border-primary-500 opacity-20"
@@ -785,6 +787,29 @@ export default function InterviewPage() {
                   }`}>
                     <img src="/logo.png" alt="HireMind" className="w-14 h-14 object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]" />
                   </div>
+                </div>
+
+                {/* Mobile-only dots animation when speaking/listening */}
+                <div className="flex sm:hidden items-center justify-center gap-3 h-8 mb-4 w-full">
+                  {isListening && [1, 2, 3].map((i) => (
+                    <motion.div
+                      key={`listen-${i}`}
+                      className="w-3 h-3 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.6)]"
+                      animate={{ scale: [1, 1.4, 1], opacity: [0.4, 1, 0.4] }}
+                      transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
+                    />
+                  ))}
+                  {isAiSpeaking && [1, 2, 3].map((i) => (
+                    <motion.div
+                      key={`speak-${i}`}
+                      className="w-3 h-3 rounded-full bg-primary-500 shadow-[0_0_10px_rgba(139,92,246,0.6)]"
+                      animate={{ scale: [1, 1.4, 1], opacity: [0.4, 1, 0.4] }}
+                      transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
+                    />
+                  ))}
+                  {!isListening && !isAiSpeaking && (
+                    <div className="text-xs text-zinc-500 font-medium tracking-widest uppercase">Standing By</div>
+                  )}
                 </div>
 
                 {/* Primary Action Button */}
@@ -823,7 +848,7 @@ export default function InterviewPage() {
               </div>
 
               {/* Webcam Tracking HUD */}
-              <div className={`${isWebcamVisible ? "lg:w-1/2 flex relative" : "absolute opacity-0 pointer-events-none w-0 h-0 overflow-hidden"} flex-col justify-center items-center`}>
+              <div className={`hidden sm:flex ${isWebcamVisible ? "lg:w-1/2 relative" : "absolute opacity-0 pointer-events-none w-0 h-0 overflow-hidden"} flex-col justify-center items-center`}>
                 <div className="relative w-full max-w-sm aspect-[4/3] rounded-xl overflow-hidden border border-white/10 bg-black/40 shadow-inner">
                     <video
                       ref={videoRef}
@@ -865,7 +890,7 @@ export default function InterviewPage() {
           </div>
 
           {/* Telemetry HUD Panel */}
-          <div className="w-full mt-6 pt-6 border-t border-white/5">
+          <div className="hidden sm:block w-full mt-6 pt-6 border-t border-white/5">
             <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">
               <Zap className="w-3.5 h-3.5 text-primary-400" /> Interviewer Analytics console
             </h3>
@@ -936,7 +961,7 @@ export default function InterviewPage() {
         </div>
 
         {/* Right: Live Transcript */}
-        <div className="w-full md:w-[360px] lg:w-[420px] flex flex-col glass-card rounded-2xl overflow-hidden">
+        <div className="w-full md:w-[360px] lg:w-[420px] flex-1 md:flex-none flex flex-col glass-card rounded-2xl overflow-hidden">
           <div className="p-4 border-b border-white/10 bg-white/5 font-medium flex items-center gap-2">
             <FileTextIcon /> Live Feed
           </div>
