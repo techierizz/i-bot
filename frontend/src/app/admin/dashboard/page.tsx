@@ -60,6 +60,7 @@ export default function AdminDashboard() {
   const [metrics, setMetrics] = useState<any>({
     total_interviews: 0,
     total_candidates: 0,
+    active_sessions: 0,
     averages: { overall: 0, technical: 0, communication: 0, confidence: 0, problem_solving: 0 }
   });
   const [candidates, setCandidates] = useState<EvaluationRecord[]>([]);
@@ -697,7 +698,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="flex justify-between">
                     <span>Active Sessions</span>
-                    <span className="text-zinc-300">3 current candidate channels</span>
+                    <span className="text-zinc-300">{metrics.active_sessions || 0} current candidate channels</span>
                   </div>
                 </div>
               </div>
