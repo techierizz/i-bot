@@ -914,16 +914,16 @@ export default function AdminDashboard() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setSelectedNeonCandidate(null)}
-                className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
+                className="absolute inset-0 bg-black/80 backdrop-blur-sm"
               />
               <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                className="relative w-full max-w-lg bg-gradient-to-b from-[#1a0505]/95 to-[#0a0000]/95 backdrop-blur-3xl border border-[#ff4500]/20 rounded-[2.5rem] overflow-hidden z-10 shadow-[0_0_80px_rgba(255,69,0,0.15)]"
+                className="relative w-full max-w-lg bg-gradient-to-b from-[#1a0505]/60 to-[#0a0000]/80 backdrop-blur-3xl border border-[#ff4500]/20 rounded-[2.5rem] overflow-hidden z-10 shadow-[0_0_80px_rgba(255,69,0,0.05)]"
               >
                 {/* Glowing borders */}
-                <div className="absolute inset-0 pointer-events-none rounded-[2.5rem] border border-transparent [background:linear-gradient(45deg,rgba(255,69,0,0.3),rgba(220,38,38,0.1))_border-box] [mask:linear-gradient(#fff_0_0)_padding-box,linear-gradient(#fff_0_0)] mask-composite-exclude shadow-[inset_0_0_40px_rgba(255,69,0,0.1)]" />
+                <div className="absolute inset-0 pointer-events-none rounded-[2.5rem] border border-transparent [background:linear-gradient(45deg,rgba(255,69,0,0.15),rgba(220,38,38,0.05))_border-box] [mask:linear-gradient(#fff_0_0)_padding-box,linear-gradient(#fff_0_0)] mask-composite-exclude shadow-[inset_0_0_40px_rgba(255,69,0,0.05)]" />
                 
                 <div className="relative z-10 p-10 flex flex-col items-center">
                   <button
