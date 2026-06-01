@@ -314,11 +314,13 @@ export default function AdminDashboard() {
     
     const observer = new ResizeObserver((entries) => {
       if (entries[0]) {
-        const { width, height } = entries[0].contentRect;
-        if (width > 0 && height > 0) {
-          const center = Math.min(width, height) / 2;
+        const { width } = entries[0].contentRect;
+        // Only trigger state update if width changes significantly to prevent infinite vertical expansion loops
+        if (width > 0 && Math.abs(width - radarDims.width) > 5) {
+          const center = width / 2;
           const radius = center * 0.47; // Leave roughly 50% room for outer labels
-          setRadarDims({ center, radius, width, height });
+          // Force height to equal width to maintain a perfect square
+          setRadarDims({ center, radius, width, height: width });
         }
       }
     });
