@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { User, LogOut } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 
-export default function UserBox({ forceShow = false }: { forceShow?: boolean }) {
+export default function UserBox({ forceShow = false, className }: { forceShow?: boolean, className?: string }) {
   const [user, setUser] = useState<any>(null);
   const router = useRouter();
   const pathname = usePathname();
@@ -33,7 +33,7 @@ export default function UserBox({ forceShow = false }: { forceShow?: boolean }) 
   if (!forceShow && (pathname === "/" || pathname === "/interview" || pathname === "/results" || pathname === "/profile")) return null;
 
   return (
-    <div className="fixed top-6 right-6 z-50 flex items-center gap-3">
+    <div className={className || "fixed top-6 right-6 z-50 flex items-center gap-3"}>
       <button 
         onClick={() => router.push("/profile")}
         className="text-sm font-bold text-zinc-300 flex items-center gap-2 bg-zinc-900/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 hover:border-primary-500/50 hover:text-white transition-all cursor-pointer shadow-lg hover:shadow-primary-500/20"
