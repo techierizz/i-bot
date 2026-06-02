@@ -926,10 +926,12 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
               </div>
 
               {/* Header Bar */}
-              <div className="flex justify-between items-end mb-1 pl-12 pr-1 relative z-10">
+              <div className="flex justify-between items-start mb-1 pl-12 pr-1 relative z-10 pt-1">
                 <div className="flex flex-col">
-                  <span className="text-[8px] italic font-bold text-zinc-200 mb-0.5">Evolves from {gData?.rank_title || "Recruit"}</span>
-                  <h2 className="text-2xl font-bold text-white tracking-widest uppercase leading-none drop-shadow-md">
+                  <span className="text-[10px] font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-orange-500 uppercase tracking-widest drop-shadow-[0_0_8px_rgba(250,204,21,0.6)] mb-0.5">
+                    {gData?.rank_title || "Recruit"}
+                  </span>
+                  <h2 className="text-2xl font-black text-white tracking-widest uppercase leading-none drop-shadow-md">
                     {user?.username}
                   </h2>
                 </div>
@@ -1029,17 +1031,21 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
                   </div>
                 </div>
 
-                {/* Digital Barcode */}
-                <div className="flex flex-col items-center mt-2 mb-3 opacity-80">
-                  <div className="flex items-center gap-[2px] h-6 mix-blend-overlay">
-                    {[2,1,1,3,1,2,1,1,4,1,2,3,1,1,2,1,3,1,1,2,1,1,3,1,2].map((w, i) => (
-                      <div key={i} className="bg-white h-full" style={{ width: `${w * 2}px` }} />
-                    ))}
-                  </div>
-                  <span className="text-[7px] text-zinc-500 font-mono tracking-[0.3em] mt-1 font-bold">
-                    UID-{(user?.id || 1000).toString().padStart(4, '0')}-HM-{(gData?.level || 1).toString().padStart(2, '0')}
-                  </span>
-                </div>
+                {/* Real Scannable Barcode */}
+                {(() => {
+                  const uidString = `UID-${(user?.id || 1000).toString().padStart(4, '0')}-HM-${(gData?.level || 1).toString().padStart(2, '0')}`;
+                  const barcodeUrl = `https://bwipjs-api.metafloor.com/?bcid=code128&text=${encodeURIComponent(uidString)}&scale=3&includetext=false`;
+                  return (
+                    <div className="flex flex-col items-center mt-2 mb-3 opacity-80">
+                      <div className="h-6 w-[80%] flex items-center justify-center mix-blend-screen opacity-90" style={{ filter: "invert(1) brightness(2)" }}>
+                        <img src={barcodeUrl} alt="Scannable Barcode" className="h-full object-contain" />
+                      </div>
+                      <span className="text-[7px] text-zinc-500 font-mono tracking-[0.3em] mt-1 font-bold">
+                        {uidString}
+                      </span>
+                    </div>
+                  );
+                })()}
 
                 {/* Unique Signature Box */}
                 <div className="mt-auto mb-2 flex flex-col items-center justify-center gap-1">
