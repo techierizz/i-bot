@@ -76,6 +76,9 @@ class SettingsUpdateRequest(BaseModel):
     prompt_temp: Optional[float] = None
     system_prompt: Optional[str] = None
 
+class SignatureUpdateRequest(BaseModel):
+    signature_data: str
+
 # Endpoints
 @app.get("/health")
 def health_check():
@@ -156,6 +159,18 @@ def get_user_statistics(user_id: int):
     try:
         stats = get_user_stats(user_id)
         return {"status": "success", "data": stats}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/user/{user_id}/signature")
+def update_user_signature(user_id: int, req: SignatureUpdateRequest):
+    from database import update_signature
+    try:
+        success = update_signature(user_id, req.signature_data)
+        if success:
+            return {"status": "success", "message": "Signature updated."}
+        else:
+            raise HTTPException(status_code=400, detail="Failed to update signature.")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
