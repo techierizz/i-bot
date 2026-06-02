@@ -951,10 +951,11 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
                   <div className="relative z-10 w-24 h-24 drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">
                     <div className="w-full h-full rounded-full bg-zinc-950 flex items-center justify-center border-4 border-yellow-400 overflow-hidden relative">
                       {(() => {
-                        const tier = XP_LEVELS.find(t => t.level === (gData?.level ?? 1)) ?? XP_LEVELS[0];
+                        const seed = encodeURIComponent(generateUniqueName());
+                        const avatarUrl = `https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${seed}&backgroundColor=transparent`;
                         return (
-                          <div className="relative w-[85%] h-[85%] drop-shadow-md">
-                            <Image src={tier.image} alt={tier.rank} fill className="object-contain" />
+                          <div className="relative w-[90%] h-[90%] drop-shadow-md">
+                            <Image src={avatarUrl} alt="Unique Avatar" fill className="object-contain" unoptimized />
                           </div>
                         );
                       })()}
