@@ -933,9 +933,9 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
                     {user?.username}
                   </h2>
                 </div>
-                <div className="flex items-center gap-1">
-                  <span className="text-2xl font-black text-amber-400 drop-shadow-md leading-none">{gData?.total_xp?.toLocaleString() || 0} XP</span>
-                  <div className="w-6 h-6 rounded-full bg-orange-600 border-2 border-yellow-300 flex items-center justify-center shadow-sm">
+                <div className="flex items-center gap-1.5 bg-black/50 border border-white/10 rounded-full pl-3 pr-1.5 py-1 backdrop-blur-md shadow-[inset_0_2px_5px_rgba(0,0,0,0.5)] mb-1">
+                  <span className="text-xl font-black text-amber-400 drop-shadow-md leading-none tracking-tight">{gData?.total_xp?.toLocaleString() || 0} XP</span>
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-orange-500 to-red-600 border border-yellow-400 flex items-center justify-center shadow-[0_0_10px_rgba(245,158,11,0.5)]">
                     <Flame className="w-3.5 h-3.5 text-yellow-200 fill-yellow-200" />
                   </div>
                 </div>
@@ -978,7 +978,7 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
               <div className="flex-1 flex flex-col px-1 z-10 justify-center">
 
                 <div className="text-center max-w-[85%] mx-auto mt-2.5">
-                  <h3 className="text-lg md:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-violet-400 to-fuchsia-400 uppercase tracking-tight leading-tight text-balance" style={{ fontFamily: "impact, sans-serif" }}>
+                  <h3 className="text-lg md:text-xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white via-cyan-100 to-cyan-400 uppercase tracking-wider leading-tight text-balance drop-shadow-sm" style={{ fontFamily: "impact, sans-serif" }}>
                     {generateUniqueName()}
                   </h3>
                 </div>
@@ -987,19 +987,35 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
                 <div className="w-full h-[1px] bg-white/15 mt-4 mb-2" />
 
                 {/* Stats row */}
-                <div className="flex justify-around items-center px-2 mb-2">
+                <div className="flex justify-between items-center px-4 mb-3 mt-2">
                   <div className="flex flex-col items-center">
-                    <span className="text-[9px] font-black text-zinc-400 uppercase tracking-tight">Earned Badges</span>
-                    <span className="text-2xl font-black text-white leading-none drop-shadow-md">{gData?.badges?.length || 0}</span>
+                    <span className="text-[8px] font-black text-zinc-400 uppercase tracking-tight">Interviews</span>
+                    <span className="text-xl font-black text-white leading-none drop-shadow-md">{stats?.total_interviews || 0}</span>
                   </div>
                   <div className="flex flex-col items-center">
-                    <span className="text-[9px] font-black text-zinc-400 uppercase tracking-tight">Best Score</span>
-                    <span className="text-2xl font-black text-white leading-none drop-shadow-md">{bestInterview?.overall || stats?.highest_score || 0}</span>
+                    <span className="text-[8px] font-black text-zinc-400 uppercase tracking-tight">Badges</span>
+                    <span className="text-xl font-black text-white leading-none drop-shadow-md">{gData?.badges?.length || 0}</span>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <span className="text-[8px] font-black text-zinc-400 uppercase tracking-tight">Best Score</span>
+                    <span className="text-xl font-black text-white leading-none drop-shadow-md">{bestInterview?.overall || stats?.highest_score || 0}</span>
                   </div>
                 </div>
 
+                {/* Digital Barcode */}
+                <div className="flex flex-col items-center mt-2 mb-3 opacity-80">
+                  <div className="flex items-center gap-[2px] h-6 mix-blend-overlay">
+                    {[2,1,1,3,1,2,1,1,4,1,2,3,1,1,2,1,3,1,1,2,1,1,3,1,2].map((w, i) => (
+                      <div key={i} className="bg-white h-full" style={{ width: `${w * 2}px` }} />
+                    ))}
+                  </div>
+                  <span className="text-[7px] text-zinc-500 font-mono tracking-[0.3em] mt-1 font-bold">
+                    UID-{(user?.id || 1000).toString().padStart(4, '0')}-HM-{(gData?.level || 1).toString().padStart(2, '0')}
+                  </span>
+                </div>
+
                 {/* Unique Signature Box */}
-                <div className="mt-auto mb-2 flex items-center justify-center">
+                <div className="mt-auto mb-2 flex flex-col items-center justify-center gap-1">
                   {user?.signature_data ? (
                     <img src={user.signature_data} alt="Signature" className="h-10 object-contain drop-shadow-md invert" style={{ filter: "drop-shadow(0px 2px 2px rgba(0,0,0,0.8)) invert(1)" }} />
                   ) : (
@@ -1007,6 +1023,9 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
                       {user?.username}
                     </div>
                   )}
+                  <div className="text-[6px] text-zinc-400/80 uppercase tracking-widest font-bold font-mono">
+                    Authorized by HireMind Team
+                  </div>
                 </div>
 
               </div>
