@@ -42,32 +42,32 @@ interface LeaderboardEntry {
 
 // ── Constants ────────────────────────────────────────────────────────────────
 const XP_LEVELS = [
-  { level: 1,  xp: 0,      rank: "Recruit",   color: "from-zinc-500 to-zinc-400",       image: "/ranks/rank_1_recruit.png" },
-  { level: 2,  xp: 500,    rank: "Applicant",  color: "from-emerald-600 to-emerald-400", image: "/ranks/rank_2_applicant.png" },
-  { level: 3,  xp: 1500,   rank: "Contender",  color: "from-cyan-600 to-cyan-400",       image: "/ranks/rank_3_contender.png" },
-  { level: 4,  xp: 3500,   rank: "Specialist", color: "from-blue-600 to-blue-400",       image: "/ranks/rank_4_specialist.png" },
-  { level: 5,  xp: 7000,   rank: "Expert",     color: "from-violet-600 to-violet-400",   image: "/ranks/rank_5_expert.png" },
-  { level: 6,  xp: 12000,  rank: "Senior",     color: "from-purple-600 to-purple-400",   image: "/ranks/rank_6_senior.png" },
-  { level: 7,  xp: 20000,  rank: "Principal",  color: "from-fuchsia-600 to-fuchsia-400", image: "/ranks/rank_7_principal.png" },
-  { level: 8,  xp: 32000,  rank: "Director",   color: "from-pink-600 to-pink-400",       image: "/ranks/rank_8_director.png" },
-  { level: 9,  xp: 50000,  rank: "VP",         color: "from-rose-600 to-amber-400",      image: "/ranks/rank_9_vp.png" },
-  { level: 10, xp: 75000,  rank: "Legend",     color: "from-amber-500 to-yellow-300",    image: "/ranks/rank_10_legend.png" },
+  { level: 1, xp: 0, rank: "Recruit", color: "from-zinc-500 to-zinc-400", image: "/ranks/rank_1_recruit.png" },
+  { level: 2, xp: 500, rank: "Applicant", color: "from-emerald-600 to-emerald-400", image: "/ranks/rank_2_applicant.png" },
+  { level: 3, xp: 1500, rank: "Contender", color: "from-cyan-600 to-cyan-400", image: "/ranks/rank_3_contender.png" },
+  { level: 4, xp: 3500, rank: "Specialist", color: "from-blue-600 to-blue-400", image: "/ranks/rank_4_specialist.png" },
+  { level: 5, xp: 7000, rank: "Expert", color: "from-violet-600 to-violet-400", image: "/ranks/rank_5_expert.png" },
+  { level: 6, xp: 12000, rank: "Senior", color: "from-purple-600 to-purple-400", image: "/ranks/rank_6_senior.png" },
+  { level: 7, xp: 20000, rank: "Principal", color: "from-fuchsia-600 to-fuchsia-400", image: "/ranks/rank_7_principal.png" },
+  { level: 8, xp: 32000, rank: "Director", color: "from-pink-600 to-pink-400", image: "/ranks/rank_8_director.png" },
+  { level: 9, xp: 50000, rank: "VP", color: "from-rose-600 to-amber-400", image: "/ranks/rank_9_vp.png" },
+  { level: 10, xp: 75000, rank: "Legend", color: "from-amber-500 to-yellow-300", image: "/ranks/rank_10_legend.png" },
 ];
 
 const ALL_BADGES = [
-  { id: "first_blood",   name: "First Blood",        icon: "Zap",         description: "Completed your very first interview on HireMind.", image: "/badges/badge_first_blood.png" },
-  { id: "fluent_speaker",name: "Fluent Communicator",icon: "MessageSquare",description: "< 5 filler words across the entire interview.", image: "/badges/badge_fluent_speaker.png" },
-  { id: "logic_master",  name: "Logic Master",       icon: "Zap",         description: "Structured reasoning across all problem-solving questions.", image: "/badges/badge_logic_master.png" },
-  { id: "cracked_hard",  name: "Cracked Hard Round", icon: "Trophy",      description: "Successfully handled Hard-difficulty questions.", image: "/badges/badge_cracked_hard.png" },
-  { id: "unshakable",    name: "Unshakable Focus",   icon: "Eye",         description: "High confidence score (>85) and steady answers.", image: "/badges/badge_unshakable.png" },
-  { id: "clean_coder",   name: "Clean Coder",        icon: "Code",        description: "Precise and well-structured code explanations.", image: "/badges/badge_clean_coder.png" },
-  { id: "perfectionist", name: "Perfectionist",      icon: "Star",        description: "Achieved an overall score above 90.", image: "/badges/badge_perfectionist.png" },
-  { id: "speed_demon",   name: "Speed Demon",        icon: "Target",      description: "Concise, sharp answers with zero rambling.", image: "/badges/speed_demon.png" },
-  { id: "comeback_kid",  name: "Comeback Kid",       icon: "TrendingUp",  description: "Recovered strongly after a weak opening answer.", image: "/badges/comeback_kid.png" },
-  { id: "deep_diver",    name: "Deep Diver",         icon: "BookOpen",    description: "Demonstrated expert depth beyond what was asked.", image: "/badges/deep_diver.png" },
-  { id: "team_player",   name: "Team Player",        icon: "Users",       description: "Highlighted strong collaboration and leadership examples.", image: "/badges/Team_player.png" },
-  { id: "streak_3",      name: "On Fire",            icon: "Flame",       description: "Completed interviews 3 days in a row.", image: "/badges/On_fire.png" },
-  { id: "streak_7",      name: "Week Warrior",       icon: "Flame",       description: "Completed interviews 7 days in a row.", image: "/badges/week_warrior.png" },
+  { id: "first_blood", name: "First Blood", icon: "Zap", description: "Completed your very first interview on HireMind.", image: "/badges/badge_first_blood.png" },
+  { id: "fluent_speaker", name: "Fluent Communicator", icon: "MessageSquare", description: "< 5 filler words across the entire interview.", image: "/badges/badge_fluent_speaker.png" },
+  { id: "logic_master", name: "Logic Master", icon: "Zap", description: "Structured reasoning across all problem-solving questions.", image: "/badges/badge_logic_master.png" },
+  { id: "cracked_hard", name: "Cracked Hard Round", icon: "Trophy", description: "Successfully handled Hard-difficulty questions.", image: "/badges/badge_cracked_hard.png" },
+  { id: "unshakable", name: "Unshakable Focus", icon: "Eye", description: "High confidence score (>85) and steady answers.", image: "/badges/badge_unshakable.png" },
+  { id: "clean_coder", name: "Clean Coder", icon: "Code", description: "Precise and well-structured code explanations.", image: "/badges/badge_clean_coder.png" },
+  { id: "perfectionist", name: "Perfectionist", icon: "Star", description: "Achieved an overall score above 90.", image: "/badges/badge_perfectionist.png" },
+  { id: "speed_demon", name: "Speed Demon", icon: "Target", description: "Concise, sharp answers with zero rambling.", image: "/badges/speed_demon.png" },
+  { id: "comeback_kid", name: "Comeback Kid", icon: "TrendingUp", description: "Recovered strongly after a weak opening answer.", image: "/badges/comeback_kid.png" },
+  { id: "deep_diver", name: "Deep Diver", icon: "BookOpen", description: "Demonstrated expert depth beyond what was asked.", image: "/badges/deep_diver.png" },
+  { id: "team_player", name: "Team Player", icon: "Users", description: "Highlighted strong collaboration and leadership examples.", image: "/badges/Team_player.png" },
+  { id: "streak_3", name: "On Fire", icon: "Flame", description: "Completed interviews 3 days in a row.", image: "/badges/On_fire.png" },
+  { id: "streak_7", name: "Week Warrior", icon: "Flame", description: "Completed interviews 7 days in a row.", image: "/badges/week_warrior.png" },
 ];
 
 const ICON_MAP: Record<string, any> = {
@@ -122,8 +122,8 @@ export default function ProfilePage() {
   }, [router]);
 
   const currentTier = XP_LEVELS.find(t => t.level === (gData?.level ?? 1)) ?? XP_LEVELS[0];
-  const nextTier    = XP_LEVELS.find(t => t.level === (gData?.level ?? 1) + 1);
-  const myRank      = leaderboard.find(e => e.user_id === user?.id)?.rank ?? null;
+  const nextTier = XP_LEVELS.find(t => t.level === (gData?.level ?? 1) + 1);
+  const myRank = leaderboard.find(e => e.user_id === user?.id)?.rank ?? null;
 
   if (loading) {
     return (
@@ -161,22 +161,22 @@ export default function ProfilePage() {
             onClick={() => setShowSignatureModal(true)}
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900 border border-white/5 hover:border-zinc-700 text-white text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
           >
-            <span className="hidden sm:inline">Craft Your Signature</span>
+            <span className="hidden sm:inline">Draw Signature</span>
           </button>
           <button
             onClick={() => setShowICardModal(true)}
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white text-xs font-bold uppercase tracking-wider shadow-[0_0_15px_rgba(139,92,246,0.3)] hover:shadow-[0_0_25px_rgba(139,92,246,0.5)] transition-all cursor-pointer"
           >
             <IdCard className="w-4 h-4" />
-            <span className="hidden sm:inline">I-Card</span>
+            <span className="hidden sm:inline">View I-Card</span>
           </button>
         </div>
       </header>
-      
+
       {/* Signature Modal */}
-      <SignatureModal 
-        isOpen={showSignatureModal} 
-        onClose={() => setShowSignatureModal(false)} 
+      <SignatureModal
+        isOpen={showSignatureModal}
+        onClose={() => setShowSignatureModal(false)}
         onSaved={handleSignatureSaved}
         userId={user?.id}
       />
@@ -274,7 +274,7 @@ export default function ProfilePage() {
             className="rounded-3xl border border-amber-500/30 bg-gradient-to-r from-zinc-900/80 via-amber-950/20 to-zinc-900/80 backdrop-blur-xl p-6 relative overflow-hidden shadow-[0_0_30px_rgba(245,158,11,0.1)] cursor-pointer group hover:border-amber-400/50 hover:shadow-[0_0_40px_rgba(245,158,11,0.2)] transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
           >
             <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-amber-500/50 to-transparent group-hover:via-amber-400 transition-all duration-700" />
-            
+
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 shrink-0 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-[0_0_15px_rgba(245,158,11,0.5)]">
                 <Trophy className="w-6 h-6 text-white" />
@@ -288,7 +288,7 @@ export default function ProfilePage() {
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-6 self-end sm:self-auto">
               <div className="flex flex-col items-end">
                 <span className="text-lg font-black text-white">
@@ -319,19 +319,18 @@ export default function ProfilePage() {
               return (
                 <div key={tier.level} className="flex items-center shrink-0">
                   <div className={`flex flex-col items-center gap-1.5 ${isCurrent ? "scale-110" : ""} transition-transform`}>
-                    <div className={`relative w-[56px] h-[56px] min-w-[56px] min-h-[56px] rounded-full flex items-center justify-center text-sm font-extrabold border-2 transition-all overflow-hidden shrink-0 aspect-square shadow-lg ${
-                      isCurrent
+                    <div className={`relative w-[56px] h-[56px] min-w-[56px] min-h-[56px] rounded-full flex items-center justify-center text-sm font-extrabold border-2 transition-all overflow-hidden shrink-0 aspect-square shadow-lg ${isCurrent
                         ? `border-white/80 shadow-[0_0_20px_rgba(255,255,255,0.2)] ring-4 ring-white/10`
                         : unlocked
-                        ? `border-white/20 opacity-90 hover:border-white/40`
-                        : "border-white/5 opacity-50 grayscale hover:opacity-70"
-                    }`}>
+                          ? `border-white/20 opacity-90 hover:border-white/40`
+                          : "border-white/5 opacity-50 grayscale hover:opacity-70"
+                      }`}>
                       <div className="absolute inset-0 bg-zinc-950 z-0" />
-                      <Image 
-                        src={tier.image} 
-                        alt={tier.rank} 
-                        fill 
-                        className={`object-cover z-10 transition-transform duration-500 ${isCurrent ? 'scale-110' : ''} ${!unlocked ? 'opacity-30' : ''}`} 
+                      <Image
+                        src={tier.image}
+                        alt={tier.rank}
+                        fill
+                        className={`object-cover z-10 transition-transform duration-500 ${isCurrent ? 'scale-110' : ''} ${!unlocked ? 'opacity-30' : ''}`}
                       />
                       {!unlocked && (
                         <div className="absolute inset-0 z-20 flex items-center justify-center bg-zinc-950/40 backdrop-blur-[2px]">
@@ -342,7 +341,7 @@ export default function ProfilePage() {
                     <span className={`text-[8px] font-bold uppercase tracking-wider ${isCurrent ? "text-white" : unlocked ? "text-zinc-400" : "text-zinc-700"}`}>
                       {tier.rank}
                     </span>
-                    <span className="text-[7px] text-zinc-600">{tier.xp >= 1000 ? `${tier.xp/1000}k` : tier.xp} XP</span>
+                    <span className="text-[7px] text-zinc-600">{tier.xp >= 1000 ? `${tier.xp / 1000}k` : tier.xp} XP</span>
                   </div>
                   {i < XP_LEVELS.length - 1 && (
                     <div className={`w-6 md:w-10 h-0.5 mx-1 rounded-full ${unlocked && (gData?.level ?? 1) > tier.level ? `bg-gradient-to-r ${tier.color}` : "bg-zinc-800"}`} />
@@ -356,8 +355,8 @@ export default function ProfilePage() {
         {/* Tabs */}
         <div className="flex bg-zinc-900/60 p-1.5 rounded-2xl border border-white/5">
           {[
-            { id: "badges",      label: "My Badges",   icon: Award },
-            { id: "leaderboard", label: "Leaderboard",   icon: Crown },
+            { id: "badges", label: "My Badges", icon: Award },
+            { id: "leaderboard", label: "Leaderboard", icon: Crown },
           ].map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -365,9 +364,8 @@ export default function ProfilePage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold tracking-wider uppercase transition-all cursor-pointer ${
-                  isActive ? "bg-zinc-800 text-white shadow" : "text-zinc-500 hover:text-zinc-300"
-                }`}
+                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold tracking-wider uppercase transition-all cursor-pointer ${isActive ? "bg-zinc-800 text-white shadow" : "text-zinc-500 hover:text-zinc-300"
+                  }`}
               >
                 <Icon className={`w-4 h-4 ${isActive ? "text-violet-400" : ""}`} />
                 {tab.label}
@@ -388,7 +386,7 @@ export default function ProfilePage() {
             >
               {(() => {
                 const earnedBadges = ALL_BADGES.filter(badge => (gData?.badges ?? []).includes(badge.id));
-                
+
                 if (earnedBadges.length === 0) {
                   return (
                     <div className="flex flex-col items-center justify-center py-16 px-4 text-center bg-zinc-950/40 rounded-3xl border border-white/5 shadow-inner">
@@ -536,19 +534,19 @@ export default function ProfilePage() {
         </AnimatePresence>
 
       </main>
-      
+
       {/* All Badges Modal */}
       <AnimatePresence>
         {showAllBadgesModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowAllBadgesModal(false)}
               className="absolute inset-0 bg-black/80 backdrop-blur-md"
             />
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -563,7 +561,7 @@ export default function ProfilePage() {
                   <Award className="w-5 h-5 text-violet-400" />
                   All Badges
                 </h3>
-                <button 
+                <button
                   onClick={() => setShowAllBadgesModal(false)}
                   className="w-8 h-8 rounded-full bg-zinc-900 hover:bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
                 >
@@ -576,7 +574,7 @@ export default function ProfilePage() {
                 {ALL_BADGES.map((badge, i) => {
                   const actuallyEarned = (gData?.badges ?? []).includes(badge.id);
                   const Ic = ICON_MAP[badge.icon] || Trophy;
-                  
+
                   // In the All Badges modal, we want to show off the artwork, so we force the 'unlocked' visual state
                   // but we can maybe add a subtle indicator if they don't actually own it, or just let it be fully colorful.
                   // For the bottom row of badges, make the tooltip pop upwards so it doesn't get cut off
@@ -593,15 +591,13 @@ export default function ProfilePage() {
                       </div>
 
                       {/* Custom Tooltip */}
-                      <div className={`absolute left-1/2 -translate-x-1/2 w-48 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-50 transform ${
-                        isBottom 
-                          ? "bottom-[110%] translate-y-[10px] group-hover:translate-y-0" 
+                      <div className={`absolute left-1/2 -translate-x-1/2 w-48 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-50 transform ${isBottom
+                          ? "bottom-[110%] translate-y-[10px] group-hover:translate-y-0"
                           : "top-[110%] translate-y-[-10px] group-hover:translate-y-0"
-                      }`}>
+                        }`}>
                         <div className="bg-zinc-900 border border-white/10 p-3 rounded-xl shadow-2xl backdrop-blur-xl relative flex flex-col items-center text-center">
-                          <div className={`absolute left-1/2 -translate-x-1/2 w-3 h-3 bg-zinc-900 border-white/10 rotate-45 ${
-                            isBottom ? "-bottom-1.5 border-b border-r" : "-top-1.5 border-t border-l"
-                          }`} />
+                          <div className={`absolute left-1/2 -translate-x-1/2 w-3 h-3 bg-zinc-900 border-white/10 rotate-45 ${isBottom ? "-bottom-1.5 border-b border-r" : "-top-1.5 border-t border-l"
+                            }`} />
                           <span className="text-[11px] font-black uppercase tracking-wider mb-1 text-violet-400">
                             {badge.name}
                           </span>
@@ -620,27 +616,27 @@ export default function ProfilePage() {
         {/* Best Interview Modal */}
         {showBestModal && bestInterview && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowBestModal(false)}
               className="absolute inset-0 bg-black/80 backdrop-blur-md"
             />
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               className="relative w-full max-w-2xl bg-zinc-950 border border-amber-500/20 rounded-[2rem] shadow-[0_0_50px_rgba(245,158,11,0.15)] overflow-hidden z-10 max-h-[90vh] flex flex-col"
             >
               <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-900/20 via-zinc-950/80 to-zinc-950/90" />
-              
+
               <div className="relative z-10 p-6 border-b border-white/5 flex items-center justify-between bg-zinc-900/50 backdrop-blur-sm sticky top-0">
                 <h3 className="text-lg font-black text-amber-400 uppercase tracking-widest flex items-center gap-2">
                   <Trophy className="w-5 h-5" />
                   Best Interview Record
                 </h3>
-                <button 
+                <button
                   onClick={() => setShowBestModal(false)}
                   className="w-8 h-8 rounded-full bg-zinc-900 hover:bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
                 >
@@ -649,7 +645,7 @@ export default function ProfilePage() {
               </div>
 
               <div className="relative z-10 p-8 overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent space-y-8">
-                
+
                 {/* Header Stats */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   <div className="bg-zinc-900/50 rounded-2xl p-4 border border-white/5 text-center">
@@ -723,22 +719,22 @@ export default function ProfilePage() {
                     </div>
                   </div>
                 )}
-                
+
               </div>
             </motion.div>
           </div>
         )}
       </AnimatePresence>
-      
+
       {/* 3D Holographic I-Card Modal */}
       <AnimatePresence>
         {showICardModal && (
-          <HolographicICard 
-            user={user} 
-            gData={gData} 
-            stats={stats} 
-            bestInterview={bestInterview} 
-            onClose={() => setShowICardModal(false)} 
+          <HolographicICard
+            user={user}
+            gData={gData}
+            stats={stats}
+            bestInterview={bestInterview}
+            onClose={() => setShowICardModal(false)}
           />
         )}
       </AnimatePresence>
@@ -759,10 +755,10 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
     const y = e.clientY - box.top;
     const centerX = box.width / 2;
     const centerY = box.height / 2;
-    
+
     const rotateXValue = ((y - centerY) / centerY) * -15;
     const rotateYValue = ((x - centerX) / centerX) * 15;
-    
+
     setRotateX(rotateXValue);
     setRotateY(rotateYValue);
   };
@@ -776,7 +772,7 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
     if (!bestInterview) return "Digital Recruit";
     const scores = bestInterview.evaluation_data?.scores;
     if (!scores) return "Digital Recruit";
-    
+
     const s = [
       { key: "technical", name: "System Design Titan", val: scores.technical },
       { key: "communication", name: "Fluent Orator", val: scores.communication },
@@ -784,7 +780,7 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
       { key: "confidence", name: "Unshakable Professional", val: scores.confidence },
     ];
     s.sort((a, b) => b.val - a.val);
-    
+
     if (s[0].val >= 85) return s[0].name;
     const lvl = gData?.level ?? 1;
     if (lvl >= 7) return "Data Prodigy";
@@ -849,7 +845,7 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
     const score = bestInterview?.overall || stats?.highest_score || 0;
     const initial = (user?.username || "A").charCodeAt(0);
     // Use the unique database ID as the ultimate tie-breaker
-    const uid = gData?.user_id || user?.id || 1; 
+    const uid = gData?.user_id || user?.id || 1;
 
     // Determine the user's skill tier so beginners don't get legendary titles
     let tier = 0;
@@ -858,9 +854,9 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
     else if (score >= 20 || level >= 2) tier = 1;
 
     const prefixTiers = [
-      ["The Aspiring", "The Novice", "The Unknown", "The Curious"], 
-      ["The Steadfast", "The Rising", "The Capable", "The Driven"], 
-      ["The Fearless", "The Relentless", "The Ascendant", "The Bold"], 
+      ["The Aspiring", "The Novice", "The Unknown", "The Curious"],
+      ["The Steadfast", "The Rising", "The Capable", "The Driven"],
+      ["The Fearless", "The Relentless", "The Ascendant", "The Bold"],
       ["The Legendary", "The Unstoppable", "The Visionary", "The Enigmatic"]
     ];
 
@@ -887,14 +883,14 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center p-4">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
         className="absolute inset-0 bg-black/90 backdrop-blur-xl"
       />
-      
+
       {/* 3D Container for the Card */}
       <div className="relative z-10 perspective-[1000px] mb-8">
         <motion.div
@@ -917,9 +913,9 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
           >
             {/* Glossy shine effect removed */}
 
-            {/* Inner Red/Orange Fire Background */}
-            <div className="relative flex-1 w-full rounded-md bg-gradient-to-b from-orange-400 via-red-500 to-red-600 shadow-inner flex flex-col p-1.5 overflow-hidden">
-              
+            {/* Inner Obsidian Premium Background */}
+            <div className="relative flex-1 w-full rounded-md bg-gradient-to-br from-slate-900 via-zinc-950 to-black shadow-[inset_0_0_20px_rgba(255,255,255,0.05)] border border-white/10 flex flex-col p-1.5 overflow-hidden">
+
               {/* Texture overlay for the fire */}
               <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-40 mix-blend-overlay pointer-events-none" />
 
@@ -932,13 +928,13 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
               {/* Header Bar */}
               <div className="flex justify-between items-end mb-1 pl-12 pr-1 relative z-10">
                 <div className="flex flex-col">
-                  <span className="text-[8px] italic font-bold text-black/70 mb-[-2px]">Evolves from {gData?.rank_title || "Recruit"}</span>
-                  <h2 className="text-3xl font-black text-black tracking-tighter leading-none" style={{ fontFamily: "impact, sans-serif" }}>
+                  <span className="text-[8px] italic font-bold text-zinc-400 mb-[-2px]">Evolves from {gData?.rank_title || "Recruit"}</span>
+                  <h2 className="text-3xl font-black text-white tracking-tighter leading-none drop-shadow-[0_2px_10px_rgba(255,255,255,0.3)]" style={{ fontFamily: "impact, sans-serif" }}>
                     {user?.username}
                   </h2>
                 </div>
                 <div className="flex items-center gap-1">
-                  <span className="text-2xl font-black text-red-900 drop-shadow-sm leading-none">{gData?.total_xp?.toLocaleString() || 0} XP</span>
+                  <span className="text-2xl font-black text-amber-400 drop-shadow-md leading-none">{gData?.total_xp?.toLocaleString() || 0} XP</span>
                   <div className="w-6 h-6 rounded-full bg-orange-600 border-2 border-yellow-300 flex items-center justify-center shadow-sm">
                     <Flame className="w-3.5 h-3.5 text-yellow-200 fill-yellow-200" />
                   </div>
@@ -947,10 +943,10 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
 
               {/* Main Image Frame (Gold Beveled) */}
               <div className="relative w-full h-[150px] bg-gradient-to-br from-yellow-200 via-yellow-500 to-yellow-700 p-[3px] shadow-[2px_2px_5px_rgba(0,0,0,0.5)] z-10 mb-1">
-                <div className="w-full h-full relative overflow-hidden shadow-inner bg-gradient-to-br from-red-600 via-orange-500 to-yellow-400 flex items-center justify-center">
+                <div className="w-full h-full relative overflow-hidden shadow-inner bg-gradient-to-br from-indigo-600 via-purple-600 to-fuchsia-600 flex items-center justify-center">
                   {/* Starburst effect behind the image */}
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_rgba(0,0,0,0.4)_100%)]" />
-                  
+
                   {/* Profile / Rank Art */}
                   <div className="relative z-10 w-24 h-24 drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">
                     <div className="w-full h-full rounded-full bg-zinc-950 flex items-center justify-center border-4 border-yellow-400">
@@ -971,35 +967,35 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
 
               {/* Abilities & Attacks Section (Redesigned) */}
               <div className="flex-1 flex flex-col px-1 z-10 justify-center">
-                
+
                 {/* Unique Tech Savvy Name */}
                 <div className="text-center max-w-[85%] mx-auto mt-2.5">
-                  <h3 className="text-lg md:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-800 via-red-950 to-red-800 uppercase tracking-tight drop-shadow-sm leading-tight text-balance" style={{ fontFamily: "impact, sans-serif" }}>
+                  <h3 className="text-lg md:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-violet-400 to-fuchsia-400 uppercase tracking-tight drop-shadow-[0_0_15px_rgba(139,92,246,0.8)] leading-tight text-balance" style={{ fontFamily: "impact, sans-serif" }}>
                     {generateUniqueName()}
                   </h3>
                 </div>
-                
+
                 {/* Thin Line */}
-                <div className="w-full h-[1px] bg-black/20 mt-4 mb-2" />
+                <div className="w-full h-[1px] bg-white/15 mt-4 mb-2" />
 
                 {/* Stats row */}
                 <div className="flex justify-around items-center px-2 mb-2">
                   <div className="flex flex-col items-center">
-                    <span className="text-[9px] font-black text-red-900 uppercase tracking-tight">Earned Badges</span>
-                    <span className="text-2xl font-black text-black leading-none">{gData?.badges?.length || 0}</span>
+                    <span className="text-[9px] font-black text-zinc-400 uppercase tracking-tight">Earned Badges</span>
+                    <span className="text-2xl font-black text-white leading-none drop-shadow-md">{gData?.badges?.length || 0}</span>
                   </div>
                   <div className="flex flex-col items-center">
-                    <span className="text-[9px] font-black text-red-900 uppercase tracking-tight">Best Score</span>
-                    <span className="text-2xl font-black text-black leading-none">{bestInterview?.overall || stats?.highest_score || 0}</span>
+                    <span className="text-[9px] font-black text-zinc-400 uppercase tracking-tight">Best Score</span>
+                    <span className="text-2xl font-black text-white leading-none drop-shadow-md">{bestInterview?.overall || stats?.highest_score || 0}</span>
                   </div>
                 </div>
 
                 {/* Unique Signature Box */}
                 <div className="mt-auto mb-2 flex items-center justify-center">
                   {user?.signature_data ? (
-                    <img src={user.signature_data} alt="Signature" className="h-10 object-contain drop-shadow-md" style={{ filter: "drop-shadow(0px 2px 2px rgba(0,0,0,0.3))" }} />
+                    <img src={user.signature_data} alt="Signature" className="h-10 object-contain drop-shadow-md invert" style={{ filter: "drop-shadow(0px 2px 2px rgba(0,0,0,0.8)) invert(1)" }} />
                   ) : (
-                    <div className="text-3xl text-black/90 font-black leading-none -rotate-3 drop-shadow-md" style={{ fontFamily: "'Brush Script MT', cursive, serif" }}>
+                    <div className="text-3xl text-white font-black leading-none -rotate-3 drop-shadow-[0_2px_5px_rgba(0,0,0,0.8)]" style={{ fontFamily: "'Brush Script MT', cursive, serif" }}>
                       {user?.username}
                     </div>
                   )}
@@ -1013,9 +1009,9 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
           </motion.div>
         </motion.div>
       </div>
-      
+
       {/* Social Actions Panel */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 20 }}
@@ -1025,7 +1021,7 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
         <div className="text-xs font-bold text-violet-300 uppercase tracking-widest drop-shadow-md">Share your story</div>
         <div className="flex items-center gap-4 bg-zinc-900/80 backdrop-blur-xl p-3 rounded-2xl border border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
           {/* WhatsApp / Message */}
-          <button 
+          <button
             onClick={(e) => shareToApp("WhatsApp", e)}
             className="w-12 h-12 rounded-xl bg-zinc-800 border border-white/5 hover:border-emerald-500/50 hover:bg-emerald-500/20 text-zinc-300 hover:text-emerald-400 flex items-center justify-center transition-all group"
             title="Share to WhatsApp"
@@ -1034,33 +1030,33 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
           </button>
 
           {/* Instagram */}
-          <button 
+          <button
             onClick={(e) => shareToApp("Instagram", e)}
             className="w-12 h-12 rounded-xl bg-zinc-800 border border-white/5 hover:border-fuchsia-500/50 hover:bg-fuchsia-500/20 text-zinc-300 hover:text-fuchsia-400 flex items-center justify-center transition-all group"
             title="Share to Instagram"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 group-hover:scale-110 transition-transform">
-              <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
-              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-              <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+              <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+              <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
             </svg>
           </button>
 
           {/* Facebook */}
-          <button 
+          <button
             onClick={(e) => shareToApp("Facebook", e)}
             className="w-12 h-12 rounded-xl bg-zinc-800 border border-white/5 hover:border-blue-500/50 hover:bg-blue-500/20 text-zinc-300 hover:text-blue-400 flex items-center justify-center transition-all group"
             title="Share to Facebook"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 group-hover:scale-110 transition-transform">
-              <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+              <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
             </svg>
           </button>
 
           <div className="w-px h-8 bg-white/10 mx-1" />
 
           {/* Download */}
-          <button 
+          <button
             onClick={handleDownload}
             className="w-12 h-12 rounded-xl bg-violet-600 hover:bg-violet-500 text-white flex items-center justify-center transition-all group shadow-[0_0_15px_rgba(139,92,246,0.4)]"
             title="Download Image"
