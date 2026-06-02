@@ -952,8 +952,15 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
                     const seed = encodeURIComponent(generateUniqueName());
                     const avatarUrl = `https://api.dicebear.com/9.x/bottts/svg?seed=${seed}&backgroundColor=transparent`;
                     return (
-                      <div className="relative z-10 w-[90%] h-[95%] drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)] mt-2 hover:scale-105 transition-transform duration-300">
-                        <Image src={avatarUrl} alt="Unique Avatar" fill className="object-contain" unoptimized />
+                      <div className="relative z-10 w-[90%] h-[95%] mt-2 hover:scale-105 transition-transform duration-500 flex items-center justify-center">
+                        {/* Subtle glowing halo behind the robot */}
+                        <div className="absolute inset-0 bg-fuchsia-500/20 blur-[20px] rounded-full mix-blend-screen scale-75" />
+                        <div className="absolute inset-0 bg-cyan-400/20 blur-[15px] rounded-full mix-blend-screen scale-50" />
+                        
+                        {/* The robot with multi-layered shadows and glow */}
+                        <div className="relative w-full h-full" style={{ filter: "drop-shadow(0 20px 25px rgba(0,0,0,0.9)) drop-shadow(0 0 12px rgba(192,132,252,0.6))" }}>
+                          <Image src={avatarUrl} alt="Unique Avatar" fill className="object-contain drop-shadow-xl" unoptimized />
+                        </div>
                       </div>
                     );
                   })()}
