@@ -12,6 +12,7 @@ import Image from "next/image";
 import { API_BASE_URL } from "../config";
 import html2canvas from "html2canvas";
 import { useRef } from "react";
+import SignatureModal from "@/components/SignatureModal";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 interface GamificationData {
@@ -87,6 +88,14 @@ export default function ProfilePage() {
   const [showBestModal, setShowBestModal] = useState(false);
   const [stats, setStats] = useState<any>(null);
   const [showICardModal, setShowICardModal] = useState(false);
+  const [showSignatureModal, setShowSignatureModal] = useState(false);
+
+  const handleSignatureSaved = (dataUrl: string) => {
+    if (!user) return;
+    const updatedUser = { ...user, signature_data: dataUrl };
+    setUser(updatedUser);
+    localStorage.setItem("hiremind_user", JSON.stringify(updatedUser));
+  };
 
   useEffect(() => {
     const session = localStorage.getItem("hiremind_user");
@@ -147,14 +156,30 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <button
-          onClick={() => setShowICardModal(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white text-xs font-bold uppercase tracking-wider shadow-[0_0_15px_rgba(139,92,246,0.3)] hover:shadow-[0_0_25px_rgba(139,92,246,0.5)] transition-all cursor-pointer"
-        >
-          <IdCard className="w-4 h-4" />
-          <span className="hidden sm:inline">View I-Card</span>
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowSignatureModal(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900 border border-white/5 hover:border-zinc-700 text-white text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
+          >
+            <span className="hidden sm:inline">Draw Signature</span>
+          </button>
+          <button
+            onClick={() => setShowICardModal(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white text-xs font-bold uppercase tracking-wider shadow-[0_0_15px_rgba(139,92,246,0.3)] hover:shadow-[0_0_25px_rgba(139,92,246,0.5)] transition-all cursor-pointer"
+          >
+            <IdCard className="w-4 h-4" />
+            <span className="hidden sm:inline">View I-Card</span>
+          </button>
+        </div>
       </header>
+      
+      {/* Signature Modal */}
+      <SignatureModal 
+        isOpen={showSignatureModal} 
+        onClose={() => setShowSignatureModal(false)} 
+        onSaved={handleSignatureSaved}
+        userId={user?.id}
+      />
 
       <main className="max-w-5xl mx-auto px-4 md:px-8 py-10 space-y-8">
 
@@ -971,9 +996,13 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
 
                 {/* Unique Signature Box */}
                 <div className="mt-auto mb-2 flex items-center justify-center">
-                  <div className="text-3xl text-black/90 font-black leading-none -rotate-3 drop-shadow-md" style={{ fontFamily: "'Brush Script MT', cursive, serif" }}>
-                    {user?.username}
-                  </div>
+                  {user?.signature_data ? (
+                    <img src={user.signature_data} alt="Signature" className="h-10 object-contain drop-shadow-md" style={{ filter: "drop-shadow(0px 2px 2px rgba(0,0,0,0.3))" }} />
+                  ) : (
+                    <div className="text-3xl text-black/90 font-black leading-none -rotate-3 drop-shadow-md" style={{ fontFamily: "'Brush Script MT', cursive, serif" }}>
+                      {user?.username}
+                    </div>
+                  )}
                 </div>
 
               </div>
