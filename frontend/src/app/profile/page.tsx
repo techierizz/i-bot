@@ -938,18 +938,18 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
               </div>
 
               {/* Middle Gold Ribbon */}
-              <div className="w-[104%] -ml-[2%] bg-gradient-to-r from-yellow-600 via-yellow-300 to-yellow-600 border border-yellow-700 py-0.5 px-2 text-center shadow-sm z-10 mb-2">
-                <p className="text-[7px] font-bold text-black/80 italic tracking-wide">
-                  NO. 001 Candidate HT: 5'10" WT: 150 lbs. Inter: {stats?.total_interviews || 0}
-                </p>
+              <div className="w-[104%] -ml-[2%] bg-gradient-to-r from-yellow-600 via-yellow-300 to-yellow-600 border border-yellow-700 py-1 flex items-center justify-center shadow-sm z-10">
+                <span className="text-[12px] font-black tracking-[0.5em] uppercase text-black/80 drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)] ml-[0.5em]" style={{ fontFamily: "impact, sans-serif" }}>
+                  I-CARD
+                </span>
               </div>
 
               {/* Abilities & Attacks Section (Redesigned) */}
               <div className="flex-1 flex flex-col px-1 z-10 justify-center">
                 
                 {/* Unique Tech Savvy Name */}
-                <div className="text-center">
-                  <h3 className="text-lg md:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-800 via-red-950 to-red-800 uppercase tracking-tighter drop-shadow-sm leading-none" style={{ fontFamily: "impact, sans-serif" }}>
+                <div className="text-center max-w-[85%] mx-auto mt-2">
+                  <h3 className="text-lg md:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-800 via-red-950 to-red-800 uppercase tracking-tight drop-shadow-sm leading-tight text-balance" style={{ fontFamily: "impact, sans-serif" }}>
                     {generateUniqueName()}
                   </h3>
                 </div>
