@@ -878,7 +878,7 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
           exit={{ opacity: 0, scale: 0.8, rotateY: 90 }}
           transition={{ type: "spring", damping: 20, stiffness: 100 }}
           style={{ transformStyle: "preserve-3d" }}
-          className="relative w-full max-w-[340px] aspect-[1/1.65] flex items-center justify-center"
+          className="relative w-full max-w-[340px] aspect-[1/1.45] flex items-center justify-center"
         >
           {/* We attach the ref to this inner div so html2canvas renders a flat, unrotated version by temporarily ignoring transforms, or we can just capture it as is (html2canvas ignores 3D transforms mostly, which is good for 2D capture). */}
           <motion.div
@@ -948,7 +948,7 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
               <div className="flex-1 flex flex-col px-1 z-10 justify-center">
                 
                 {/* Unique Tech Savvy Name */}
-                <div className="text-center max-w-[85%] mx-auto mt-0.5">
+                <div className="text-center max-w-[85%] mx-auto mt-2.5">
                   <h3 className="text-lg md:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-800 via-red-950 to-red-800 uppercase tracking-tight drop-shadow-sm leading-tight text-balance" style={{ fontFamily: "impact, sans-serif" }}>
                     {generateUniqueName()}
                   </h3>
