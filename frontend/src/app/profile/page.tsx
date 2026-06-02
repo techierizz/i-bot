@@ -950,20 +950,19 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.07)_0%,_transparent_60%)]" />
 
                   {/* Profile / Rank Art */}
-                  {/* Profile / Rank Art */}
                   {(() => {
                     const seed = encodeURIComponent(generateUniqueName());
-                    const avatarUrl = `https://api.dicebear.com/9.x/bottts/svg?seed=${seed}&backgroundColor=transparent&scale=90`;
+                    const avatarUrl = `https://robohash.org/${seed}.png?set=set1&size=400x400`;
                     
                     return (
-                      <div className="relative z-10 w-[90%] h-[95%] mt-2 hover:scale-105 transition-transform duration-500 flex items-center justify-center">
+                      <div className="relative z-10 w-[95%] h-[95%] mt-2 hover:scale-105 transition-transform duration-500 flex items-center justify-center">
                         {/* Subtle glowing halo behind the robot */}
                         <div className="absolute inset-0 bg-fuchsia-500/20 blur-[20px] rounded-full mix-blend-screen scale-75" />
                         <div className="absolute inset-0 bg-cyan-400/20 blur-[15px] rounded-full mix-blend-screen scale-50" />
                         
-                        {/* The robot with multi-layered shadows, contrast, and saturation for a premium look */}
-                        <div className="relative w-full h-full" style={{ filter: "drop-shadow(0 20px 25px rgba(0,0,0,0.9)) drop-shadow(0 0 12px rgba(192,132,252,0.6)) saturate(1.2) contrast(1.1)" }}>
-                          <Image src={avatarUrl} alt="Unique Avatar" fill className="object-contain drop-shadow-xl" unoptimized />
+                        {/* The highly-detailed 3D Robohash robot with ambient shadows */}
+                        <div className="relative w-full h-full" style={{ filter: "drop-shadow(0 20px 25px rgba(0,0,0,0.9)) drop-shadow(0 0 15px rgba(192,132,252,0.4)) saturate(1.15) contrast(1.1)" }}>
+                          <Image src={avatarUrl} alt="Unique 3D Avatar" fill className="object-contain drop-shadow-2xl" unoptimized />
                         </div>
                       </div>
                     );
