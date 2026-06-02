@@ -869,11 +869,7 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
             style={{ transformStyle: "preserve-3d" }}
             className="w-full h-full relative rounded-[1rem] bg-yellow-400 p-[12px] shadow-[0_0_50px_rgba(250,204,21,0.4)] cursor-pointer flex flex-col"
           >
-            {/* Glossy shine effect overlaid on the whole card */}
-            <div 
-              className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/30 to-white/0 pointer-events-none z-50 rounded-[1rem]"
-              style={{ transform: `translateZ(20px) translateX(${rotateY * 3}px) translateY(${rotateX * -3}px)` }}
-            />
+            {/* Glossy shine effect removed */}
 
             {/* Inner Red/Orange Fire Background */}
             <div className="relative flex-1 w-full rounded-md bg-gradient-to-b from-orange-400 via-red-500 to-red-600 shadow-inner flex flex-col p-1.5 overflow-hidden">
@@ -953,7 +949,7 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
                 </div>
 
                 {/* Unique Signature Box */}
-                <div className="mt-auto mb-1 bg-black/5 rounded flex flex-col items-center justify-center p-1.5 border border-black/10 shadow-inner">
+                <div className="mt-4 mb-4 bg-black/5 rounded flex flex-col items-center justify-center p-2 border border-black/10 shadow-inner">
                   <span className="text-[6px] font-black text-black/60 uppercase tracking-widest mb-0.5">Candidate Signature</span>
                   <div className="text-xl text-black/80 font-black leading-none" style={{ fontFamily: "'Brush Script MT', cursive, serif" }}>
                     {user?.username}
@@ -962,35 +958,7 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
 
               </div>
 
-              {/* Footer Section */}
-              <div className="pt-1 border-t border-black/30 flex justify-between items-end z-10">
-                <div className="flex gap-4">
-                  <div className="text-center">
-                    <div className="text-[6px] font-bold text-black">weakness</div>
-                    <div className="w-3 h-3 rounded-full bg-blue-500 border border-white mx-auto mt-0.5" />
-                  </div>
-                  <div className="text-center">
-                    <div className="text-[6px] font-bold text-black">resistance</div>
-                    <div className="text-[8px] font-black text-black mt-0.5">-30</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-[6px] font-bold text-black">retreat cost</div>
-                    <div className="w-3 h-3 rounded-full bg-zinc-400 border border-white mx-auto mt-0.5" />
-                  </div>
-                </div>
-                <div className="w-24 p-1 border border-black/20 bg-white/10 rounded-sm">
-                  <p className="text-[5px] text-black italic leading-[1.2]">
-                    This unique candidate was generated using HireMind logic. Highly effective in professional environments.
-                  </p>
-                </div>
-              </div>
-
-              {/* Bottom Copyright */}
-              <div className="flex justify-between items-center w-full px-1 mt-1 z-10">
-                <span className="text-[5px] font-bold text-black">Illus. HireMind AI</span>
-                <span className="text-[5px] font-bold text-black">©2026 HireMind</span>
-                <span className="text-[5px] font-bold text-black">001/108 ★</span>
-              </div>
+              {/* Removed Footer and Copyright */}
 
             </div>
           </motion.div>
