@@ -949,17 +949,21 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
 
                   {/* Profile / Rank Art */}
                   {(() => {
-                    const seed = encodeURIComponent(generateUniqueName());
-                    const avatarUrl = `https://api.dicebear.com/9.x/bottts/svg?seed=${seed}&backgroundColor=transparent`;
+                    const nameStr = generateUniqueName();
+                    let hash = 0;
+                    for (let i = 0; i < nameStr.length; i++) hash = nameStr.charCodeAt(i) + ((hash << 5) - hash);
+                    const hueDeg = Math.abs(hash) % 360;
+                    const tier = XP_LEVELS.find(t => t.level === (gData?.level ?? 1)) ?? XP_LEVELS[0];
+
                     return (
                       <div className="relative z-10 w-[90%] h-[95%] mt-2 hover:scale-105 transition-transform duration-500 flex items-center justify-center">
-                        {/* Subtle glowing halo behind the robot */}
+                        {/* Subtle glowing halo behind the art */}
                         <div className="absolute inset-0 bg-fuchsia-500/20 blur-[20px] rounded-full mix-blend-screen scale-75" />
                         <div className="absolute inset-0 bg-cyan-400/20 blur-[15px] rounded-full mix-blend-screen scale-50" />
                         
-                        {/* The robot with multi-layered shadows and glow */}
-                        <div className="relative w-full h-full" style={{ filter: "drop-shadow(0 20px 25px rgba(0,0,0,0.9)) drop-shadow(0 0 12px rgba(192,132,252,0.6))" }}>
-                          <Image src={avatarUrl} alt="Unique Avatar" fill className="object-contain drop-shadow-xl" unoptimized />
+                        {/* The premium Rank image with unique hue rotation and multi-layered shadows */}
+                        <div className="relative w-full h-full" style={{ filter: `drop-shadow(0 20px 25px rgba(0,0,0,0.9)) drop-shadow(0 0 12px rgba(192,132,252,0.6)) hue-rotate(${hueDeg}deg)` }}>
+                          <Image src={tier.image} alt="Premium Avatar" fill className="object-contain drop-shadow-xl" />
                         </div>
                       </div>
                     );
