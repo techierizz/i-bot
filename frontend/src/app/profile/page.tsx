@@ -948,14 +948,14 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
               <div className="flex-1 flex flex-col px-1 z-10 justify-center">
                 
                 {/* Unique Tech Savvy Name */}
-                <div className="text-center max-w-[85%] mx-auto mt-2">
+                <div className="text-center max-w-[85%] mx-auto mt-0.5">
                   <h3 className="text-lg md:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-800 via-red-950 to-red-800 uppercase tracking-tight drop-shadow-sm leading-tight text-balance" style={{ fontFamily: "impact, sans-serif" }}>
                     {generateUniqueName()}
                   </h3>
                 </div>
                 
                 {/* Thin Line */}
-                <div className="w-full h-[1px] bg-black/20 my-2" />
+                <div className="w-full h-[1px] bg-black/20 mt-4 mb-2" />
 
                 {/* Stats row */}
                 <div className="flex justify-around items-center px-2 mb-2">
@@ -970,9 +970,8 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
                 </div>
 
                 {/* Unique Signature Box */}
-                <div className="mt-4 mb-4 bg-black/5 rounded flex flex-col items-center justify-center p-2 border border-black/10 shadow-inner">
-                  <span className="text-[6px] font-black text-black/60 uppercase tracking-widest mb-0.5">Candidate Signature</span>
-                  <div className="text-xl text-black/80 font-black leading-none" style={{ fontFamily: "'Brush Script MT', cursive, serif" }}>
+                <div className="mt-auto mb-2 flex items-center justify-center">
+                  <div className="text-3xl text-black/90 font-black leading-none -rotate-3 drop-shadow-md" style={{ fontFamily: "'Brush Script MT', cursive, serif" }}>
                     {user?.username}
                   </div>
                 </div>
