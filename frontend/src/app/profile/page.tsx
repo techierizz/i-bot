@@ -943,25 +943,27 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
 
               {/* Main Image Frame (Gold Beveled) */}
               <div className="relative w-full h-[150px] bg-gradient-to-br from-yellow-200 via-yellow-500 to-yellow-700 p-[3px] shadow-[2px_2px_5px_rgba(0,0,0,0.5)] z-10 mb-1">
-                <div className="w-full h-full relative overflow-hidden shadow-inner bg-gradient-to-br from-indigo-600 via-purple-600 to-fuchsia-600 flex items-center justify-center">
-                  {/* Starburst effect behind the image */}
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_rgba(0,0,0,0.4)_100%)]" />
+                <div className="w-full h-full relative overflow-hidden shadow-[inset_0_0_30px_rgba(0,0,0,0.9)] bg-zinc-950 flex items-center justify-center">
+                  {/* Premium Tech Grid */}
+                  <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:16px_16px]" />
+                  {/* Soft central spotlight */}
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.07)_0%,_transparent_60%)]" />
 
                   {/* Profile / Rank Art */}
                   {/* Profile / Rank Art */}
                   {(() => {
                     const seed = encodeURIComponent(generateUniqueName());
-                    const avatarUrl = `https://api.dicebear.com/9.x/micah/svg?seed=${seed}&backgroundColor=transparent`;
+                    const avatarUrl = `https://api.dicebear.com/9.x/bottts/svg?seed=${seed}&backgroundColor=transparent&scale=90`;
                     
                     return (
                       <div className="relative z-10 w-[90%] h-[95%] mt-2 hover:scale-105 transition-transform duration-500 flex items-center justify-center">
-                        {/* Subtle glowing halo behind the portrait */}
+                        {/* Subtle glowing halo behind the robot */}
                         <div className="absolute inset-0 bg-fuchsia-500/20 blur-[20px] rounded-full mix-blend-screen scale-75" />
                         <div className="absolute inset-0 bg-cyan-400/20 blur-[15px] rounded-full mix-blend-screen scale-50" />
                         
-                        {/* The highly polished character portrait with deep 3D shadows */}
-                        <div className="relative w-full h-full" style={{ filter: "drop-shadow(0 20px 25px rgba(0,0,0,0.9)) drop-shadow(0 0 12px rgba(192,132,252,0.6))" }}>
-                          <Image src={avatarUrl} alt="Premium Avatar" fill className="object-contain drop-shadow-xl" unoptimized />
+                        {/* The robot with multi-layered shadows, contrast, and saturation for a premium look */}
+                        <div className="relative w-full h-full" style={{ filter: "drop-shadow(0 20px 25px rgba(0,0,0,0.9)) drop-shadow(0 0 12px rgba(192,132,252,0.6)) saturate(1.2) contrast(1.1)" }}>
+                          <Image src={avatarUrl} alt="Unique Avatar" fill className="object-contain drop-shadow-xl" unoptimized />
                         </div>
                       </div>
                     );
