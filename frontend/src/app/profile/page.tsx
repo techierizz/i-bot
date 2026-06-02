@@ -161,14 +161,14 @@ export default function ProfilePage() {
             onClick={() => setShowSignatureModal(true)}
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900 border border-white/5 hover:border-zinc-700 text-white text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
           >
-            <span className="hidden sm:inline">Draw Signature</span>
+            <span className="hidden sm:inline">Craft Your Signature</span>
           </button>
           <button
             onClick={() => setShowICardModal(true)}
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white text-xs font-bold uppercase tracking-wider shadow-[0_0_15px_rgba(139,92,246,0.3)] hover:shadow-[0_0_25px_rgba(139,92,246,0.5)] transition-all cursor-pointer"
           >
             <IdCard className="w-4 h-4" />
-            <span className="hidden sm:inline">View I-Card</span>
+            <span className="hidden sm:inline">I-Card</span>
           </button>
         </div>
       </header>
