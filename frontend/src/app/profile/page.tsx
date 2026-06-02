@@ -948,19 +948,15 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_rgba(0,0,0,0.4)_100%)]" />
 
                   {/* Profile / Rank Art */}
-                  <div className="relative z-10 w-24 h-24 drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">
-                    <div className="w-full h-full rounded-full bg-white flex items-center justify-center border-4 border-yellow-400 overflow-hidden relative shadow-[inset_0_0_10px_rgba(0,0,0,0.2)]">
-                      {(() => {
-                        const seed = encodeURIComponent(generateUniqueName());
-                        const avatarUrl = `https://api.dicebear.com/9.x/bottts/svg?seed=${seed}&backgroundColor=transparent`;
-                        return (
-                          <div className="relative w-[90%] h-[90%] drop-shadow-md">
-                            <Image src={avatarUrl} alt="Unique Avatar" fill className="object-contain" unoptimized />
-                          </div>
-                        );
-                      })()}
-                    </div>
-                  </div>
+                  {(() => {
+                    const seed = encodeURIComponent(generateUniqueName());
+                    const avatarUrl = `https://api.dicebear.com/9.x/bottts/svg?seed=${seed}&backgroundColor=transparent`;
+                    return (
+                      <div className="relative z-10 w-[90%] h-[95%] drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)] mt-2 hover:scale-105 transition-transform duration-300">
+                        <Image src={avatarUrl} alt="Unique Avatar" fill className="object-contain" unoptimized />
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
 
