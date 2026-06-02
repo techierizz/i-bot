@@ -928,8 +928,8 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
               {/* Header Bar */}
               <div className="flex justify-between items-end mb-1 pl-12 pr-1 relative z-10">
                 <div className="flex flex-col">
-                  <span className="text-[8px] italic font-bold text-zinc-400 mb-[-2px]">Evolves from {gData?.rank_title || "Recruit"}</span>
-                  <h2 className="text-3xl font-black text-white tracking-tighter leading-none drop-shadow-[0_2px_10px_rgba(255,255,255,0.3)]" style={{ fontFamily: "impact, sans-serif" }}>
+                  <span className="text-[8px] italic font-bold text-zinc-200 mb-0.5">Evolves from {gData?.rank_title || "Recruit"}</span>
+                  <h2 className="text-2xl font-bold text-white tracking-widest uppercase leading-none drop-shadow-md">
                     {user?.username}
                   </h2>
                 </div>
@@ -968,9 +968,8 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
               {/* Abilities & Attacks Section (Redesigned) */}
               <div className="flex-1 flex flex-col px-1 z-10 justify-center">
 
-                {/* Unique Tech Savvy Name */}
                 <div className="text-center max-w-[85%] mx-auto mt-2.5">
-                  <h3 className="text-lg md:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-violet-400 to-fuchsia-400 uppercase tracking-tight drop-shadow-[0_0_15px_rgba(139,92,246,0.8)] leading-tight text-balance" style={{ fontFamily: "impact, sans-serif" }}>
+                  <h3 className="text-lg md:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-violet-400 to-fuchsia-400 uppercase tracking-tight leading-tight text-balance" style={{ fontFamily: "impact, sans-serif" }}>
                     {generateUniqueName()}
                   </h3>
                 </div>
