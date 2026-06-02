@@ -164,7 +164,7 @@ def authenticate_user(username: str, password: str, role: str = "candidate") -> 
     conn = get_db_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
     
-    cursor.execute("SELECT id, username, email, password_hash, role FROM users WHERE username = %s AND role = %s", (username, role))
+    cursor.execute("SELECT id, username, email, password_hash, role, signature_data FROM users WHERE username = %s AND role = %s", (username, role))
     user_row = cursor.fetchone()
     conn.close()
     
@@ -173,9 +173,25 @@ def authenticate_user(username: str, password: str, role: str = "candidate") -> 
             "id": user_row["id"],
             "username": user_row["username"],
             "email": user_row["email"],
-            "role": user_row["role"]
+            "role": user_row["role"],
+            "signature_data": user_row.get("signature_data")
         }
     return None
+
+def update_signature(user_id: int, signature_data: str) -> bool:
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("UPDATE users SET signature_data = %s WHERE id = %s", (signature_data, user_id))
+        updated = cursor.rowcount > 0
+        conn.commit()
+        return updated
+    except Exception as e:
+        conn.rollback()
+        print(f"Error updating signature: {e}")
+        return False
+    finally:
+        conn.close()
 
 def _enforce_rolling_window(cursor, user_id: int):
     cursor.execute("SELECT id, overall, evaluation_data FROM evaluations WHERE user_id = %s ORDER BY created_at DESC", (user_id,))
