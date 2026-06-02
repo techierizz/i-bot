@@ -845,87 +845,123 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
             animate={{ rotateX, rotateY }}
             transition={{ type: "spring", damping: 20, stiffness: 300, mass: 0.5 }}
             style={{ transformStyle: "preserve-3d" }}
-            className="w-full h-full relative rounded-3xl overflow-hidden bg-zinc-950 border border-violet-500/50 shadow-[0_0_50px_rgba(139,92,246,0.5)] cursor-pointer flex flex-col"
+            className="w-full h-full relative rounded-[1rem] bg-yellow-400 p-[12px] shadow-[0_0_50px_rgba(250,204,21,0.4)] cursor-pointer flex flex-col"
           >
-            {/* Holographic background layers */}
-            <div className="absolute inset-0 bg-gradient-to-br from-violet-900/80 via-zinc-950 to-fuchsia-900/80" />
-            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-40 mix-blend-overlay" />
-            <div className="absolute top-[-20%] right-[-20%] w-[200px] h-[200px] bg-fuchsia-500/30 blur-[60px] rounded-full pointer-events-none" />
-            <div className="absolute bottom-[-20%] left-[-20%] w-[200px] h-[200px] bg-violet-500/30 blur-[60px] rounded-full pointer-events-none" />
-
-            {/* Glossy shine effect */}
+            {/* Glossy shine effect overlaid on the whole card */}
             <div 
-              className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/20 to-white/0 pointer-events-none"
+              className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/30 to-white/0 pointer-events-none z-50 rounded-[1rem]"
               style={{ transform: `translateZ(20px) translateX(${rotateY * 3}px) translateY(${rotateX * -3}px)` }}
             />
 
-            <div className="relative z-10 p-6 flex flex-col h-full" style={{ transform: "translateZ(30px)" }}>
-              {/* Header */}
-              <div className="flex justify-between items-center mb-6">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center shadow-lg">
-                    <BrainCircuit className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <h2 className="text-xs font-black text-white uppercase tracking-widest leading-none">HireMind</h2>
-                    <p className="text-[9px] text-violet-300 uppercase tracking-wider font-semibold">Official ID</p>
-                  </div>
-                </div>
-                <IdCard className="w-6 h-6 text-violet-400 opacity-60" />
+            {/* Inner Red/Orange Fire Background */}
+            <div className="relative flex-1 w-full rounded-md bg-gradient-to-b from-orange-400 via-red-500 to-red-600 shadow-inner flex flex-col p-1.5 overflow-hidden">
+              
+              {/* Texture overlay for the fire */}
+              <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-40 mix-blend-overlay pointer-events-none" />
+
+              {/* Stage Badge (Top Left Overlapping) */}
+              <div className="absolute -top-3 -left-3 bg-gradient-to-br from-yellow-200 to-yellow-600 border border-yellow-700 shadow-md p-1 z-20 flex flex-col items-center justify-center transform -rotate-6" style={{ width: "50px", height: "50px", clipPath: "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)" }}>
+                <span className="text-[6px] font-black uppercase text-black leading-none mt-1">Stage</span>
+                <span className="text-sm font-black text-black leading-none">{gData?.level || 1}</span>
               </div>
 
-              {/* Center Profile Info */}
-              <div className="flex flex-col items-center flex-1 justify-center space-y-4">
-                <div 
-                  className="w-24 h-24 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-600 p-1 shadow-[0_0_40px_rgba(139,92,246,0.6)]"
-                  style={{ transform: "translateZ(40px)" }}
-                >
-                  <div className="w-full h-full rounded-full bg-zinc-950 flex items-center justify-center border-[3px] border-zinc-950 relative overflow-hidden">
-                    <span className="text-[40px] font-black text-transparent bg-clip-text bg-gradient-to-br from-violet-300 to-fuchsia-300 drop-shadow-md">
-                      {user?.username.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
+              {/* Header Bar */}
+              <div className="flex justify-between items-end mb-1 pl-10 pr-1 relative z-10">
+                <div className="flex flex-col">
+                  <span className="text-[6px] italic font-bold text-black/70 mb-[-2px]">Evolves from {gData?.rank_title || "Recruit"}</span>
+                  <h2 className="text-xl font-black text-black tracking-tighter leading-none" style={{ fontFamily: "impact, sans-serif" }}>
+                    {user?.username}
+                  </h2>
                 </div>
-
-                <div className="text-center w-full" style={{ transform: "translateZ(35px)" }}>
-                  <h3 className="text-3xl font-black text-white tracking-tight break-words">{user?.username}</h3>
-                  <div className="inline-flex items-center justify-center mt-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 border border-violet-500/40 shadow-inner">
-                    <span className="text-xs font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-300 to-fuchsia-300 uppercase tracking-widest">{title}</span>
+                <div className="flex items-center gap-1">
+                  <span className="text-lg font-black text-red-900 drop-shadow-sm leading-none">{gData?.total_xp?.toLocaleString() || 0} XP</span>
+                  <div className="w-5 h-5 rounded-full bg-orange-600 border-2 border-yellow-300 flex items-center justify-center shadow-sm">
+                    <Flame className="w-3 h-3 text-yellow-200 fill-yellow-200" />
                   </div>
                 </div>
               </div>
 
-              {/* Data Grid Section */}
-              <div className="bg-zinc-950/50 backdrop-blur-md rounded-2xl p-4 border border-white/10 mt-6" style={{ transform: "translateZ(25px)" }}>
+              {/* Main Image Frame (Gold Beveled) */}
+              <div className="relative w-full aspect-[4/3] bg-gradient-to-br from-yellow-200 via-yellow-500 to-yellow-700 p-[3px] shadow-[2px_2px_5px_rgba(0,0,0,0.5)] z-10 mb-1">
+                <div className="w-full h-full relative overflow-hidden shadow-inner bg-gradient-to-br from-red-600 via-orange-500 to-yellow-400 flex items-center justify-center">
+                  {/* Starburst effect behind the image */}
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_rgba(0,0,0,0.4)_100%)]" />
+                  
+                  {/* Profile / Rank Art */}
+                  <div className="relative z-10 w-24 h-24 drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">
+                    <div className="w-full h-full rounded-full bg-zinc-950 flex items-center justify-center border-4 border-yellow-400">
+                      <span className="text-5xl font-black text-yellow-400">
+                        {user?.username.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Middle Gold Ribbon */}
+              <div className="w-[104%] -ml-[2%] bg-gradient-to-r from-yellow-600 via-yellow-300 to-yellow-600 border border-yellow-700 py-0.5 px-2 text-center shadow-sm z-10 mb-2">
+                <p className="text-[7px] font-bold text-black/80 italic tracking-wide">
+                  NO. 001 Candidate HT: 5'10" WT: 150 lbs. Badges: {gData?.badges?.length || 0}
+                </p>
+              </div>
+
+              {/* Abilities & Attacks Section */}
+              <div className="flex-1 flex flex-col px-1 z-10">
+                {/* Ability */}
+                <div className="mb-2">
+                  <h4 className="text-sm font-black text-red-900 italic tracking-tight">Ability: Fluent Orator</h4>
+                  <p className="text-[8px] font-medium text-black leading-tight mt-0.5">
+                    All communication responses are highly structured. Nullifies the effect of filler words.
+                  </p>
+                </div>
                 
-                {/* Level & Rank Strip */}
-                <div className="flex justify-between items-center border-b border-white/10 pb-3 mb-3">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] text-zinc-400 uppercase tracking-wider font-bold">Current Rank</span>
-                    <span className="text-sm font-black text-white uppercase tracking-wider">{gData?.rank_title || "Recruit"}</span>
+                <div className="w-full h-px bg-black/30 my-1" />
+
+                {/* Attack */}
+                <div className="flex justify-between items-center mt-1">
+                  <div className="flex items-center gap-1">
+                    <div className="flex gap-0.5">
+                      <div className="w-3 h-3 rounded-full bg-orange-600 border border-yellow-300 flex items-center justify-center"><Flame className="w-2 h-2 text-white" /></div>
+                      <div className="w-3 h-3 rounded-full bg-orange-600 border border-yellow-300 flex items-center justify-center"><Flame className="w-2 h-2 text-white" /></div>
+                      <div className="w-3 h-3 rounded-full bg-orange-600 border border-yellow-300 flex items-center justify-center"><Flame className="w-2 h-2 text-white" /></div>
+                    </div>
+                    <span className="text-sm font-black text-black ml-1">{title}</span>
                   </div>
-                  <div className="flex flex-col items-end">
-                    <span className="text-[10px] text-zinc-400 uppercase tracking-wider font-bold">Level</span>
-                    <span className="text-xl font-black text-violet-400 leading-none">{gData?.level || 1}</span>
+                  <span className="text-lg font-black text-black">{bestInterview?.overall || stats?.highest_score || 0}</span>
+                </div>
+                <p className="text-[8px] font-medium text-black leading-tight mt-1">
+                  Discard 3 doubts attached to this Candidate. This attack does {bestInterview?.overall || 0} damage to the interviewer's expectations.
+                </p>
+              </div>
+
+              {/* Footer Section */}
+              <div className="mt-auto pt-1 border-t border-black/30 flex justify-between items-end z-10">
+                <div className="flex gap-4">
+                  <div className="text-center">
+                    <div className="text-[6px] font-bold text-black">weakness</div>
+                    <div className="w-3 h-3 rounded-full bg-blue-500 border border-white mx-auto mt-0.5" />
+                  </div>
+                  <div className="text-center">
+                    <div className="text-[6px] font-bold text-black">resistance</div>
+                    <div className="text-[8px] font-black text-black mt-0.5">-30</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-[6px] font-bold text-black">retreat cost</div>
+                    <div className="w-3 h-3 rounded-full bg-zinc-400 border border-white mx-auto mt-0.5" />
                   </div>
                 </div>
-
-                {/* 3 Stats */}
-                <div className="grid grid-cols-3 gap-2 divide-x divide-white/10">
-                  <div className="flex flex-col items-center justify-center">
-                    <span className="text-lg font-black text-fuchsia-400">{gData?.total_xp?.toLocaleString() || 0}</span>
-                    <span className="text-[8px] text-zinc-500 uppercase tracking-wider font-bold mt-1">Total XP</span>
-                  </div>
-                  <div className="flex flex-col items-center justify-center">
-                    <span className="text-lg font-black text-emerald-400">{gData?.badges?.length || 0}</span>
-                    <span className="text-[8px] text-zinc-500 uppercase tracking-wider font-bold mt-1">Badges</span>
-                  </div>
-                  <div className="flex flex-col items-center justify-center">
-                    <span className="text-lg font-black text-amber-400">{bestInterview?.overall || stats?.highest_score || 0}</span>
-                    <span className="text-[8px] text-zinc-500 uppercase tracking-wider font-bold mt-1">Best Score</span>
-                  </div>
+                <div className="w-24 p-1 border border-black/20 bg-white/10 rounded-sm">
+                  <p className="text-[5px] text-black italic leading-[1.2]">
+                    Its logic can carry this Candidate close to an altitude of 4,600 feet. It blows out fire at very high temperatures.
+                  </p>
                 </div>
+              </div>
 
+              {/* Bottom Copyright */}
+              <div className="flex justify-between items-center w-full px-1 mt-1 z-10">
+                <span className="text-[5px] font-bold text-black">Illus. HireMind AI</span>
+                <span className="text-[5px] font-bold text-black">©2026 HireMind</span>
+                <span className="text-[5px] font-bold text-black">001/108 ★</span>
               </div>
 
             </div>
