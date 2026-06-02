@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Save, Eraser } from "lucide-react";
+import { API_BASE_URL } from "../app/config";
 
 interface SignatureModalProps {
   isOpen: boolean;
@@ -29,7 +30,7 @@ export default function SignatureModal({ isOpen, onClose, onSaved, userId }: Sig
 
     setIsSaving(true);
     try {
-      const res = await fetch(`http://localhost:8000/api/user/${userId}/signature`, {
+      const res = await fetch(`${API_BASE_URL}/api/user/${userId}/signature`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
