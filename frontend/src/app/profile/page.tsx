@@ -933,11 +933,34 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
                     {user?.username}
                   </h2>
                 </div>
-                <div className="flex items-center gap-1.5 bg-black/50 border border-white/10 rounded-full pl-3 pr-1.5 py-1 backdrop-blur-md shadow-[inset_0_2px_5px_rgba(0,0,0,0.5)] mb-1">
-                  <span className="text-xl font-black text-amber-400 drop-shadow-md leading-none tracking-tight">{gData?.total_xp?.toLocaleString() || 0} XP</span>
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-orange-500 to-red-600 border border-yellow-400 flex items-center justify-center shadow-[0_0_10px_rgba(245,158,11,0.5)]">
-                    <Flame className="w-3.5 h-3.5 text-yellow-200 fill-yellow-200" />
+                <div className="flex flex-col items-end w-32">
+                  <div className="flex items-center gap-1.5 bg-black/50 border border-white/10 rounded-full pl-3 pr-1.5 py-1 backdrop-blur-md shadow-[inset_0_2px_5px_rgba(0,0,0,0.5)]">
+                    <span className="text-xl font-black text-amber-400 drop-shadow-md leading-none tracking-tight">{gData?.total_xp?.toLocaleString() || 0} XP</span>
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-orange-500 to-red-600 border border-yellow-400 flex items-center justify-center shadow-[0_0_10px_rgba(245,158,11,0.5)]">
+                      <Flame className="w-3.5 h-3.5 text-yellow-200 fill-yellow-200" />
+                    </div>
                   </div>
+                  {/* Progress Bar Sub-section */}
+                  {(() => {
+                    const currentXP = gData?.total_xp || 0;
+                    const cTier = XP_LEVELS.find(t => t.level === (gData?.level ?? 1)) ?? XP_LEVELS[0];
+                    const nTier = XP_LEVELS.find(t => t.level === ((gData?.level ?? 1) + 1));
+                    const baseXP = cTier.xp;
+                    const targetXP = nTier ? nTier.xp : baseXP;
+                    const progress = targetXP > baseXP ? Math.min(100, Math.max(0, ((currentXP - baseXP) / (targetXP - baseXP)) * 100)) : 100;
+
+                    return (
+                      <div className="w-[90%] flex flex-col gap-0.5 mt-1 opacity-90">
+                        <div className="h-1.5 w-full bg-zinc-900/80 rounded-full overflow-hidden border border-white/5 shadow-inner">
+                          <div className="h-full bg-gradient-to-r from-amber-600 to-yellow-300 rounded-full shadow-[0_0_8px_rgba(245,158,11,0.8)]" style={{ width: `${progress}%` }} />
+                        </div>
+                        <div className="flex justify-between w-full px-0.5">
+                          <span className="text-[6px] font-black text-zinc-400 font-mono tracking-widest">{currentXP}</span>
+                          <span className="text-[6px] font-black text-zinc-600 font-mono tracking-widest">{targetXP > baseXP ? targetXP : 'MAX'}</span>
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
 
@@ -950,12 +973,13 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.07)_0%,_transparent_60%)]" />
 
                   {/* Profile / Rank Art */}
+                  {/* Profile / Rank Art */}
                   {(() => {
                     const seed = encodeURIComponent(generateUniqueName());
                     const avatarUrl = `https://robohash.org/${seed}.png?set=set1&size=400x400`;
                     
                     return (
-                      <div className="relative z-10 w-[95%] h-[95%] mt-2 hover:scale-105 transition-transform duration-500 flex items-center justify-center">
+                      <div className="relative z-10 w-full h-full scale-[1.25] -translate-y-2 hover:scale-[1.30] transition-transform duration-500 flex items-center justify-center">
                         {/* Subtle glowing halo behind the robot */}
                         <div className="absolute inset-0 bg-fuchsia-500/20 blur-[20px] rounded-full mix-blend-screen scale-75" />
                         <div className="absolute inset-0 bg-cyan-400/20 blur-[15px] rounded-full mix-blend-screen scale-50" />
