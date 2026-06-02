@@ -949,10 +949,15 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
 
                   {/* Profile / Rank Art */}
                   <div className="relative z-10 w-24 h-24 drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">
-                    <div className="w-full h-full rounded-full bg-zinc-950 flex items-center justify-center border-4 border-yellow-400">
-                      <span className="text-5xl font-black text-yellow-400">
-                        {user?.username.charAt(0).toUpperCase()}
-                      </span>
+                    <div className="w-full h-full rounded-full bg-zinc-950 flex items-center justify-center border-4 border-yellow-400 overflow-hidden relative">
+                      {(() => {
+                        const tier = XP_LEVELS.find(t => t.level === (gData?.level ?? 1)) ?? XP_LEVELS[0];
+                        return (
+                          <div className="relative w-[85%] h-[85%] drop-shadow-md">
+                            <Image src={tier.image} alt={tier.rank} fill className="object-contain" />
+                          </div>
+                        );
+                      })()}
                     </div>
                   </div>
                 </div>
