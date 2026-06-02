@@ -826,9 +826,30 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
     // Use the unique database ID as the ultimate tie-breaker
     const uid = gData?.user_id || user?.id || 1; 
 
-    const prefixes = ["The Ascendant", "The Relentless", "The Unstoppable", "The Visionary", "The Fearless", "The Enigmatic"];
-    const cores = ["Architect", "Titan", "Ninja", "Oracle", "Virtuoso", "Vanguard"];
+    // Determine the user's skill tier so beginners don't get legendary titles
+    let tier = 0;
+    if (score >= 80 || level >= 7) tier = 3;
+    else if (score >= 50 || level >= 4) tier = 2;
+    else if (score >= 20 || level >= 2) tier = 1;
+
+    const prefixTiers = [
+      ["The Aspiring", "The Novice", "The Unknown", "The Curious"], 
+      ["The Steadfast", "The Rising", "The Capable", "The Driven"], 
+      ["The Fearless", "The Relentless", "The Ascendant", "The Bold"], 
+      ["The Legendary", "The Unstoppable", "The Visionary", "The Enigmatic"]
+    ];
+
+    const coreTiers = [
+      ["Recruit", "Trainee", "Initiate", "Apprentice"],
+      ["Coder", "Developer", "Explorer", "Hacker"],
+      ["Architect", "Ninja", "Virtuoso", "Strategist"],
+      ["Titan", "Oracle", "Vanguard", "Mastermind"]
+    ];
+
     const suffixes = ["of Logic", "of Algorithms", "of Systems", "of the Console", "of the Cloud", "of Code"];
+
+    const prefixes = prefixTiers[tier];
+    const cores = coreTiers[tier];
 
     // Incorporate the UID into the math so even if two users have identical stats and identical names, 
     // their unique database ID ensures they get a completely different combination!
