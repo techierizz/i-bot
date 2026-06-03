@@ -1036,13 +1036,28 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
                   const uidString = `UID-${(user?.id || 1000).toString().padStart(4, '0')}-HM-${(gData?.level || 1).toString().padStart(2, '0')}`;
                   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(uidString)}`;
                   return (
-                    <div className="flex flex-col items-center mt-2 mb-3 w-full px-4">
-                      <div className="h-14 w-14 flex items-center justify-center mix-blend-screen opacity-90 drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]" style={{ filter: "invert(1)" }}>
+                    <div className="flex items-center justify-between mt-2 mb-3 w-full px-6">
+                      <div className="flex flex-col items-start justify-center">
+                        <div className="flex items-center gap-1.5 mb-1.5">
+                          <div className="w-1 h-1 bg-cyan-400 rounded-full shadow-[0_0_5px_rgba(34,211,238,0.8)] animate-pulse" />
+                          <span className="text-[5px] text-zinc-500 uppercase tracking-[0.4em] font-bold">Secure Access</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="h-6 w-[2px] bg-gradient-to-b from-cyan-400 to-blue-600 shadow-[0_0_8px_rgba(34,211,238,0.6)]" />
+                          <div className="flex flex-col">
+                            <span className="text-[10px] text-transparent bg-clip-text bg-gradient-to-r from-white to-zinc-400 font-black tracking-[0.2em] uppercase leading-none drop-shadow-sm">
+                              Verified
+                            </span>
+                            <span className="text-[10px] text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-500 font-black tracking-[0.2em] uppercase leading-none mt-1 drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]">
+                              Credential
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="h-12 w-12 flex items-center justify-center mix-blend-screen opacity-90 drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]" style={{ filter: "invert(1)" }}>
                         <img src={qrUrl} alt="Scannable QR Code" className="h-full w-full object-contain" />
                       </div>
-                      <span className="text-[7px] text-zinc-500 font-mono tracking-[0.3em] mt-1.5 font-bold">
-                        {uidString}
-                      </span>
                     </div>
                   );
                 })()}
