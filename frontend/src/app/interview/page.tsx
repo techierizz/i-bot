@@ -69,6 +69,7 @@ export default function InterviewPage() {
   const synthRef = useRef<SpeechSynthesis | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const isConcludingRef = useRef(false);
+  const isEndingRef = useRef(false);
 
   // Webcam & Tracking Refs
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -524,6 +525,7 @@ export default function InterviewPage() {
   };
 
   const endInterview = () => {
+    isEndingRef.current = true;
     if (synthRef.current) synthRef.current.cancel();
     if (recognitionRef.current) recognitionRef.current.stop();
     localStorage.setItem("hiremind_chat_history", JSON.stringify(chatHistoryRef.current));
@@ -587,7 +589,7 @@ export default function InterviewPage() {
     const handleFullscreenChange = () => {
       if (!document.fullscreenElement) {
         setIsFullscreen(false);
-        if (phase === "interview") {
+        if (phase === "interview" && !isEndingRef.current) {
           setViolationWarning({ type: "fullscreen", active: true });
         }
       } else {
@@ -1035,7 +1037,7 @@ export default function InterviewPage() {
           
           <div className="p-4 border-t border-white/5 bg-white/5">
              <p className="text-xs text-center text-amber-500 font-bold tracking-wide">
-               Speak clearly into your microphone. The AI will respond automatically.
+               Speak clearly into your microphone!!
              </p>
           </div>
         </div>
