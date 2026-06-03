@@ -792,8 +792,7 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
     if (!cardRef.current) return null;
     try {
       const blob = await toBlob(cardRef.current, { 
-        pixelRatio: 3, 
-        backgroundColor: 'transparent',
+        pixelRatio: 3,
         style: { transform: 'none' }
       });
       if (!blob) return null;
@@ -809,8 +808,7 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
     if (!cardRef.current) return;
     try {
       const dataUrl = await toPng(cardRef.current, { 
-        pixelRatio: 3, 
-        backgroundColor: 'transparent',
+        pixelRatio: 3,
         style: { transform: 'none' }
       });
       const link = document.createElement('a');
