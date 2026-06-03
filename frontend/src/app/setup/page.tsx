@@ -86,6 +86,9 @@ export default function SetupPage() {
     formData.append("file", file);
     formData.append("mode", selectedMode);
     formData.append("persona", selectedPersona);
+    if (candidateUser?.id) {
+      formData.append("user_id", candidateUser.id.toString());
+    }
     
     try {
       const response = await fetch(`${API_BASE_URL}/api/setup/upload`, {
