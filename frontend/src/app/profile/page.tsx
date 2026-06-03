@@ -1034,11 +1034,11 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
                 {/* Real Scannable Barcode */}
                 {(() => {
                   const uidString = `UID-${(user?.id || 1000).toString().padStart(4, '0')}-HM-${(gData?.level || 1).toString().padStart(2, '0')}`;
-                  const barcodeUrl = `https://bwipjs-api.metafloor.com/?bcid=code128&text=${encodeURIComponent(uidString)}&scale=3&includetext=false`;
+                  const barcodeUrl = `https://bwipjs-api.metafloor.com/?bcid=code128&text=${encodeURIComponent(uidString)}&scale=5&includetext=false`;
                   return (
-                    <div className="flex flex-col items-center mt-2 mb-3 opacity-80 w-full px-4">
-                      <div className="h-12 w-full flex items-center justify-center mix-blend-screen opacity-90" style={{ filter: "invert(1) brightness(2)" }}>
-                        <img src={barcodeUrl} alt="Scannable Barcode" className="h-full w-full object-fill" />
+                    <div className="flex flex-col items-center mt-2 mb-3 w-full px-4">
+                      <div className="h-12 w-full flex items-center justify-center mix-blend-screen" style={{ filter: "invert(1)" }}>
+                        <img src={barcodeUrl} alt="Scannable Barcode" className="h-full object-contain" />
                       </div>
                       <span className="text-[7px] text-zinc-500 font-mono tracking-[0.3em] mt-1 font-bold">
                         {uidString}
