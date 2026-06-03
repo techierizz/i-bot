@@ -1101,51 +1101,61 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
         transition={{ delay: 0.2 }}
         className="relative z-20 flex flex-col items-center space-y-4"
       >
-        <div className="text-xs font-bold text-violet-300 uppercase tracking-widest drop-shadow-md">Share your story</div>
-        <div className="flex items-center gap-4">
-          {/* WhatsApp / Message */}
-          <button
-            onClick={(e) => shareToApp("WhatsApp", e)}
-            className="w-12 h-12 rounded-xl bg-zinc-800 border border-white/5 hover:border-emerald-500/50 hover:bg-emerald-500/20 text-zinc-300 hover:text-emerald-400 flex items-center justify-center transition-all group"
-            title="Share to WhatsApp"
-          >
-            <MessageSquare className="w-5 h-5 group-hover:scale-110 transition-transform" />
-          </button>
+        <div className="flex flex-col items-center gap-3">
+          <div className="flex items-center gap-2">
+            <div className="h-[1px] w-8 bg-gradient-to-r from-transparent to-cyan-500/50" />
+            <span className="text-[10px] font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 uppercase tracking-[0.3em] drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]">
+              Share Your Story
+            </span>
+            <div className="h-[1px] w-8 bg-gradient-to-l from-transparent to-cyan-500/50" />
+          </div>
+          
+          <div className="flex items-center gap-3 bg-zinc-950/80 backdrop-blur-xl p-2.5 rounded-2xl border border-white/10 shadow-[0_20px_40px_rgba(0,0,0,0.5)]">
+            {/* WhatsApp / Message */}
+            <button
+              onClick={(e) => shareToApp("WhatsApp", e)}
+              className="w-11 h-11 rounded-xl bg-black/60 border border-white/5 hover:border-yellow-400/50 hover:bg-yellow-500/10 text-zinc-400 hover:text-yellow-400 flex items-center justify-center transition-all duration-300 group hover:shadow-[0_0_15px_rgba(250,204,21,0.2)]"
+              title="Share to WhatsApp"
+            >
+              <MessageSquare className="w-5 h-5 group-hover:scale-110 transition-transform" />
+            </button>
 
-          {/* Instagram */}
-          <button
-            onClick={(e) => shareToApp("Instagram", e)}
-            className="w-12 h-12 rounded-xl bg-zinc-800 border border-white/5 hover:border-fuchsia-500/50 hover:bg-fuchsia-500/20 text-zinc-300 hover:text-fuchsia-400 flex items-center justify-center transition-all group"
-            title="Share to Instagram"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 group-hover:scale-110 transition-transform">
-              <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
-              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-              <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
-            </svg>
-          </button>
+            {/* Instagram */}
+            <button
+              onClick={(e) => shareToApp("Instagram", e)}
+              className="w-11 h-11 rounded-xl bg-black/60 border border-white/5 hover:border-yellow-400/50 hover:bg-yellow-500/10 text-zinc-400 hover:text-yellow-400 flex items-center justify-center transition-all duration-300 group hover:shadow-[0_0_15px_rgba(250,204,21,0.2)]"
+              title="Share to Instagram"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 group-hover:scale-110 transition-transform">
+                <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+              </svg>
+            </button>
 
-          {/* Facebook */}
-          <button
-            onClick={(e) => shareToApp("Facebook", e)}
-            className="w-12 h-12 rounded-xl bg-zinc-800 border border-white/5 hover:border-blue-500/50 hover:bg-blue-500/20 text-zinc-300 hover:text-blue-400 flex items-center justify-center transition-all group"
-            title="Share to Facebook"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 group-hover:scale-110 transition-transform">
-              <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-            </svg>
-          </button>
+            {/* Facebook */}
+            <button
+              onClick={(e) => shareToApp("Facebook", e)}
+              className="w-11 h-11 rounded-xl bg-black/60 border border-white/5 hover:border-yellow-400/50 hover:bg-yellow-500/10 text-zinc-400 hover:text-yellow-400 flex items-center justify-center transition-all duration-300 group hover:shadow-[0_0_15px_rgba(250,204,21,0.2)]"
+              title="Share to Facebook"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 group-hover:scale-110 transition-transform">
+                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+              </svg>
+            </button>
 
-          <div className="w-px h-8 bg-white/10 mx-1" />
+            <div className="w-px h-8 bg-gradient-to-b from-transparent via-white/20 to-transparent mx-2" />
 
-          {/* Download */}
-          <button
-            onClick={handleDownload}
-            className="w-12 h-12 rounded-xl bg-violet-600 hover:bg-violet-500 text-white flex items-center justify-center transition-all group shadow-[0_0_15px_rgba(139,92,246,0.4)]"
-            title="Download Image"
-          >
-            <Download className="w-5 h-5 group-hover:-translate-y-1 transition-transform" />
-          </button>
+            {/* Download */}
+            <button
+              onClick={handleDownload}
+              className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-300 to-blue-600 text-zinc-950 flex items-center justify-center transition-all duration-300 group shadow-[0_0_20px_rgba(34,211,238,0.4)] hover:shadow-[0_0_30px_rgba(34,211,238,0.7)] hover:scale-105 border border-cyan-200 overflow-hidden"
+              title="Download Image"
+            >
+              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+              <Download className="w-5 h-5 relative z-10 font-bold group-hover:-translate-y-0.5 transition-transform" />
+            </button>
+          </div>
         </div>
       </motion.div>
 
