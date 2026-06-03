@@ -93,6 +93,37 @@ def init_db():
     )
     """)
     
+    # Add fraud columns to users if they don't exist
+    try:
+        cursor.execute("ALTER TABLE users ADD COLUMN fraud_strikes INTEGER DEFAULT 0")
+        conn.commit()
+    except psycopg2.errors.DuplicateColumn:
+        conn.rollback()
+
+    try:
+        cursor.execute("ALTER TABLE users ADD COLUMN is_fraudulent BOOLEAN DEFAULT FALSE")
+        conn.commit()
+    except psycopg2.errors.DuplicateColumn:
+        conn.rollback()
+
+    # Create user_experiences table
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS user_experiences (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL,
+        company TEXT NOT NULL,
+        role TEXT NOT NULL,
+        start_date TEXT,
+        end_date TEXT,
+        verification_status TEXT DEFAULT 'Pending',
+        certificate_url TEXT,
+        fraud_reason TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+    )
+    """)
+    conn.commit()
+    
     # Seed default settings if empty
     cursor.execute("SELECT COUNT(*) as count FROM system_settings")
     if cursor.fetchone()["count"] == 0:
