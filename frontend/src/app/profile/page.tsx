@@ -791,7 +791,11 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
   const captureCard = async (): Promise<File | null> => {
     if (!cardRef.current) return null;
     try {
-      const blob = await toBlob(cardRef.current, { pixelRatio: 3, backgroundColor: 'transparent' });
+      const blob = await toBlob(cardRef.current, { 
+        pixelRatio: 3, 
+        backgroundColor: 'transparent',
+        style: { transform: 'none' }
+      });
       if (!blob) return null;
       return new File([blob], "HireMind_ICard.png", { type: "image/png" });
     } catch (err) {
@@ -804,7 +808,11 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
     e.stopPropagation();
     if (!cardRef.current) return;
     try {
-      const dataUrl = await toPng(cardRef.current, { pixelRatio: 3, backgroundColor: 'transparent' });
+      const dataUrl = await toPng(cardRef.current, { 
+        pixelRatio: 3, 
+        backgroundColor: 'transparent',
+        style: { transform: 'none' }
+      });
       const link = document.createElement('a');
       link.download = 'HireMind_ICard.png';
       link.href = dataUrl;
@@ -937,9 +945,9 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
                     {user?.username}
                   </h2>
                 </div>
-                <div className="flex flex-col items-end w-32">
+                <div className="flex flex-col items-end shrink-0">
                   <div className="flex items-center gap-1.5 bg-black/50 border border-white/10 rounded-full pl-3 pr-1.5 py-1 backdrop-blur-md shadow-[inset_0_2px_5px_rgba(0,0,0,0.5)]">
-                    <span className="text-xl font-black text-amber-400 drop-shadow-md leading-none tracking-tight">{gData?.total_xp?.toLocaleString() || 0} XP</span>
+                    <span className="text-xl font-black text-amber-400 drop-shadow-md leading-none tracking-tight whitespace-nowrap">{gData?.total_xp?.toLocaleString() || 0} XP</span>
                     <div className="w-6 h-6 rounded-full bg-gradient-to-br from-orange-500 to-red-600 border border-yellow-400 flex items-center justify-center shadow-[0_0_10px_rgba(245,158,11,0.5)]">
                       <Flame className="w-3.5 h-3.5 text-yellow-200 fill-yellow-200" />
                     </div>
@@ -1038,7 +1046,7 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
                   const uidString = `UID-${(user?.id || 1000).toString().padStart(4, '0')}-HM-${(gData?.level || 1).toString().padStart(2, '0')}`;
                   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(uidString)}`;
                   return (
-                    <div className="flex items-center justify-between mt-1 mb-1 w-full px-6">
+                    <div className="flex items-center justify-between mt-4 mb-2 w-full px-6">
                       <div className="flex flex-col items-start justify-center">
                         <div className="flex items-center gap-1.5 mb-1.5">
                           <div className="w-1 h-1 bg-cyan-400 rounded-full shadow-[0_0_5px_rgba(34,211,238,0.8)] animate-pulse" />
