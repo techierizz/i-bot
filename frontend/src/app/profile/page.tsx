@@ -89,6 +89,7 @@ export default function ProfilePage() {
   const [stats, setStats] = useState<any>(null);
   const [showICardModal, setShowICardModal] = useState(false);
   const [showSignatureModal, setShowSignatureModal] = useState(false);
+  const [validationData, setValidationData] = useState<any>(null);
 
   const handleSignatureSaved = (dataUrl: string) => {
     if (!user) return;
@@ -108,7 +109,8 @@ export default function ProfilePage() {
       fetch(`${API_BASE_URL}/api/leaderboard`).then(r => r.json()),
       fetch(`${API_BASE_URL}/api/user/${loggedUser.id}/best_interview`).then(r => r.json()),
       fetch(`${API_BASE_URL}/api/user/${loggedUser.id}/stats`).then(r => r.json()),
-    ]).then(([gam, lb, best, userStats]) => {
+      fetch(`${API_BASE_URL}/api/user/${loggedUser.id}/experiences`).then(r => r.json()),
+    ]).then(([gam, lb, best, userStats, validData]) => {
       setGData(gam);
       setLeaderboard(lb);
       if (best && best.status === "success" && best.data) {
@@ -116,6 +118,9 @@ export default function ProfilePage() {
       }
       if (userStats && userStats.status === "success" && userStats.data) {
         setStats(userStats.data);
+      }
+      if (validData && validData.status === "success" && validData.data) {
+        setValidationData(validData.data);
       }
     }).catch(console.error)
       .finally(() => setLoading(false));
@@ -161,14 +166,14 @@ export default function ProfilePage() {
             onClick={() => setShowSignatureModal(true)}
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900 border border-white/5 hover:border-zinc-700 text-white text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
           >
-            <span className="hidden sm:inline">Draw Your Signature</span>
+            <span className="hidden sm:inline">Draw Signature</span>
           </button>
           <button
             onClick={() => setShowICardModal(true)}
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white text-xs font-bold uppercase tracking-wider shadow-[0_0_15px_rgba(139,92,246,0.3)] hover:shadow-[0_0_25px_rgba(139,92,246,0.5)] transition-all cursor-pointer"
           >
             <IdCard className="w-4 h-4" />
-            <span className="hidden sm:inline">I-Card</span>
+            <span className="hidden sm:inline">View I-Card</span>
           </button>
         </div>
       </header>
@@ -734,6 +739,7 @@ export default function ProfilePage() {
             gData={gData}
             stats={stats}
             bestInterview={bestInterview}
+            validationData={validationData}
             onClose={() => setShowICardModal(false)}
           />
         )}
@@ -743,30 +749,25 @@ export default function ProfilePage() {
 }
 
 // ── Holographic I-Card Component ────────────────────────────────────────────────
-const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) => {
-  const [rotateX, setRotateX] = useState(0);
-  const [rotateY, setRotateY] = useState(0);
+const HolographicICard = ({ user, gData, stats, bestInterview, validationData, onClose }: any) => {
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const card = e.currentTarget;
-    const box = card.getBoundingClientRect();
-    const x = e.clientX - box.left;
-    const y = e.clientY - box.top;
-    const centerX = box.width / 2;
-    const centerY = box.height / 2;
+  let verificationText = "© Authorized by HireMind Team";
+  let verificationColor = "text-zinc-400/80";
 
-    const rotateXValue = ((y - centerY) / centerY) * -15;
-    const rotateYValue = ((x - centerX) / centerX) * 15;
-
-    setRotateX(rotateXValue);
-    setRotateY(rotateYValue);
-  };
-
-  const handleMouseLeave = () => {
-    setRotateX(0);
-    setRotateY(0);
-  };
+  if (validationData?.is_fraudulent) {
+    verificationText = "⚠️ [FRAUDULENT] Verification Failed";
+    verificationColor = "text-red-500 font-bold drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]";
+  } else if (validationData?.experiences?.length > 0) {
+    const allVerified = validationData.experiences.every((e: any) => e.verification_status === "Verified");
+    if (allVerified) {
+      verificationText = "© Verified by HireMind Team";
+      verificationColor = "text-emerald-400 font-bold drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]";
+    } else {
+      verificationText = "⏳ Verification in Pending";
+      verificationColor = "text-yellow-500 font-bold drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]";
+    }
+  }
 
   const getTechSavvyTitle = () => {
     if (!bestInterview) return "Digital Recruit";
@@ -791,7 +792,7 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
   const captureCard = async (): Promise<File | null> => {
     if (!cardRef.current) return null;
     try {
-      const blob = await toBlob(cardRef.current, { 
+      const blob = await toBlob(cardRef.current, {
         pixelRatio: 3,
         style: { transform: 'none', boxShadow: 'none' }
       });
@@ -807,7 +808,7 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
     e.stopPropagation();
     if (!cardRef.current) return;
     try {
-      const dataUrl = await toPng(cardRef.current, { 
+      const dataUrl = await toPng(cardRef.current, {
         pixelRatio: 3,
         style: { transform: 'none', boxShadow: 'none' }
       });
@@ -1075,8 +1076,8 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
                       {user?.username}
                     </div>
                   )}
-                  <div className="text-[6px] text-zinc-400/80 uppercase tracking-widest font-bold font-mono mt-1">
-                    © Authorized by HireMind Team
+                  <div className={`text-[6px] uppercase tracking-widest font-bold font-mono mt-1 ${verificationColor}`}>
+                    {verificationText}
                   </div>
                 </div>
 
@@ -1105,7 +1106,7 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
             </span>
             <div className="h-[1px] w-8 bg-gradient-to-l from-transparent to-cyan-500/50" />
           </div>
-          
+
           <div className="flex items-center gap-3 bg-zinc-950/80 backdrop-blur-xl p-2.5 rounded-2xl border border-white/10 shadow-[0_20px_40px_rgba(0,0,0,0.5)]">
             {/* WhatsApp / Message */}
             <button
@@ -1114,7 +1115,7 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
               title="Share to WhatsApp"
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 group-hover:scale-110 transition-transform">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
               </svg>
             </button>
 
