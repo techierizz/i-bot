@@ -1037,10 +1037,10 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
                   const barcodeUrl = `https://bwipjs-api.metafloor.com/?bcid=code128&text=${encodeURIComponent(uidString)}&scale=5&includetext=false`;
                   return (
                     <div className="flex flex-col items-center mt-2 mb-3 w-full px-4">
-                      <div className="h-12 w-full flex items-center justify-center mix-blend-screen" style={{ filter: "invert(1)" }}>
-                        <img src={barcodeUrl} alt="Scannable Barcode" className="h-full object-contain" />
+                      <div className="h-12 w-full bg-white/95 rounded-sm p-1.5 flex items-center justify-center shadow-inner drop-shadow-md">
+                        <img src={barcodeUrl} alt="Scannable Barcode" className="h-full object-contain mix-blend-multiply opacity-80" />
                       </div>
-                      <span className="text-[7px] text-zinc-500 font-mono tracking-[0.3em] mt-1 font-bold">
+                      <span className="text-[7px] text-zinc-500 font-mono tracking-[0.3em] mt-1.5 font-bold">
                         {uidString}
                       </span>
                     </div>
