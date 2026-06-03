@@ -1036,28 +1036,44 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
                   const uidString = `UID-${(user?.id || 1000).toString().padStart(4, '0')}-HM-${(gData?.level || 1).toString().padStart(2, '0')}`;
                   const barcodeUrl = `https://bwipjs-api.metafloor.com/?bcid=code128&text=${encodeURIComponent(uidString)}&scale=3&includetext=false`;
                   return (
-                    <div className="flex flex-col items-center mt-2 mb-3 opacity-80">
-                      <div className="h-6 w-[80%] flex items-center justify-center mix-blend-screen opacity-90" style={{ filter: "invert(1) brightness(2)" }}>
+                    <div className="flex flex-col items-center mt-1 mb-2">
+                      <div className="flex items-center gap-2 mb-1 opacity-60">
+                        <div className="h-[1px] w-8 bg-zinc-600" />
+                        <span className="text-[5px] font-black text-zinc-400 uppercase tracking-[0.4em]">Scan to Verify</span>
+                        <div className="h-[1px] w-8 bg-zinc-600" />
+                      </div>
+                      <div className="h-7 w-[70%] flex items-center justify-center mix-blend-screen opacity-90" style={{ filter: "invert(1) brightness(2)" }}>
                         <img src={barcodeUrl} alt="Scannable Barcode" className="h-full object-contain" />
                       </div>
-                      <span className="text-[7px] text-zinc-500 font-mono tracking-[0.3em] mt-1 font-bold">
-                        {uidString}
-                      </span>
+                      <div className="flex items-center gap-1.5 mt-1 bg-white/5 border border-white/10 px-2 py-0.5 rounded-sm">
+                        <div className="w-1 h-1 rounded-full bg-cyan-400 shadow-[0_0_5px_#22d3ee] animate-pulse" />
+                        <span className="text-[7px] text-zinc-300 font-mono tracking-[0.3em] font-bold">
+                          {uidString}
+                        </span>
+                      </div>
                     </div>
                   );
                 })()}
 
                 {/* Unique Signature Box */}
-                <div className="mt-auto mb-2 flex flex-col items-center justify-center gap-1">
+                <div className="mt-auto mb-2 flex flex-col items-center justify-center relative">
+                  {/* Subtle verified seal behind signature */}
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] opacity-20 pointer-events-none">
+                    <div className="border border-emerald-500/50 text-emerald-500/50 text-[10px] font-black p-0.5 px-2 uppercase tracking-widest rounded-sm" style={{ fontFamily: "impact, sans-serif" }}>VERIFIED</div>
+                  </div>
+                  
                   {user?.signature_data ? (
-                    <img src={user.signature_data} alt="Signature" className="h-10 object-contain drop-shadow-md invert" style={{ filter: "drop-shadow(0px 2px 2px rgba(0,0,0,0.8)) invert(1)" }} />
+                    <img src={user.signature_data} alt="Signature" className="h-10 relative z-10 object-contain drop-shadow-md invert" style={{ filter: "drop-shadow(0px 2px 2px rgba(0,0,0,0.8)) invert(1)" }} />
                   ) : (
-                    <div className="text-3xl text-white font-black leading-none -rotate-3 drop-shadow-[0_2px_5px_rgba(0,0,0,0.8)]" style={{ fontFamily: "'Brush Script MT', cursive, serif" }}>
+                    <div className="text-3xl text-white font-black leading-none -rotate-3 relative z-10 drop-shadow-[0_2px_5px_rgba(0,0,0,0.8)] mt-1 mb-1" style={{ fontFamily: "'Brush Script MT', cursive, serif" }}>
                       {user?.username}
                     </div>
                   )}
-                  <div className="text-[6px] text-zinc-400/80 uppercase tracking-widest font-bold font-mono">
-                    Authorized by HireMind Team
+                  <div className="flex items-center gap-1 mt-0.5">
+                    <CheckCircle2 className="w-2.5 h-2.5 text-emerald-400 opacity-80" />
+                    <div className="text-[6px] text-zinc-400 uppercase tracking-widest font-bold font-mono">
+                      Authorized by HireMind Team
+                    </div>
                   </div>
                 </div>
 
