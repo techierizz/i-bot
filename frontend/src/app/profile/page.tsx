@@ -921,12 +921,12 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
             animate={{ rotateX, rotateY }}
             transition={{ type: "spring", damping: 20, stiffness: 300, mass: 0.5 }}
             style={{ transformStyle: "preserve-3d" }}
-            className="w-full h-full relative rounded-[1rem] bg-yellow-400 p-[12px] shadow-[0_0_50px_rgba(250,204,21,0.4)] cursor-pointer flex flex-col"
+            className="w-full h-full relative rounded-[1rem] border-[10px] border-yellow-400 bg-zinc-950 shadow-[0_0_50px_rgba(250,204,21,0.4)] cursor-pointer flex flex-col overflow-hidden"
           >
             {/* Glossy shine effect removed */}
 
             {/* Inner Obsidian Premium Background */}
-            <div className="relative flex-1 w-full rounded-md bg-gradient-to-br from-slate-900 via-zinc-950 to-black shadow-[inset_0_0_20px_rgba(255,255,255,0.05)] border border-white/10 flex flex-col p-1.5 overflow-hidden">
+            <div className="relative flex-1 w-full bg-gradient-to-br from-slate-900 via-zinc-950 to-black shadow-[inset_0_0_20px_rgba(255,255,255,0.05)] border border-white/10 flex flex-col p-1.5">
 
 
               {/* Stage Badge (Top Left Overlapping) */}
