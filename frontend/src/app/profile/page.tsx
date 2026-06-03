@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { API_BASE_URL } from "../config";
-import html2canvas from "html2canvas";
+import { toPng, toBlob } from "html-to-image";
 import { useRef } from "react";
 import SignatureModal from "@/components/SignatureModal";
 
@@ -790,24 +790,28 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
 
   const captureCard = async (): Promise<File | null> => {
     if (!cardRef.current) return null;
-    const canvas = await html2canvas(cardRef.current, { scale: 3, backgroundColor: null, useCORS: true });
-    return new Promise((resolve) => {
-      canvas.toBlob((blob) => {
-        if (!blob) { resolve(null); return; }
-        const file = new File([blob], "HireMind_ICard.png", { type: "image/png" });
-        resolve(file);
-      }, "image/png");
-    });
+    try {
+      const blob = await toBlob(cardRef.current, { pixelRatio: 3, backgroundColor: 'transparent' });
+      if (!blob) return null;
+      return new File([blob], "HireMind_ICard.png", { type: "image/png" });
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
   };
 
   const handleDownload = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!cardRef.current) return;
-    const canvas = await html2canvas(cardRef.current, { scale: 3, backgroundColor: null, useCORS: true });
-    const link = document.createElement('a');
-    link.download = 'HireMind_ICard.png';
-    link.href = canvas.toDataURL("image/png");
-    link.click();
+    try {
+      const dataUrl = await toPng(cardRef.current, { pixelRatio: 3, backgroundColor: 'transparent' });
+      const link = document.createElement('a');
+      link.download = 'HireMind_ICard.png';
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const shareToApp = async (platform: string, e: React.MouseEvent) => {
@@ -965,7 +969,7 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
               </div>
 
               {/* Main Image Frame (Gold Beveled) */}
-              <div className="relative w-full h-[150px] bg-gradient-to-br from-yellow-200 via-yellow-500 to-yellow-700 p-[3px] shadow-[2px_2px_5px_rgba(0,0,0,0.5)] z-10 mb-1">
+              <div className="relative w-full h-[105px] bg-gradient-to-br from-yellow-200 via-yellow-500 to-yellow-700 p-[3px] shadow-[2px_2px_5px_rgba(0,0,0,0.5)] z-10 mb-1">
                 <div className="w-full h-full relative overflow-hidden shadow-[inset_0_0_30px_rgba(0,0,0,0.9)] bg-zinc-950 flex items-center justify-center">
                   {/* Premium Tech Grid */}
                   <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:16px_16px]" />
