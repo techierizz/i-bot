@@ -1015,49 +1015,66 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
                 {/* Thin Line */}
                 <div className="w-full h-[1px] bg-white/15 mt-4 mb-2" />
 
-                {/* Stats row */}
-                <div className="flex justify-between items-center px-4 mb-3 mt-2">
-                  <div className="flex flex-col items-center">
-                    <span className="text-[8px] font-black text-zinc-400 uppercase tracking-tight">Interviews</span>
-                    <span className="text-xl font-black text-white leading-none drop-shadow-md">{stats?.total_interviews || 0}</span>
+                {/* Enhanced Stats Row */}
+                <div className="flex justify-between items-center px-4 mb-3 mt-3 bg-white/5 border border-white/10 rounded-lg mx-2 py-1.5 shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)]">
+                  <div className="flex flex-col items-center flex-1">
+                    <Target className="w-3.5 h-3.5 text-cyan-400 mb-0.5 drop-shadow-md" />
+                    <span className="text-[7px] font-black text-zinc-400 uppercase tracking-widest">Interviews</span>
+                    <span className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-400 leading-none drop-shadow-sm mt-0.5">{stats?.total_interviews || 0}</span>
                   </div>
-                  <div className="flex flex-col items-center">
-                    <span className="text-[8px] font-black text-zinc-400 uppercase tracking-tight">Badges</span>
-                    <span className="text-xl font-black text-white leading-none drop-shadow-md">{gData?.badges?.length || 0}</span>
+                  <div className="w-[1px] h-8 bg-white/10" />
+                  <div className="flex flex-col items-center flex-1">
+                    <Award className="w-3.5 h-3.5 text-fuchsia-400 mb-0.5 drop-shadow-md" />
+                    <span className="text-[7px] font-black text-zinc-400 uppercase tracking-widest">Badges</span>
+                    <span className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-400 leading-none drop-shadow-sm mt-0.5">{gData?.badges?.length || 0}</span>
                   </div>
-                  <div className="flex flex-col items-center">
-                    <span className="text-[8px] font-black text-zinc-400 uppercase tracking-tight">Best Score</span>
-                    <span className="text-xl font-black text-white leading-none drop-shadow-md">{bestInterview?.overall || stats?.highest_score || 0}</span>
+                  <div className="w-[1px] h-8 bg-white/10" />
+                  <div className="flex flex-col items-center flex-1">
+                    <Trophy className="w-3.5 h-3.5 text-amber-400 mb-0.5 drop-shadow-md" />
+                    <span className="text-[7px] font-black text-zinc-400 uppercase tracking-widest">Best Score</span>
+                    <span className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-400 leading-none drop-shadow-sm mt-0.5">{bestInterview?.overall || stats?.highest_score || 0}</span>
                   </div>
                 </div>
 
-                {/* Real Scannable Barcode */}
+                {/* Enhanced Scannable Barcode & Verification */}
                 {(() => {
                   const uidString = `UID-${(user?.id || 1000).toString().padStart(4, '0')}-HM-${(gData?.level || 1).toString().padStart(2, '0')}`;
                   const barcodeUrl = `https://bwipjs-api.metafloor.com/?bcid=code128&text=${encodeURIComponent(uidString)}&scale=3&includetext=false`;
                   return (
-                    <div className="flex flex-col items-center mt-2 mb-3 opacity-80">
-                      <div className="h-6 w-[80%] flex items-center justify-center mix-blend-screen opacity-90" style={{ filter: "invert(1) brightness(2)" }}>
+                    <div className="flex flex-col items-center mt-3 mb-3 relative group">
+                      <span className="text-[5px] font-black text-zinc-500 uppercase tracking-[0.4em] mb-1">Authentic ID / Scan to Verify</span>
+                      <div className="h-7 w-[70%] flex items-center justify-center mix-blend-screen opacity-90 border-y border-white/10 py-1 transition-opacity duration-300 group-hover:opacity-100" style={{ filter: "invert(1) brightness(2)" }}>
                         <img src={barcodeUrl} alt="Scannable Barcode" className="h-full object-contain" />
                       </div>
-                      <span className="text-[7px] text-zinc-500 font-mono tracking-[0.3em] mt-1 font-bold">
-                        {uidString}
-                      </span>
+                      <div className="flex items-center gap-1 mt-1">
+                        <div className="w-1.5 h-1.5 rounded-full bg-cyan-500 shadow-[0_0_5px_#06b6d4] animate-pulse" />
+                        <span className="text-[7px] text-zinc-400 font-mono tracking-[0.3em] font-bold">
+                          {uidString}
+                        </span>
+                      </div>
                     </div>
                   );
                 })()}
 
-                {/* Unique Signature Box */}
-                <div className="mt-auto mb-2 flex flex-col items-center justify-center gap-1">
+                {/* Unique Signature Box with Watermark */}
+                <div className="mt-auto mb-2 relative flex flex-col items-center justify-center gap-1 overflow-hidden">
+                  {/* Huge Watermark */}
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] opacity-[0.03] pointer-events-none whitespace-nowrap">
+                    <span className="text-6xl font-black text-white uppercase tracking-tighter" style={{ fontFamily: "impact, sans-serif" }}>APPROVED</span>
+                  </div>
+                  
                   {user?.signature_data ? (
-                    <img src={user.signature_data} alt="Signature" className="h-10 object-contain drop-shadow-md invert" style={{ filter: "drop-shadow(0px 2px 2px rgba(0,0,0,0.8)) invert(1)" }} />
+                    <img src={user.signature_data} alt="Signature" className="h-10 relative z-10 object-contain drop-shadow-md invert" style={{ filter: "drop-shadow(0px 2px 2px rgba(0,0,0,0.8)) invert(1)" }} />
                   ) : (
-                    <div className="text-3xl text-white font-black leading-none -rotate-3 drop-shadow-[0_2px_5px_rgba(0,0,0,0.8)]" style={{ fontFamily: "'Brush Script MT', cursive, serif" }}>
+                    <div className="text-3xl text-white font-black leading-none -rotate-3 relative z-10 drop-shadow-[0_2px_5px_rgba(0,0,0,0.8)]" style={{ fontFamily: "'Brush Script MT', cursive, serif" }}>
                       {user?.username}
                     </div>
                   )}
-                  <div className="text-[6px] text-zinc-400/80 uppercase tracking-widest font-bold font-mono">
-                    Authorized by HireMind Team
+                  <div className="flex items-center gap-1 relative z-10">
+                    <CheckCircle2 className="w-2.5 h-2.5 text-emerald-400" />
+                    <div className="text-[6px] text-zinc-400/80 uppercase tracking-widest font-bold font-mono">
+                      Authorized by HireMind Team
+                    </div>
                   </div>
                 </div>
 
