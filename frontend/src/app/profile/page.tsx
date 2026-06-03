@@ -914,12 +914,8 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
           {/* We attach the ref to this inner div so html2canvas renders a flat, unrotated version by temporarily ignoring transforms, or we can just capture it as is (html2canvas ignores 3D transforms mostly, which is good for 2D capture). */}
           <motion.div
             ref={cardRef}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-            animate={{ rotateX, rotateY }}
-            transition={{ type: "spring", damping: 20, stiffness: 300, mass: 0.5 }}
             style={{ transformStyle: "preserve-3d" }}
-            className="w-full h-full relative rounded-[1rem] bg-yellow-400 p-[12px] shadow-[0_0_50px_rgba(250,204,21,0.4)] cursor-pointer flex flex-col"
+            className="w-full h-full relative rounded-[1rem] bg-yellow-400 p-[12px] shadow-[0_0_50px_rgba(250,204,21,0.4)] flex flex-col"
           >
             {/* Glossy shine effect removed */}
 
