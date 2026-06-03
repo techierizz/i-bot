@@ -29,6 +29,7 @@ def extract_resume_context(resume_text: str) -> dict:
         - experience_level: Junior, Mid, Senior, or Lead
         - potential_weaknesses: list of 1-3 areas they might lack experience in based on their resume
         - summary: a 2 sentence summary of their background
+        - work_experiences: list of objects with keys 'company', 'role', 'start_date', 'end_date'. (Extract up to 3 most recent experiences. If none, return an empty array).
         
         Resume Text:
         {resume_text}
@@ -79,3 +80,39 @@ def extract_resume_context(resume_text: str) -> dict:
             "potential_weaknesses": [],
             "summary": f"Could not parse resume with LLM. Error: {str(e)}"
         }
+
+def validate_certificate(image_bytes: bytes, mime_type: str, company: str, role: str, start_date: str, end_date: str) -> dict:
+    """
+    Forensically validates a certificate image using Gemini 1.5 Pro multimodal.
+    """
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        return {"is_valid": False, "fraud_reason": "System Error: Gemini API key missing"}
+        
+    try:
+        client = genai.Client(api_key=api_key)
+        
+        prompt = f"""
+        Perform forensic analysis on this document. 1) Extract any Certificate IDs or Verification URLs. 2) Check for font mismatching or digital tampering around the name. 3) Verify the exact dates match the user's claimed timeline of {start_date} to {end_date}. 4) Ensure the role stated on the document matches {role} at {company}. If ANY of these fail, reject it with a specific fraud_reason. Return ONLY a JSON with `is_valid: boolean` and `fraud_reason: string`.
+        """
+        
+        response = client.models.generate_content(
+            model='gemini-2.5-pro',
+            contents=[
+                prompt,
+                genai.types.Part.from_bytes(data=image_bytes, mime_type=mime_type)
+            ]
+        )
+        
+        text_response = response.text
+        if "```json" in text_response:
+            text_response = text_response.split("```json")[1].split("```")[0].strip()
+        elif "```" in text_response:
+            text_response = text_response.split("```")[1].split("```")[0].strip()
+        else:
+            text_response = text_response.strip()
+            
+        return json.loads(text_response)
+    except Exception as e:
+        print(f"Error validating certificate: {e}")
+        return {"is_valid": False, "fraud_reason": "AI Validation Failed due to technical error."}
