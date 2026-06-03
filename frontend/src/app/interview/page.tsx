@@ -542,7 +542,7 @@ export default function InterviewPage() {
       document.exitFullscreen().catch(err => console.error(err));
     }
     
-    router.push("/results");
+    router.push("/validation");
   };
 
   const requestFullscreen = async () => {
