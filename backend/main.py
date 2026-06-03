@@ -64,6 +64,13 @@ class LoginRequest(BaseModel):
     username: str
     password: str
 
+class SettingsUpdateRequest(BaseModel):
+    prompt_temp: Optional[float] = None
+    system_prompt: Optional[str] = None
+
+class SignatureUpdateRequest(BaseModel):
+    signature_data: str
+
 # Endpoints
 @app.get("/health")
 def health_check():
@@ -94,6 +101,70 @@ def login_admin(req: LoginRequest):
     if not user:
         raise HTTPException(status_code=401, detail="Invalid administrator credentials.")
     return {"status": "success", "user": user}
+
+# Admin Settings Routes
+@app.get("/api/admin/settings")
+def get_settings():
+    from database import get_system_settings
+    settings = get_system_settings()
+    return {
+        "prompt_temp": float(settings.get("prompt_temp", 0.7)),
+        "system_prompt": settings.get("system_prompt", "")
+    }
+
+@app.post("/api/admin/settings")
+def update_settings(req: SettingsUpdateRequest):
+    from database import update_system_settings
+    updates = {}
+    if req.prompt_temp is not None:
+        updates["prompt_temp"] = req.prompt_temp
+    if req.system_prompt is not None:
+        updates["system_prompt"] = req.system_prompt
+    
+    if updates:
+        update_system_settings(updates)
+    return {"status": "success"}
+
+@app.get("/api/user/{user_id}/best_interview")
+def get_user_best_interview(user_id: int):
+    from database import get_best_interview
+    import json
+    
+    best = get_best_interview(user_id)
+    if not best:
+        return {"status": "success", "data": None}
+        
+    if isinstance(best.get("evaluation_data"), str):
+        best["evaluation_data"] = json.loads(best["evaluation_data"])
+    if isinstance(best.get("transcript"), str):
+        best["transcript"] = json.loads(best["transcript"])
+        
+    # Format date
+    if best.get("created_at"):
+        best["created_at"] = best["created_at"].isoformat()
+        
+    return {"status": "success", "data": best}
+
+@app.get("/api/user/{user_id}/stats")
+def get_user_statistics(user_id: int):
+    from database import get_user_stats
+    try:
+        stats = get_user_stats(user_id)
+        return {"status": "success", "data": stats}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/user/{user_id}/signature")
+def update_user_signature(user_id: int, req: SignatureUpdateRequest):
+    from database import update_signature
+    try:
+        success = update_signature(user_id, req.signature_data)
+        if success:
+            return {"status": "success", "message": "Signature updated."}
+        else:
+            raise HTTPException(status_code=400, detail="Failed to update signature.")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # Candidate Resume setup
 @app.post("/api/setup/upload")
@@ -372,8 +443,12 @@ async def validate_experience(
         )
         
         is_valid = validation_result.get("is_valid", False)
+        is_error = validation_result.get("is_error", False)
         fraud_reason = validation_result.get("fraud_reason", "")
         
+        if is_error:
+            raise HTTPException(status_code=500, detail=fraud_reason)
+
         if is_valid:
             cursor.execute(
                 "UPDATE user_experiences SET verification_status = 'Verified' WHERE id = %s", 
