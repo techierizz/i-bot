@@ -115,4 +115,4 @@ def validate_certificate(image_bytes: bytes, mime_type: str, company: str, role:
         return json.loads(text_response)
     except Exception as e:
         print(f"Error validating certificate: {e}")
-        return {"is_valid": False, "fraud_reason": "AI Validation Failed due to technical error."}
+        return {"is_valid": False, "is_error": True, "fraud_reason": f"AI Validation Failed due to technical error: {e}"}
