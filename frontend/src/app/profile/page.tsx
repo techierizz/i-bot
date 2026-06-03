@@ -1036,9 +1036,11 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
                   const uidString = `UID-${(user?.id || 1000).toString().padStart(4, '0')}-HM-${(gData?.level || 1).toString().padStart(2, '0')}`;
                   const barcodeUrl = `https://bwipjs-api.metafloor.com/?bcid=code128&text=${encodeURIComponent(uidString)}&scale=5&includetext=false`;
                   return (
-                    <div className="flex flex-col items-center mt-2 mb-3 w-full px-4">
-                      <div className="h-12 w-full bg-white/95 rounded-sm p-1.5 flex items-center justify-center shadow-inner drop-shadow-md">
-                        <img src={barcodeUrl} alt="Scannable Barcode" className="h-full object-contain mix-blend-multiply opacity-80" />
+                    <div className="flex flex-col items-center mt-2 mb-3 w-full px-4 relative">
+                      {/* Subtle gold glow behind barcode */}
+                      <div className="absolute inset-0 bg-yellow-500/10 blur-md rounded-full pointer-events-none" />
+                      <div className="relative h-12 w-full bg-gradient-to-b from-yellow-50 via-amber-100 to-yellow-200 rounded p-1.5 flex items-center justify-center shadow-[inset_0_2px_5px_rgba(0,0,0,0.1),0_0_10px_rgba(251,191,36,0.2)] border border-yellow-500/30">
+                        <img src={barcodeUrl} alt="Scannable Barcode" className="h-full object-contain mix-blend-multiply opacity-75" />
                       </div>
                       <span className="text-[7px] text-zinc-500 font-mono tracking-[0.3em] mt-1.5 font-bold">
                         {uidString}
