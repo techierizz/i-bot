@@ -1055,7 +1055,7 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
                         </div>
                       </div>
                       
-                      <div className="h-12 w-12 flex items-center justify-center mix-blend-screen opacity-90 drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]" style={{ filter: "invert(1)" }}>
+                      <div className="h-[54px] w-[54px] -translate-y-2 flex items-center justify-center mix-blend-screen opacity-90 drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]" style={{ filter: "invert(1)" }}>
                         <img src={qrUrl} alt="Scannable QR Code" className="h-full w-full object-contain" />
                       </div>
                     </div>
