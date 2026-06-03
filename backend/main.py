@@ -5,7 +5,6 @@ from typing import List, Dict, Any, Optional
 import pypdf
 import io
 import json
-from datetime import datetime
 from services.llm_service import extract_resume_context
 from services.interview_service import generate_interview_response, evaluate_interview
 from database import (
@@ -46,9 +45,6 @@ app.add_middleware(
 def on_startup():
     init_db()
 
-# In-memory store to track active sessions (user_id -> last_activity_datetime)
-active_sessions: Dict[int, datetime] = {}
-
 # Request schemas
 class ChatRequest(BaseModel):
     context: Dict[str, Any]
@@ -67,17 +63,6 @@ class RegisterRequest(BaseModel):
 class LoginRequest(BaseModel):
     username: str
     password: str
-
-class AddXPRequest(BaseModel):
-    user_id: int
-    amount: int
-
-class SettingsUpdateRequest(BaseModel):
-    prompt_temp: Optional[float] = None
-    system_prompt: Optional[str] = None
-
-class SignatureUpdateRequest(BaseModel):
-    signature_data: str
 
 # Endpoints
 @app.get("/health")
@@ -110,76 +95,13 @@ def login_admin(req: LoginRequest):
         raise HTTPException(status_code=401, detail="Invalid administrator credentials.")
     return {"status": "success", "user": user}
 
-# Admin Settings Routes
-@app.get("/api/admin/settings")
-def get_settings():
-    from database import get_system_settings
-    settings = get_system_settings()
-    return {
-        "prompt_temp": float(settings.get("prompt_temp", 0.7)),
-        "system_prompt": settings.get("system_prompt", "")
-    }
-
-@app.post("/api/admin/settings")
-def update_settings(req: SettingsUpdateRequest):
-    from database import update_system_settings
-    updates = {}
-    if req.prompt_temp is not None:
-        updates["prompt_temp"] = req.prompt_temp
-    if req.system_prompt is not None:
-        updates["system_prompt"] = req.system_prompt
-    
-    if updates:
-        update_system_settings(updates)
-    return {"status": "success"}
-
-@app.get("/api/user/{user_id}/best_interview")
-def get_user_best_interview(user_id: int):
-    from database import get_best_interview
-    import json
-    
-    best = get_best_interview(user_id)
-    if not best:
-        return {"status": "success", "data": None}
-        
-    if isinstance(best.get("evaluation_data"), str):
-        best["evaluation_data"] = json.loads(best["evaluation_data"])
-    if isinstance(best.get("transcript"), str):
-        best["transcript"] = json.loads(best["transcript"])
-        
-    # Format date
-    if best.get("created_at"):
-        best["created_at"] = best["created_at"].isoformat()
-        
-    return {"status": "success", "data": best}
-
-@app.get("/api/user/{user_id}/stats")
-def get_user_statistics(user_id: int):
-    from database import get_user_stats
-    try:
-        stats = get_user_stats(user_id)
-        return {"status": "success", "data": stats}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/api/user/{user_id}/signature")
-def update_user_signature(user_id: int, req: SignatureUpdateRequest):
-    from database import update_signature
-    try:
-        success = update_signature(user_id, req.signature_data)
-        if success:
-            return {"status": "success", "message": "Signature updated."}
-        else:
-            raise HTTPException(status_code=400, detail="Failed to update signature.")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
 # Candidate Resume setup
 @app.post("/api/setup/upload")
 async def upload_resume(
     file: UploadFile = File(...),
     mode: str = Form("General"),
-    persona: str = Form("Friendly")
+    persona: str = Form("Friendly"),
+    user_id: Optional[int] = Form(None)
 ):
     if not file.filename.endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are supported.")
@@ -196,7 +118,33 @@ async def upload_resume(
             raise HTTPException(status_code=400, detail="Could not extract text from the PDF.")
             
         extracted_context = extract_resume_context(resume_text)
-        
+
+        # Save extracted experiences to the database
+        if user_id and extracted_context.get("work_experiences"):
+            from database import get_db_connection
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            try:
+                # First delete any existing unverified experiences for this user (to reset if they upload a new resume)
+                cursor.execute("DELETE FROM user_experiences WHERE user_id = %s", (user_id,))
+                
+                for exp in extracted_context["work_experiences"]:
+                    company = exp.get("company", "Unknown")
+                    role = exp.get("role", "Unknown")
+                    start_date = exp.get("start_date", "")
+                    end_date = exp.get("end_date", "")
+                    
+                    cursor.execute(
+                        "INSERT INTO user_experiences (user_id, company, role, start_date, end_date) VALUES (%s, %s, %s, %s, %s)",
+                        (user_id, company, role, start_date, end_date)
+                    )
+                conn.commit()
+            except Exception as e:
+                print(f"Error saving experiences: {e}")
+                conn.rollback()
+            finally:
+                conn.close()
+
         return {
             "status": "success",
             "message": "Resume parsed successfully.",
@@ -204,7 +152,7 @@ async def upload_resume(
                 "interview_mode": mode,
                 "persona": persona,
                 "extracted_context": extracted_context,
-                "raw_resume_text": resume_text
+                "raw_text_preview": resume_text[:200] + "..."
             }
         }
         
@@ -214,20 +162,6 @@ async def upload_resume(
 @app.post("/api/interview/chat")
 async def chat_endpoint(request: ChatRequest):
     try:
-        # Extract user_id to track active session
-        extracted_context = request.context.get("extracted_context", {})
-        user_id = (
-            request.context.get("user_id") or 
-            request.context.get("user", {}).get("id") or 
-            extracted_context.get("user_id") or
-            extracted_context.get("user", {}).get("id")
-        )
-        if user_id:
-            try:
-                active_sessions[int(user_id)] = datetime.now()
-            except (ValueError, TypeError):
-                pass
-                
         response_data = generate_interview_response(
             context=request.context,
             chat_history=request.chat_history,
@@ -271,14 +205,8 @@ async def evaluate_endpoint(request: EvaluationRequest):
                 elif "user" in msg or "candidate" in msg:
                     user_turns += 1
         
-        try:
-            question_limit = int(request.context.get("question_limit", 10))
-        except (ValueError, TypeError):
-            question_limit = 10
-            
-        actual_user_turns = max(0, user_turns - 1)
-        MIN_USER_TURNS = question_limit
-        is_meaningful = actual_user_turns >= MIN_USER_TURNS
+        MIN_USER_TURNS = 2  # Must answer at least 2 questions to earn XP
+        is_meaningful = user_turns >= MIN_USER_TURNS
         
         gamification_result = None
         if user_id:
@@ -296,11 +224,11 @@ async def evaluate_endpoint(request: EvaluationRequest):
                     transcript=request.chat_history,
                     evaluation_data=evaluation_data
                 )
-                print(f"[*] Evaluation logged for user_id={user_id} (actual_user_turns={actual_user_turns})")
+                print(f"[*] Evaluation logged for user_id={user_id} (user_turns={user_turns})")
                 
                 # Only award XP if the interview was meaningful
                 if is_meaningful:
-                    xp_earned = evaluation_data.get("xp_earned", question_limit * 200)
+                    xp_earned = evaluation_data.get("xp_earned", 1000)
                     new_badges = [a["id"] for a in evaluation_data.get("achievements", [])]
                     gamification_result = add_xp_to_user(
                         user_id=int(user_id),
@@ -322,7 +250,7 @@ async def evaluate_endpoint(request: EvaluationRequest):
                         "level_up": False,
                         "new_badges": [],
                         "all_badges": current_state.get("badges", []),
-                        "skipped_reason": f"Interview too short ({actual_user_turns} answers, need {MIN_USER_TURNS}+)"
+                        "skipped_reason": f"Interview too short ({user_turns} answers, need {MIN_USER_TURNS}+)"
                     }
                     # Override evaluation XP to 0 for the frontend
                     evaluation_data["xp_earned"] = 0
@@ -340,15 +268,6 @@ async def evaluate_endpoint(request: EvaluationRequest):
         raise HTTPException(status_code=500, detail=f"Error evaluating interview: {str(e)}")
 
 # Gamification endpoints
-@app.post("/api/gamification/add_xp")
-def api_add_xp(req: AddXPRequest):
-    try:
-        # Give XP, no badges awarded for roadmap tasks currently
-        result = add_xp_to_user(user_id=req.user_id, xp_earned=req.amount, new_badge_ids=[])
-        return {"status": "success", "gamification": result}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
 @app.get("/api/gamification/{user_id}")
 def fetch_user_gamification(user_id: int):
     try:
@@ -367,22 +286,7 @@ def fetch_leaderboard():
 @app.get("/api/admin/metrics")
 def fetch_admin_metrics():
     try:
-        metrics = get_admin_metrics()
-        
-        # Calculate active sessions based on last 2 minutes (120 seconds)
-        now = datetime.now()
-        active_count = 0
-        
-        # We need to iterate over a copy of items since we might delete
-        for uid, last_time in list(active_sessions.items()):
-            if (now - last_time).total_seconds() < 120:
-                active_count += 1
-            else:
-                # cleanup inactive sessions
-                del active_sessions[uid]
-                
-        metrics["active_sessions"] = active_count
-        return metrics
+        return get_admin_metrics()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -402,3 +306,113 @@ def delete_candidate_evaluation(id: int):
         return {"status": "success", "message": "Evaluation record successfully deleted."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# Experience Validation Endpoints
+
+@app.get("/api/user/{user_id}/experiences")
+def get_user_experiences(user_id: int):
+    from database import get_db_connection
+    from psycopg2.extras import RealDictCursor
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    try:
+        cursor.execute("SELECT * FROM user_experiences WHERE user_id = %s ORDER BY id DESC", (user_id,))
+        experiences = cursor.fetchall()
+        
+        cursor.execute("SELECT fraud_strikes, is_fraudulent FROM users WHERE id = %s", (user_id,))
+        user_info = cursor.fetchone()
+        
+        return {
+            "status": "success", 
+            "data": {
+                "experiences": [dict(e) for e in experiences],
+                "is_fraudulent": user_info["is_fraudulent"] if user_info else False
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        conn.close()
+
+@app.post("/api/experiences/validate")
+async def validate_experience(
+    experience_id: int = Form(...),
+    user_id: int = Form(...),
+    file: UploadFile = File(...)
+):
+    if not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="Must upload an image (PNG/JPG).")
+        
+    image_bytes = await file.read()
+    
+    from database import get_db_connection
+    from psycopg2.extras import RealDictCursor
+    from services.llm_service import validate_certificate
+    
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    
+    try:
+        # Fetch experience details
+        cursor.execute("SELECT * FROM user_experiences WHERE id = %s AND user_id = %s", (experience_id, user_id))
+        exp = cursor.fetchone()
+        
+        if not exp:
+            raise HTTPException(status_code=404, detail="Experience not found.")
+            
+        # Call Gemini Vision
+        validation_result = validate_certificate(
+            image_bytes=image_bytes,
+            mime_type=file.content_type,
+            company=exp["company"],
+            role=exp["role"],
+            start_date=exp["start_date"],
+            end_date=exp["end_date"]
+        )
+        
+        is_valid = validation_result.get("is_valid", False)
+        fraud_reason = validation_result.get("fraud_reason", "")
+        
+        if is_valid:
+            cursor.execute(
+                "UPDATE user_experiences SET verification_status = 'Verified' WHERE id = %s", 
+                (experience_id,)
+            )
+            message = "Successfully verified!"
+        else:
+            # Delete fake experience
+            cursor.execute("DELETE FROM user_experiences WHERE id = %s", (experience_id,))
+            
+            # Apply penalties
+            cursor.execute("UPDATE users SET fraud_strikes = fraud_strikes + 1 WHERE id = %s RETURNING fraud_strikes", (user_id,))
+            strikes = cursor.fetchone()["fraud_strikes"]
+            
+            # Check total claimed experiences
+            cursor.execute("SELECT COUNT(*) as total_exp FROM user_experiences WHERE user_id = %s", (user_id,))
+            total_claimed = cursor.fetchone()["total_exp"] + strikes
+            
+            # If they faked ALL their experiences, or hit 2 strikes, mark as FRAUDULENT
+            if strikes >= 2 or strikes >= total_claimed:
+                cursor.execute("UPDATE users SET is_fraudulent = TRUE WHERE id = %s", (user_id,))
+                message = f"Validation failed: {fraud_reason}. WARNING: Your account is now marked as FRAUDULENT."
+            else:
+                # Deduct XP
+                cursor.execute("UPDATE user_gamification SET total_xp = GREATEST(0, total_xp - 500) WHERE user_id = %s", (user_id,))
+                message = f"Validation failed: {fraud_reason}. You lost 500 XP for this fraudulent submission."
+                
+        conn.commit()
+        
+        return {
+            "status": "success",
+            "is_valid": is_valid,
+            "message": message,
+            "fraud_reason": fraud_reason
+        }
+        
+    except Exception as e:
+        conn.rollback()
+        print(f"Error in validate endpoint: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        conn.close()
