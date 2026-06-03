@@ -793,7 +793,7 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
     try {
       const blob = await toBlob(cardRef.current, { 
         pixelRatio: 3,
-        style: { transform: 'none' }
+        style: { transform: 'none', boxShadow: 'none' }
       });
       if (!blob) return null;
       return new File([blob], "HireMind_ICard.png", { type: "image/png" });
@@ -809,7 +809,7 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
     try {
       const dataUrl = await toPng(cardRef.current, { 
         pixelRatio: 3,
-        style: { transform: 'none' }
+        style: { transform: 'none', boxShadow: 'none' }
       });
       const link = document.createElement('a');
       link.download = 'HireMind_ICard.png';
