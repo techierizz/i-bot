@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   BrainCircuit, ArrowLeft, Trophy, Flame, Star, Zap, Eye,
   MessageSquare, Code, TrendingUp, Users, Target, BookOpen,
-  Lock, Crown, Medal, Award, User, RefreshCw, IdCard, Download, Share2, Share, CheckCircle2
+  Lock, Crown, Medal, Award, User, RefreshCw, IdCard, Download, Share2, Share, CheckCircle2, ShieldAlert
 } from "lucide-react";
 import Image from "next/image";
 import { API_BASE_URL } from "../config";
@@ -162,6 +162,15 @@ export default function ProfilePage() {
         </div>
 
         <div className="flex gap-2">
+          {validationData?.experiences?.length > 0 && validationData.experiences.some((e: any) => e.verification_status !== "Verified") && (
+            <button
+              onClick={() => router.push("/validation")}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-orange-500/10 border border-orange-500/30 hover:bg-orange-500/20 text-orange-400 text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
+            >
+              <ShieldAlert className="w-4 h-4" />
+              <span className="hidden sm:inline">Verify Experiences</span>
+            </button>
+          )}
           <button
             onClick={() => setShowSignatureModal(true)}
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900 border border-white/5 hover:border-zinc-700 text-white text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
