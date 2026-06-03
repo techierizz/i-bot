@@ -988,7 +988,7 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
 
                         {/* The highly-detailed 3D Robohash robot with ambient shadows */}
                         <div className="relative w-full h-full" style={{ filter: "drop-shadow(0 20px 25px rgba(0,0,0,0.9)) drop-shadow(0 0 15px rgba(192,132,252,0.4)) saturate(1.15) contrast(1.1)" }}>
-                          <Image src={avatarUrl} alt="Unique 3D Avatar" fill className="object-contain drop-shadow-2xl" unoptimized />
+                          <img src={avatarUrl} alt="Unique 3D Avatar" crossOrigin="anonymous" className="w-full h-full object-contain drop-shadow-2xl" />
                         </div>
                       </div>
                     );
@@ -1056,7 +1056,7 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
                       </div>
                       
                       <div className="h-[54px] w-[54px] -translate-y-2 flex items-center justify-center mix-blend-screen opacity-90 drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]" style={{ filter: "invert(1)" }}>
-                        <img src={qrUrl} alt="Scannable QR Code" className="h-full w-full object-contain" />
+                        <img src={qrUrl} alt="Scannable QR Code" crossOrigin="anonymous" className="h-full w-full object-contain" />
                       </div>
                     </div>
                   );
@@ -1094,7 +1094,7 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
         className="relative z-20 flex flex-col items-center space-y-4"
       >
         <div className="text-xs font-bold text-violet-300 uppercase tracking-widest drop-shadow-md">Share your story</div>
-        <div className="flex items-center gap-4 bg-zinc-900/80 backdrop-blur-xl p-3 rounded-2xl border border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+        <div className="flex items-center gap-4">
           {/* WhatsApp / Message */}
           <button
             onClick={(e) => shareToApp("WhatsApp", e)}
