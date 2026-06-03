@@ -320,10 +320,10 @@ export default function ProfilePage() {
                 <div key={tier.level} className="flex items-center shrink-0">
                   <div className={`flex flex-col items-center gap-1.5 ${isCurrent ? "scale-110" : ""} transition-transform`}>
                     <div className={`relative w-[56px] h-[56px] min-w-[56px] min-h-[56px] rounded-full flex items-center justify-center text-sm font-extrabold border-2 transition-all overflow-hidden shrink-0 aspect-square shadow-lg ${isCurrent
-                        ? `border-white/80 shadow-[0_0_20px_rgba(255,255,255,0.2)] ring-4 ring-white/10`
-                        : unlocked
-                          ? `border-white/20 opacity-90 hover:border-white/40`
-                          : "border-white/5 opacity-50 grayscale hover:opacity-70"
+                      ? `border-white/80 shadow-[0_0_20px_rgba(255,255,255,0.2)] ring-4 ring-white/10`
+                      : unlocked
+                        ? `border-white/20 opacity-90 hover:border-white/40`
+                        : "border-white/5 opacity-50 grayscale hover:opacity-70"
                       }`}>
                       <div className="absolute inset-0 bg-zinc-950 z-0" />
                       <Image
@@ -592,8 +592,8 @@ export default function ProfilePage() {
 
                       {/* Custom Tooltip */}
                       <div className={`absolute left-1/2 -translate-x-1/2 w-48 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-50 transform ${isBottom
-                          ? "bottom-[110%] translate-y-[10px] group-hover:translate-y-0"
-                          : "top-[110%] translate-y-[-10px] group-hover:translate-y-0"
+                        ? "bottom-[110%] translate-y-[10px] group-hover:translate-y-0"
+                        : "top-[110%] translate-y-[-10px] group-hover:translate-y-0"
                         }`}>
                         <div className="bg-zinc-900 border border-white/10 p-3 rounded-xl shadow-2xl backdrop-blur-xl relative flex flex-col items-center text-center">
                           <div className={`absolute left-1/2 -translate-x-1/2 w-3 h-3 bg-zinc-900 border-white/10 rotate-45 ${isBottom ? "-bottom-1.5 border-b border-r" : "-top-1.5 border-t border-l"
@@ -979,13 +979,13 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
                   {(() => {
                     const seed = encodeURIComponent(generateUniqueName());
                     const avatarUrl = `https://robohash.org/${seed}.png?set=set1&size=400x400`;
-                    
+
                     return (
                       <div className="relative z-10 w-full h-full scale-[1.25] -translate-y-2 hover:scale-[1.30] transition-transform duration-500 flex items-center justify-center">
                         {/* Subtle glowing halo behind the robot */}
                         <div className="absolute inset-0 bg-fuchsia-500/20 blur-[20px] rounded-full mix-blend-screen scale-75" />
                         <div className="absolute inset-0 bg-cyan-400/20 blur-[15px] rounded-full mix-blend-screen scale-50" />
-                        
+
                         {/* The highly-detailed 3D Robohash robot with ambient shadows */}
                         <div className="relative w-full h-full" style={{ filter: "drop-shadow(0 20px 25px rgba(0,0,0,0.9)) drop-shadow(0 0 15px rgba(192,132,252,0.4)) saturate(1.15) contrast(1.1)" }}>
                           <Image src={avatarUrl} alt="Unique 3D Avatar" fill className="object-contain drop-shadow-2xl" unoptimized />
@@ -1015,66 +1015,49 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
                 {/* Thin Line */}
                 <div className="w-full h-[1px] bg-white/15 mt-4 mb-2" />
 
-                {/* Enhanced Stats Row */}
-                <div className="flex justify-between items-center px-4 mb-3 mt-3 bg-white/5 border border-white/10 rounded-lg mx-2 py-1.5 shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)]">
-                  <div className="flex flex-col items-center flex-1">
-                    <Target className="w-3.5 h-3.5 text-cyan-400 mb-0.5 drop-shadow-md" />
-                    <span className="text-[7px] font-black text-zinc-400 uppercase tracking-widest">Interviews</span>
-                    <span className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-400 leading-none drop-shadow-sm mt-0.5">{stats?.total_interviews || 0}</span>
+                {/* Stats row */}
+                <div className="flex justify-between items-center px-4 mb-3 mt-2">
+                  <div className="flex flex-col items-center">
+                    <span className="text-[8px] font-black text-zinc-400 uppercase tracking-tight">Interviews</span>
+                    <span className="text-xl font-black text-white leading-none drop-shadow-md">{stats?.total_interviews || 0}</span>
                   </div>
-                  <div className="w-[1px] h-8 bg-white/10" />
-                  <div className="flex flex-col items-center flex-1">
-                    <Award className="w-3.5 h-3.5 text-fuchsia-400 mb-0.5 drop-shadow-md" />
-                    <span className="text-[7px] font-black text-zinc-400 uppercase tracking-widest">Badges</span>
-                    <span className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-400 leading-none drop-shadow-sm mt-0.5">{gData?.badges?.length || 0}</span>
+                  <div className="flex flex-col items-center">
+                    <span className="text-[8px] font-black text-zinc-400 uppercase tracking-tight">Badges</span>
+                    <span className="text-xl font-black text-white leading-none drop-shadow-md">{gData?.badges?.length || 0}</span>
                   </div>
-                  <div className="w-[1px] h-8 bg-white/10" />
-                  <div className="flex flex-col items-center flex-1">
-                    <Trophy className="w-3.5 h-3.5 text-amber-400 mb-0.5 drop-shadow-md" />
-                    <span className="text-[7px] font-black text-zinc-400 uppercase tracking-widest">Best Score</span>
-                    <span className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-400 leading-none drop-shadow-sm mt-0.5">{bestInterview?.overall || stats?.highest_score || 0}</span>
+                  <div className="flex flex-col items-center">
+                    <span className="text-[8px] font-black text-zinc-400 uppercase tracking-tight">Best Score</span>
+                    <span className="text-xl font-black text-white leading-none drop-shadow-md">{bestInterview?.overall || stats?.highest_score || 0}</span>
                   </div>
                 </div>
 
-                {/* Enhanced Scannable Barcode & Verification */}
+                {/* Real Scannable Barcode */}
                 {(() => {
                   const uidString = `UID-${(user?.id || 1000).toString().padStart(4, '0')}-HM-${(gData?.level || 1).toString().padStart(2, '0')}`;
                   const barcodeUrl = `https://bwipjs-api.metafloor.com/?bcid=code128&text=${encodeURIComponent(uidString)}&scale=3&includetext=false`;
                   return (
-                    <div className="flex flex-col items-center mt-3 mb-3 relative group">
-                      <span className="text-[5px] font-black text-zinc-500 uppercase tracking-[0.4em] mb-1">Authentic ID / Scan to Verify</span>
-                      <div className="h-7 w-[70%] flex items-center justify-center mix-blend-screen opacity-90 border-y border-white/10 py-1 transition-opacity duration-300 group-hover:opacity-100" style={{ filter: "invert(1) brightness(2)" }}>
+                    <div className="flex flex-col items-center mt-2 mb-3 opacity-80">
+                      <div className="h-6 w-[80%] flex items-center justify-center mix-blend-screen opacity-90" style={{ filter: "invert(1) brightness(2)" }}>
                         <img src={barcodeUrl} alt="Scannable Barcode" className="h-full object-contain" />
                       </div>
-                      <div className="flex items-center gap-1 mt-1">
-                        <div className="w-1.5 h-1.5 rounded-full bg-cyan-500 shadow-[0_0_5px_#06b6d4] animate-pulse" />
-                        <span className="text-[7px] text-zinc-400 font-mono tracking-[0.3em] font-bold">
-                          {uidString}
-                        </span>
-                      </div>
+                      <span className="text-[7px] text-zinc-500 font-mono tracking-[0.3em] mt-1 font-bold">
+                        {uidString}
+                      </span>
                     </div>
                   );
                 })()}
 
-                {/* Unique Signature Box with Watermark */}
-                <div className="mt-auto mb-2 relative flex flex-col items-center justify-center gap-1 overflow-hidden">
-                  {/* Huge Watermark */}
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-[15deg] opacity-[0.03] pointer-events-none whitespace-nowrap">
-                    <span className="text-6xl font-black text-white uppercase tracking-tighter" style={{ fontFamily: "impact, sans-serif" }}>APPROVED</span>
-                  </div>
-                  
+                {/* Unique Signature Box */}
+                <div className="mt-auto mb-2 flex flex-col items-center justify-center gap-1">
                   {user?.signature_data ? (
-                    <img src={user.signature_data} alt="Signature" className="h-10 relative z-10 object-contain drop-shadow-md invert" style={{ filter: "drop-shadow(0px 2px 2px rgba(0,0,0,0.8)) invert(1)" }} />
+                    <img src={user.signature_data} alt="Signature" className="h-10 object-contain drop-shadow-md invert" style={{ filter: "drop-shadow(0px 2px 2px rgba(0,0,0,0.8)) invert(1)" }} />
                   ) : (
-                    <div className="text-3xl text-white font-black leading-none -rotate-3 relative z-10 drop-shadow-[0_2px_5px_rgba(0,0,0,0.8)]" style={{ fontFamily: "'Brush Script MT', cursive, serif" }}>
+                    <div className="text-3xl text-white font-black leading-none -rotate-3 drop-shadow-[0_2px_5px_rgba(0,0,0,0.8)]" style={{ fontFamily: "'Brush Script MT', cursive, serif" }}>
                       {user?.username}
                     </div>
                   )}
-                  <div className="flex items-center gap-1 relative z-10">
-                    <CheckCircle2 className="w-2.5 h-2.5 text-emerald-400" />
-                    <div className="text-[6px] text-zinc-400/80 uppercase tracking-widest font-bold font-mono">
-                      Authorized by HireMind Team
-                    </div>
+                  <div className="text-[6px] text-zinc-400/80 uppercase tracking-widest font-bold font-mono">
+                    Authorized by HireMind Team
                   </div>
                 </div>
 
