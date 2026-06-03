@@ -916,8 +916,6 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
             {/* Inner Obsidian Premium Background */}
             <div className="relative flex-1 w-full rounded-md bg-gradient-to-br from-slate-900 via-zinc-950 to-black shadow-[inset_0_0_20px_rgba(255,255,255,0.05)] border border-white/10 flex flex-col p-1.5 overflow-hidden">
 
-              {/* Texture overlay for the fire */}
-              <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-40 mix-blend-overlay pointer-events-none" />
 
               {/* Stage Badge (Top Left Overlapping) */}
               <div className="absolute -top-3 -left-3 bg-gradient-to-br from-yellow-200 to-yellow-600 border border-yellow-700 shadow-md p-1 z-20 flex flex-col items-center justify-center transform -rotate-6" style={{ width: "55px", height: "55px", clipPath: "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)" }}>
@@ -988,7 +986,7 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
 
                         {/* The highly-detailed 3D Robohash robot with ambient shadows */}
                         <div className="relative w-full h-full" style={{ filter: "drop-shadow(0 20px 25px rgba(0,0,0,0.9)) drop-shadow(0 0 15px rgba(192,132,252,0.4)) saturate(1.15) contrast(1.1)" }}>
-                          <img src={avatarUrl} alt="Unique 3D Avatar" crossOrigin="anonymous" className="w-full h-full object-contain drop-shadow-2xl" />
+                          <img src={avatarUrl} alt="Unique 3D Avatar" crossOrigin="anonymous" className="absolute inset-0 w-full h-full object-contain drop-shadow-2xl" />
                         </div>
                       </div>
                     );
@@ -1016,7 +1014,7 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
                 <div className="w-full h-[1px] bg-white/15 mt-4 mb-2" />
 
                 {/* Stats row */}
-                <div className="flex justify-between items-center px-4 mb-3 mt-2">
+                <div className="flex justify-between items-center px-4 mb-1 mt-1">
                   <div className="flex flex-col items-center">
                     <span className="text-[8px] font-black text-zinc-400 uppercase tracking-tight">Interviews</span>
                     <span className="text-xl font-black text-white leading-none drop-shadow-md">{stats?.total_interviews || 0}</span>
@@ -1036,7 +1034,7 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
                   const uidString = `UID-${(user?.id || 1000).toString().padStart(4, '0')}-HM-${(gData?.level || 1).toString().padStart(2, '0')}`;
                   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(uidString)}`;
                   return (
-                    <div className="flex items-center justify-between mt-2 mb-3 w-full px-6">
+                    <div className="flex items-center justify-between mt-1 mb-1 w-full px-6">
                       <div className="flex flex-col items-start justify-center">
                         <div className="flex items-center gap-1.5 mb-1.5">
                           <div className="w-1 h-1 bg-cyan-400 rounded-full shadow-[0_0_5px_rgba(34,211,238,0.8)] animate-pulse" />
@@ -1054,7 +1052,7 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="h-[54px] w-[54px] -translate-y-2 flex items-center justify-center mix-blend-screen opacity-90 drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]" style={{ filter: "invert(1)" }}>
                         <img src={qrUrl} alt="Scannable QR Code" crossOrigin="anonymous" className="h-full w-full object-contain" />
                       </div>
@@ -1063,7 +1061,7 @@ const HolographicICard = ({ user, gData, stats, bestInterview, onClose }: any) =
                 })()}
 
                 {/* Unique Signature Box */}
-                <div className="mt-auto mb-2 flex flex-col items-center justify-center gap-1">
+                <div className="mt-auto mb-1 flex flex-col items-center justify-center">
                   {user?.signature_data ? (
                     <img src={user.signature_data} alt="Signature" className="h-7 object-contain drop-shadow-md invert" style={{ filter: "drop-shadow(0px 2px 2px rgba(0,0,0,0.8)) invert(1)" }} />
                   ) : (
