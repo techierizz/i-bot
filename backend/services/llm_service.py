@@ -97,7 +97,7 @@ def validate_certificate(image_bytes: bytes, mime_type: str, company: str, role:
         """
         
         response = client.models.generate_content(
-            model='gemini-2.5-pro',
+            model='gemini-2.5-flash',
             contents=[
                 prompt,
                 genai.types.Part.from_bytes(data=image_bytes, mime_type=mime_type)
