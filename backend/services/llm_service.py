@@ -81,7 +81,7 @@ def extract_resume_context(resume_text: str) -> dict:
             "summary": f"Could not parse resume with LLM. Error: {str(e)}"
         }
 
-def validate_certificate(image_bytes: bytes, mime_type: str, company: str, role: str, start_date: str, end_date: str) -> dict:
+def validate_certificate(image_bytes: bytes, mime_type: str, candidate_name: str, company: str, role: str, start_date: str, end_date: str) -> dict:
     """
     Forensically validates a certificate image using Gemini 1.5 Pro multimodal.
     """
@@ -93,7 +93,14 @@ def validate_certificate(image_bytes: bytes, mime_type: str, company: str, role:
         client = genai.Client(api_key=api_key)
         
         prompt = f"""
-        Perform forensic analysis on this document. 1) Extract any Certificate IDs or Verification URLs. 2) Check for font mismatching or digital tampering around the name. 3) Verify the exact dates match the user's claimed timeline of {start_date} to {end_date}. 4) Ensure the role stated on the document matches {role} at {company}. If ANY of these fail, reject it with a specific fraud_reason. Return ONLY a JSON with `is_valid: boolean` and `fraud_reason: string`.
+        Perform forensic analysis on this document. 
+        1) Extract any Certificate IDs or Verification URLs.
+        2) OPTIONAL: Use Google Search to attempt to verify this Certificate ID explicitly at '{company}'. If you find public verification that this belongs to '{candidate_name}', note it. 
+        3) Even if online verification fails or is inaccessible, perform visual forensic analysis: Ensure the document explicitly belongs to '{candidate_name}'. 
+        4) Check for font mismatching or digital tampering around the candidate's name. 
+        5) Verify the exact dates match the user's claimed timeline of {start_date} to {end_date}. 
+        6) Ensure the role stated on the document matches {role} at {company}. 
+        If it appears forged or tampered with, reject it with a specific fraud_reason. Return ONLY a JSON with `is_valid: boolean`, `fraud_reason: string` (empty if valid), and `verification_method: string` ("Google Search Verified" if confirmed online, or "Visual Forensic Verified" if relying on image analysis).
         """
         
         response = client.models.generate_content(
@@ -101,7 +108,10 @@ def validate_certificate(image_bytes: bytes, mime_type: str, company: str, role:
             contents=[
                 prompt,
                 genai.types.Part.from_bytes(data=image_bytes, mime_type=mime_type)
-            ]
+            ],
+            config=genai.types.GenerateContentConfig(
+                tools=[{"google_search": {}}]
+            )
         )
         
         text_response = response.text
