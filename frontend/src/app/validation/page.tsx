@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { API_BASE_URL } from "../config";
 import { CheckCircle, AlertTriangle, UploadCloud, FileText, ChevronRight, Loader2, ShieldCheck, XCircle } from "lucide-react";
 import Link from "next/link";
@@ -20,12 +20,15 @@ interface Experience {
 
 export default function ValidationPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const fromProfile = searchParams.get("from") === "profile";
+
   const [user, setUser] = useState<any>(null);
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
   // UI Phases: "celebration" -> "validation"
-  const [phase, setPhase] = useState<"celebration" | "validation">("celebration");
+  const [phase, setPhase] = useState<"celebration" | "validation">(fromProfile ? "validation" : "celebration");
   
   // Upload states mapping exp.id -> File
   const [selectedFiles, setSelectedFiles] = useState<Record<number, File>>({});
@@ -53,10 +56,12 @@ export default function ValidationPage() {
             setExperiences(exps);
             setIsLoading(false);
             
-            // Trigger phase transition after 3 seconds
-            setTimeout(() => {
-              setPhase("validation");
-            }, 3000);
+            // Trigger phase transition after 3 seconds if not from profile
+            if (!fromProfile) {
+              setTimeout(() => {
+                setPhase("validation");
+              }, 3000);
+            }
           }
         }
       })
@@ -164,8 +169,17 @@ export default function ValidationPage() {
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="w-full flex flex-col items-center"
+              className="w-full flex flex-col items-center relative"
             >
+              {fromProfile && (
+                <button
+                  onClick={() => router.push("/profile")}
+                  className="absolute -top-4 left-0 md:-left-8 p-2 text-zinc-500 hover:text-white transition-colors cursor-pointer"
+                  title="Back to Profile"
+                >
+                  <XCircle className="w-8 h-8" />
+                </button>
+              )}
               <div className="text-center mb-12">
                 <h1 className="text-4xl md:text-5xl font-black mb-4 tracking-tight text-white">
                   Experience Validation
@@ -259,19 +273,21 @@ export default function ValidationPage() {
                 )}
               </div>
 
-              <div className="mt-12">
-                <button
-                  onClick={() => router.push("/results")}
-                  className={`flex items-center gap-2 px-8 py-4 rounded-full font-bold text-lg transition-all ${
-                    allVerified 
-                      ? "bg-emerald-500 text-black hover:bg-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.4)]" 
-                      : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700 hover:text-white"
-                  }`}
-                >
-                  {allVerified ? "Go to Results" : "Skip to Results"}
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              </div>
+              {!fromProfile && (
+                <div className="mt-12">
+                  <button
+                    onClick={() => router.push("/results")}
+                    className={`flex items-center gap-2 px-8 py-4 rounded-full font-bold text-lg transition-all ${
+                      allVerified 
+                        ? "bg-emerald-500 text-black hover:bg-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.4)]" 
+                        : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700 hover:text-white"
+                    }`}
+                  >
+                    {allVerified ? "Go to Results" : "Skip to Results"}
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
+              )}
 
             </motion.div>
           )}
