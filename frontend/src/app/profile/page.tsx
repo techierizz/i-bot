@@ -164,7 +164,7 @@ export default function ProfilePage() {
         <div className="flex gap-2">
           {validationData?.experiences?.length > 0 && validationData.experiences.some((e: any) => e.verification_status !== "Verified") && (
             <button
-              onClick={() => router.push("/validation")}
+              onClick={() => router.push("/validation?from=profile")}
               className="flex items-center gap-2 px-4 py-2 rounded-xl bg-orange-500/10 border border-orange-500/30 hover:bg-orange-500/20 text-orange-400 text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
             >
               <ShieldAlert className="w-4 h-4" />
