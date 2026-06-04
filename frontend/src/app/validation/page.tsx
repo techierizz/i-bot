@@ -103,6 +103,7 @@ function ValidationContent() {
       if (res.ok && data.status === "success") {
         if (data.is_valid) {
           // Update local state to Verified
+          alert(data.message || "Certificate verified successfully.");
           setExperiences(prev => prev.map(exp => exp.id === expId ? { ...exp, verification_status: "Verified" } : exp));
         } else {
           // It was rejected/fraudulent. Remove it locally and alert.
