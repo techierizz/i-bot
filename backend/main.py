@@ -426,9 +426,13 @@ async def validate_experience(
     cursor = conn.cursor(cursor_factory=RealDictCursor)
     
     try:
-        # Fetch experience details
+        # Fetch experience details and user name
         cursor.execute("SELECT * FROM user_experiences WHERE id = %s AND user_id = %s", (experience_id, user_id))
         exp = cursor.fetchone()
+        
+        cursor.execute("SELECT name FROM users WHERE id = %s", (user_id,))
+        user_row = cursor.fetchone()
+        candidate_name = user_row["name"] if user_row else "the candidate"
         
         if not exp:
             raise HTTPException(status_code=404, detail="Experience not found.")
@@ -437,6 +441,7 @@ async def validate_experience(
         validation_result = validate_certificate(
             image_bytes=image_bytes,
             mime_type=file.content_type,
+            candidate_name=candidate_name,
             company=exp["company"],
             role=exp["role"],
             start_date=exp["start_date"],
@@ -446,6 +451,7 @@ async def validate_experience(
         is_valid = validation_result.get("is_valid", False)
         is_error = validation_result.get("is_error", False)
         fraud_reason = validation_result.get("fraud_reason", "")
+        verification_method = validation_result.get("verification_method", "Visual Forensic Verified")
         
         if is_error:
             raise HTTPException(status_code=500, detail=fraud_reason)
@@ -455,7 +461,7 @@ async def validate_experience(
                 "UPDATE user_experiences SET verification_status = 'Verified' WHERE id = %s", 
                 (experience_id,)
             )
-            message = "Successfully verified!"
+            message = f"Certificate verified successfully via {verification_method}."
         else:
             # Delete fake experience
             cursor.execute("DELETE FROM user_experiences WHERE id = %s", (experience_id,))
