@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import { API_BASE_URL } from "../config";
@@ -18,7 +18,7 @@ interface Experience {
   fraud_reason?: string;
 }
 
-export default function ValidationPage() {
+function ValidationContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const fromProfile = searchParams.get("from") === "profile";
@@ -294,5 +294,18 @@ export default function ValidationPage() {
         </AnimatePresence>
       </main>
     </div>
+  );
+}
+
+export default function ValidationPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex-1 flex flex-col items-center justify-center min-h-screen bg-zinc-950 text-white">
+        <Loader2 className="w-10 h-10 animate-spin text-primary-500 mb-4" />
+        <p className="text-zinc-500 font-medium">Loading...</p>
+      </div>
+    }>
+      <ValidationContent />
+    </Suspense>
   );
 }
