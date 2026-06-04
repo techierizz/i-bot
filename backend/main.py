@@ -430,9 +430,9 @@ async def validate_experience(
         cursor.execute("SELECT * FROM user_experiences WHERE id = %s AND user_id = %s", (experience_id, user_id))
         exp = cursor.fetchone()
         
-        cursor.execute("SELECT name FROM users WHERE id = %s", (user_id,))
+        cursor.execute("SELECT username FROM users WHERE id = %s", (user_id,))
         user_row = cursor.fetchone()
-        candidate_name = user_row["name"] if user_row else "the candidate"
+        candidate_name = user_row["username"] if user_row else "the candidate"
         
         if not exp:
             raise HTTPException(status_code=404, detail="Experience not found.")
