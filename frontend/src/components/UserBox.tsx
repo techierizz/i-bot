@@ -30,7 +30,7 @@ export default function UserBox({ forceShow = false, className }: { forceShow?: 
   };
 
   if (!user) return null;
-  if (!forceShow && (pathname === "/" || pathname === "/interview" || pathname === "/results" || pathname === "/profile")) return null;
+  if (!forceShow && (pathname === "/" || pathname === "/interview" || pathname === "/results" || pathname === "/profile" || pathname === "/validation")) return null;
 
   return (
     <div className={className || "fixed top-6 right-6 z-50 flex items-center gap-3"}>
