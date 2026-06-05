@@ -10,6 +10,7 @@ import {
   Target, Clock, User
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { API_BASE_URL } from "../config";
 import UserBox from "@/components/UserBox";
 
@@ -408,7 +409,7 @@ export default function ResultsPage() {
                 transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
                 className="absolute inset-4 rounded-full border border-dashed border-secondary-500/20 bg-secondary-500/5"
               />
-              <BrainCircuit className="w-12 h-12 text-primary-400 animate-pulse" />
+              <Image src="/logo.png" alt="HireMind Logo" width={48} height={48} className="relative z-10 opacity-80" />
             </div>
 
             <div className="text-center w-full max-w-md">
