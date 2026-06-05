@@ -115,7 +115,11 @@ function ValidationContent() {
       // Step 3: Forensic Visual Analysis (wait for actual response)
       const res = await fetchPromise;
       const data = await res.json();
-
+      
+      if (data.playwright_status) {
+        console.log("Playwright Details:", data.playwright_status);
+      }
+      
       if (res.ok && data.status === "success") {
         console.log("Validation Method Used:", data.verification_method);
         if (data.is_valid) {
