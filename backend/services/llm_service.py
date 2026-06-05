@@ -100,7 +100,7 @@ def validate_certificate(image_bytes: bytes, mime_type: str, candidate_name: str
         4) Check for font mismatching or digital tampering around the candidate's name. 
         5) Verify the exact dates match the user's claimed timeline of {start_date} to {end_date}. 
         6) Ensure the role stated on the document matches {role} at {company}. 
-        If it appears forged or tampered with, reject it with a specific fraud_reason. Return ONLY a JSON with `is_valid: boolean`, `fraud_reason: string` (empty if valid), `verification_method: string` ("Visual Forensic Verified"), and `verification_url: string` (the direct verification link if found, else null).
+        If it appears forged or tampered with, reject it with a specific fraud_reason. Return ONLY a JSON with `is_valid: boolean`, `fraud_reason: string` (empty if valid), `verification_method: string` ("Visual Forensic Verified"), `verification_url: string` (the direct verification link if found, else null), and `certificate_id: string` (the extracted ID if present, else null).
         """
         
         response = client.models.generate_content(
