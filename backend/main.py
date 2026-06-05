@@ -451,6 +451,8 @@ async def validate_experience(
         verification_url = validation_result.get("verification_url")
         certificate_id = validation_result.get("certificate_id")
         
+        playwright_status = "Playwright not triggered (No Verification URL found in document by Gemini)"
+        
         if verification_url:
             from services.playwright_service import verify_certificate_online
             playwright_result = await verify_certificate_online(
@@ -463,6 +465,9 @@ async def validate_experience(
             # If Playwright had a technical error (e.g. timeout, site down), we ignore it and fallback to the Visual Forensic result
             if not playwright_result.get("is_playwright_error"):
                 validation_result.update(playwright_result)
+                playwright_status = f"Playwright successfully scraped and validated via {verification_url}"
+            else:
+                playwright_status = f"Playwright fallback triggered due to error: {playwright_result.get('fraud_reason', 'Unknown error')}"
         
         is_valid = validation_result.get("is_valid", False)
         is_error = validation_result.get("is_error", False)
@@ -506,7 +511,8 @@ async def validate_experience(
             "is_valid": is_valid,
             "message": message,
             "fraud_reason": fraud_reason,
-            "verification_method": verification_method
+            "verification_method": verification_method,
+            "playwright_status": playwright_status
         }
         
     except Exception as e:
