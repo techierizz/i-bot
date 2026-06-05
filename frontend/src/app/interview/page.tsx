@@ -544,6 +544,12 @@ export default function InterviewPage() {
       document.exitFullscreen().catch(err => console.error(err));
     }
     
+    // Stop screen share
+    if (screenStreamRef.current) {
+      screenStreamRef.current.getTracks().forEach(track => track.stop());
+      setIsScreenShared(false);
+    }
+
     router.push("/validation");
   };
 
@@ -1037,7 +1043,7 @@ export default function InterviewPage() {
           
           <div className="p-4 border-t border-white/5 bg-white/5">
              <p className="text-xs text-center text-amber-500 font-bold tracking-wide">
-               Speak clearly into your microphone!!
+               Speak clearly into your microphone. The AI will respond automatically.
              </p>
           </div>
         </div>
