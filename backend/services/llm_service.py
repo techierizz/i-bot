@@ -94,13 +94,13 @@ def validate_certificate(image_bytes: bytes, mime_type: str, candidate_name: str
         
         prompt = f"""
         Perform forensic analysis on this document. 
-        1) Extract any Certificate IDs or Verification URLs.
-        2) OPTIONAL: Use Google Search to attempt to verify this Certificate ID explicitly at '{company}'. If you find public verification that this belongs to '{candidate_name}', note it. 
-        3) Even if online verification fails or is inaccessible, perform visual forensic analysis: Ensure the document explicitly belongs to '{candidate_name}'. 
+        1) Extract any Certificate IDs or Verification URLs (e.g. from QR codes or text).
+        2) Try to infer the full verification URL for this exact certificate at '{company}'. If you find a direct URL that verifies this certificate, return it as `verification_url`. 
+        3) Even if online verification seems unavailable, perform visual forensic analysis: Ensure the document explicitly belongs to '{candidate_name}'. 
         4) Check for font mismatching or digital tampering around the candidate's name. 
         5) Verify the exact dates match the user's claimed timeline of {start_date} to {end_date}. 
         6) Ensure the role stated on the document matches {role} at {company}. 
-        If it appears forged or tampered with, reject it with a specific fraud_reason. Return ONLY a JSON with `is_valid: boolean`, `fraud_reason: string` (empty if valid), and `verification_method: string` ("Google Search Verified" if confirmed online, or "Visual Forensic Verified" if relying on image analysis).
+        If it appears forged or tampered with, reject it with a specific fraud_reason. Return ONLY a JSON with `is_valid: boolean`, `fraud_reason: string` (empty if valid), `verification_method: string` ("Visual Forensic Verified"), and `verification_url: string` (the direct verification link if found, else null).
         """
         
         response = client.models.generate_content(
