@@ -448,6 +448,19 @@ async def validate_experience(
             end_date=exp["end_date"]
         )
         
+        verification_url = validation_result.get("verification_url")
+        if verification_url:
+            from services.playwright_service import verify_certificate_online
+            playwright_result = await verify_certificate_online(
+                url=verification_url,
+                candidate_name=candidate_name,
+                company=exp["company"],
+                role=exp["role"]
+            )
+            # If Playwright had a technical error (e.g. timeout, site down), we ignore it and fallback to the Visual Forensic result
+            if not playwright_result.get("is_playwright_error"):
+                validation_result.update(playwright_result)
+        
         is_valid = validation_result.get("is_valid", False)
         is_error = validation_result.get("is_error", False)
         fraud_reason = validation_result.get("fraud_reason", "")
@@ -481,7 +494,7 @@ async def validate_experience(
             else:
                 # Deduct XP
                 cursor.execute("UPDATE user_gamification SET total_xp = GREATEST(0, total_xp - 500) WHERE user_id = %s", (user_id,))
-                message = f"Validation failed: {fraud_reason}. Warning: 500 XP penalty applied. Please double-check your documents before uploading to avoid fraudulent tag."
+                message = f"Validation failed: {fraud_reason}. Warning: 500 XP penalty applied. Please double-check your documents before uploading to avoid fraudulent tags"
                 
         conn.commit()
         
