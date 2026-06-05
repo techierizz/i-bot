@@ -481,7 +481,7 @@ async def validate_experience(
             else:
                 # Deduct XP
                 cursor.execute("UPDATE user_gamification SET total_xp = GREATEST(0, total_xp - 500) WHERE user_id = %s", (user_id,))
-                message = f"Validation failed: {fraud_reason}. You lost 500 XP for this fraudulent submission."
+                message = f"Validation failed: {fraud_reason}. Warning: 500 XP penalty applied. Please double-check your documents before uploading to avoid fraudulent tag."
                 
         conn.commit()
         
