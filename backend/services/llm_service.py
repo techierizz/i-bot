@@ -125,4 +125,9 @@ def validate_certificate(image_bytes: bytes, mime_type: str, candidate_name: str
         return json.loads(text_response)
     except Exception as e:
         print(f"Error validating certificate: {e}")
-        return {"is_valid": False, "is_error": True, "fraud_reason": f"AI Validation Failed due to technical error: {e}"}
+        return {
+            "is_valid": False, 
+            "is_error": True, 
+            "fraud_reason": "AI Validation service is temporarily unavailable (API Quota Exceeded). Please try again in a few minutes.",
+            "error_details": str(e)
+        }
