@@ -33,6 +33,8 @@ function ValidationContent() {
   // Upload states mapping exp.id -> File
   const [selectedFiles, setSelectedFiles] = useState<Record<number, File>>({});
   const [validatingExpId, setValidatingExpId] = useState<number | null>(null);
+  const [validationTimeline, setValidationTimeline] = useState<{ step: number; status: "loading" | "success" | "error" } | null>(null);
+  const [validationAlert, setValidationAlert] = useState<{ type: "success" | "error" | "warning"; message: string } | null>(null);
 
   useEffect(() => {
     const session = localStorage.getItem("hiremind_user");
@@ -87,35 +89,60 @@ function ValidationContent() {
     if (!file || !user) return;
 
     setValidatingExpId(expId);
-    
+    setValidationTimeline({ step: 1, status: "loading" });
+    setValidationAlert(null);
+
     const formData = new FormData();
     formData.append("file", file);
     formData.append("experience_id", expId.toString());
     formData.append("user_id", user.id.toString());
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/experiences/validate`, {
+      const fetchPromise = fetch(`${API_BASE_URL}/api/experiences/validate`, {
         method: "POST",
         body: formData
       });
+
+      // Timeline Animation Sync
+      // Step 1: Initializing secure connection
+      await new Promise(r => setTimeout(r, 1000));
+      setValidationTimeline({ step: 2, status: "loading" });
+      
+      // Step 2: Querying Google Search databases
+      await new Promise(r => setTimeout(r, 1500));
+      setValidationTimeline({ step: 3, status: "loading" });
+      
+      // Step 3: Forensic Visual Analysis (wait for actual response)
+      const res = await fetchPromise;
       const data = await res.json();
       
       if (res.ok && data.status === "success") {
         if (data.is_valid) {
-          // Update local state to Verified
-          alert(data.message || "Certificate verified successfully.");
+          setValidationTimeline({ step: 3, status: "success" });
+          await new Promise(r => setTimeout(r, 800)); // Brief pause to show green
+          setValidationTimeline(null);
           setExperiences(prev => prev.map(exp => exp.id === expId ? { ...exp, verification_status: "Verified" } : exp));
         } else {
-          // It was rejected/fraudulent. Remove it locally and alert.
-          alert(data.message || "Fraud detected.");
+          setValidationTimeline({ step: 3, status: "error" });
+          await new Promise(r => setTimeout(r, 1000)); // Show red before disappearing
+          setValidationTimeline(null);
+          
+          const isFraudulent = data.message.includes("FRAUDULENT");
+          setValidationAlert({ 
+            type: isFraudulent ? "error" : "warning", 
+            message: data.message 
+          });
           setExperiences(prev => prev.filter(exp => exp.id !== expId));
         }
       } else {
-        alert(data.detail || "Validation failed due to server error.");
+        throw new Error(data.detail || data.message || "Validation failed due to server error.");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert("Network error during validation.");
+      setValidationTimeline({ step: 3, status: "error" });
+      await new Promise(r => setTimeout(r, 1000));
+      setValidationTimeline(null);
+      setValidationAlert({ type: "error", message: err.message || "Network error during validation." });
     } finally {
       setValidatingExpId(null);
     }
@@ -141,6 +168,57 @@ function ValidationContent() {
       </div>
 
       <main className="flex-1 flex flex-col items-center justify-center p-6 w-full max-w-5xl mx-auto min-h-screen relative z-10">
+        
+        {/* Custom Alert Modal */}
+        <AnimatePresence>
+          {validationAlert && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            >
+              <motion.div 
+                initial={{ scale: 0.9, y: 20 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0.9, y: 20 }}
+                className={`w-full max-w-md bg-zinc-900 border rounded-2xl p-6 shadow-2xl ${
+                  validationAlert.type === 'error' 
+                    ? 'border-red-500/30 shadow-[0_0_40px_rgba(239,68,68,0.1)]' 
+                    : 'border-yellow-500/30 shadow-[0_0_40px_rgba(234,179,8,0.1)]'
+                }`}
+              >
+                <div className="flex items-start gap-4">
+                  <div className={`p-3 rounded-full shrink-0 ${
+                    validationAlert.type === 'error' ? 'bg-red-500/20 text-red-400' : 'bg-yellow-500/20 text-yellow-400'
+                  }`}>
+                    <AlertTriangle className="w-8 h-8" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className={`text-xl font-bold mb-2 ${
+                      validationAlert.type === 'error' ? 'text-red-400' : 'text-yellow-400'
+                    }`}>
+                      {validationAlert.type === 'error' ? 'Fraud Detected' : 'Validation Warning'}
+                    </h3>
+                    <p className="text-zinc-300 text-sm leading-relaxed mb-6">
+                      {validationAlert.message}
+                    </p>
+                    <button 
+                      onClick={() => setValidationAlert(null)}
+                      className={`w-full py-3 rounded-xl font-bold transition-all ${
+                        validationAlert.type === 'error' 
+                          ? 'bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30' 
+                          : 'bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                      }`}
+                    >
+                      Acknowledge
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
         
         <AnimatePresence mode="wait">
           {phase === "celebration" && (
