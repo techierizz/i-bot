@@ -475,7 +475,11 @@ async def validate_experience(
         verification_method = validation_result.get("verification_method", "Visual Forensic Verified")
         
         if is_error:
-            raise HTTPException(status_code=500, detail=fraud_reason)
+            return {
+                "status": "error",
+                "message": fraud_reason,
+                "raw_error": validation_result.get("error_details", "")
+            }
 
         if is_valid:
             cursor.execute(
