@@ -140,7 +140,8 @@ function ValidationContent() {
           setExperiences(prev => prev.filter(exp => exp.id !== expId));
         }
       } else {
-        throw new Error(data.detail || data.message || "Validation failed due to server error.");
+        if (data.raw_error) console.error("Raw Technical Error Details from API:", data.raw_error);
+        throw new Error(data.message || data.detail || "Validation failed due to server error.");
       }
     } catch (err: any) {
       console.error(err);
