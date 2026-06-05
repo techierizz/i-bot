@@ -550,7 +550,8 @@ export default function InterviewPage() {
       setIsScreenShared(false);
     }
 
-    router.push("/validation");
+    // Force a hard navigation to avoid Next.js caching previous ?from=profile state
+    window.location.href = "/validation";
   };
 
   const requestFullscreen = async () => {
