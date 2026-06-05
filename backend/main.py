@@ -505,7 +505,8 @@ async def validate_experience(
             "status": "success",
             "is_valid": is_valid,
             "message": message,
-            "fraud_reason": fraud_reason
+            "fraud_reason": fraud_reason,
+            "verification_method": verification_method
         }
         
     except Exception as e:
