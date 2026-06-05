@@ -449,13 +449,16 @@ async def validate_experience(
         )
         
         verification_url = validation_result.get("verification_url")
+        certificate_id = validation_result.get("certificate_id")
+        
         if verification_url:
             from services.playwright_service import verify_certificate_online
             playwright_result = await verify_certificate_online(
                 url=verification_url,
                 candidate_name=candidate_name,
                 company=exp["company"],
-                role=exp["role"]
+                role=exp["role"],
+                certificate_id=certificate_id
             )
             # If Playwright had a technical error (e.g. timeout, site down), we ignore it and fallback to the Visual Forensic result
             if not playwright_result.get("is_playwright_error"):
