@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import { API_BASE_URL } from "../config";
-import { CheckCircle, AlertTriangle, UploadCloud, FileText, ChevronRight, Loader2, ShieldCheck, XCircle } from "lucide-react";
+import { CheckCircle, AlertTriangle, UploadCloud, FileText, ChevronRight, Loader2, ShieldCheck, XCircle, Shield, Search, Brain } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -320,24 +320,44 @@ function ValidationContent() {
                               </div>
                             </label>
                             
-                            <button
-                              onClick={() => handleValidate(exp.id)}
-                              disabled={!selectedFiles[exp.id] || validatingExpId === exp.id}
-                              className={`flex items-center justify-center gap-2 py-3 rounded-xl font-bold transition-all ${
-                                !selectedFiles[exp.id]
-                                  ? "bg-zinc-800 text-zinc-500 cursor-not-allowed"
-                                  : "bg-primary-600 hover:bg-primary-500 text-white shadow-[0_0_20px_rgba(139,92,246,0.3)]"
-                              }`}
-                            >
-                              {validatingExpId === exp.id ? (
-                                <>
-                                  <Loader2 className="w-5 h-5 animate-spin" />
-                                  Scanning...
-                                </>
-                              ) : (
-                                "Run AI Validation"
-                              )}
-                            </button>
+                            {validatingExpId === exp.id ? (
+                              <div className="w-full flex flex-col gap-3 p-4 bg-zinc-950/50 rounded-xl border border-primary-500/20 relative overflow-hidden">
+                                <div className="absolute inset-0 bg-primary-500/5 animate-pulse pointer-events-none" />
+                                
+                                <div className="flex items-center gap-3">
+                                  <div className={`p-2 rounded-full ${validationTimeline?.step && validationTimeline.step >= 1 ? (validationTimeline.step === 1 && validationTimeline.status === 'error' ? 'bg-red-500/20 text-red-400' : 'bg-primary-500/20 text-primary-400') : 'bg-zinc-800 text-zinc-500'}`}>
+                                    {validationTimeline?.step === 1 && validationTimeline.status === 'loading' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Shield className="w-4 h-4" />}
+                                  </div>
+                                  <span className={`text-sm font-medium ${validationTimeline?.step && validationTimeline.step >= 1 ? (validationTimeline.step === 1 && validationTimeline.status === 'error' ? 'text-red-400' : 'text-primary-300') : 'text-zinc-500'}`}>Initializing connection...</span>
+                                </div>
+                                
+                                <div className="flex items-center gap-3">
+                                  <div className={`p-2 rounded-full ${validationTimeline?.step && validationTimeline.step >= 2 ? (validationTimeline.step === 2 && validationTimeline.status === 'error' ? 'bg-red-500/20 text-red-400' : 'bg-primary-500/20 text-primary-400') : 'bg-zinc-800 text-zinc-500'}`}>
+                                    {validationTimeline?.step === 2 && validationTimeline.status === 'loading' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+                                  </div>
+                                  <span className={`text-sm font-medium ${validationTimeline?.step && validationTimeline.step >= 2 ? (validationTimeline.step === 2 && validationTimeline.status === 'error' ? 'text-red-400' : 'text-primary-300') : 'text-zinc-500'}`}>Querying online databases...</span>
+                                </div>
+
+                                <div className="flex items-center gap-3">
+                                  <div className={`p-2 rounded-full ${validationTimeline?.step && validationTimeline.step >= 3 ? (validationTimeline.status === 'error' ? 'bg-red-500/20 text-red-400' : (validationTimeline.status === 'success' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-primary-500/20 text-primary-400')) : 'bg-zinc-800 text-zinc-500'}`}>
+                                    {validationTimeline?.step === 3 && validationTimeline.status === 'loading' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Brain className="w-4 h-4" />}
+                                  </div>
+                                  <span className={`text-sm font-medium ${validationTimeline?.step && validationTimeline.step >= 3 ? (validationTimeline.status === 'error' ? 'text-red-400' : (validationTimeline.status === 'success' ? 'text-emerald-400' : 'text-primary-300')) : 'text-zinc-500'}`}>Forensic visual analysis...</span>
+                                </div>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => handleValidate(exp.id)}
+                                disabled={!selectedFiles[exp.id]}
+                                className={`flex items-center justify-center gap-2 py-3 rounded-xl font-bold transition-all ${
+                                  !selectedFiles[exp.id]
+                                    ? "bg-zinc-800 text-zinc-500 cursor-not-allowed"
+                                    : "bg-primary-600 hover:bg-primary-500 text-white shadow-[0_0_20px_rgba(139,92,246,0.3)]"
+                                }`}
+                              >
+                                Run AI Validation
+                              </button>
+                            )}
                           </div>
                         )}
                       </div>
