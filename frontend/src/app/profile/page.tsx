@@ -763,18 +763,30 @@ const HolographicICard = ({ user, gData, stats, bestInterview, validationData, o
 
   let verificationText = "© Authorized by HireMind Team";
   let verificationColor = "text-zinc-400/80";
+  let badgeTop = "Authorized";
+  let badgeBottom = "Personnel";
+  let badgeColor = "from-zinc-300 to-zinc-500";
 
   if (validationData?.is_fraudulent) {
     verificationText = "⚠️ [FRAUDULENT] Verification Failed";
     verificationColor = "text-red-500 font-bold drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]";
+    badgeTop = "Fraudulent";
+    badgeBottom = "Identity";
+    badgeColor = "from-red-400 to-red-600";
   } else if (validationData?.experiences?.length > 0) {
     const allVerified = validationData.experiences.every((e: any) => e.verification_status === "Verified");
     if (allVerified) {
       verificationText = "© Verified by HireMind Team";
       verificationColor = "text-emerald-400 font-bold drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]";
+      badgeTop = "Verified";
+      badgeBottom = "Credential";
+      badgeColor = "from-cyan-300 to-blue-500";
     } else {
       verificationText = "⏳ Verification in Pending";
       verificationColor = "text-yellow-500 font-bold drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]";
+      badgeTop = "Pending";
+      badgeBottom = "Verification";
+      badgeColor = "from-yellow-400 to-orange-500";
     }
   }
 
@@ -1060,10 +1072,10 @@ const HolographicICard = ({ user, gData, stats, bestInterview, validationData, o
                           <div className="h-6 w-[2px] bg-gradient-to-b from-cyan-400 to-blue-600 shadow-[0_0_8px_rgba(34,211,238,0.6)]" />
                           <div className="flex flex-col">
                             <span className="text-[10px] text-transparent bg-clip-text bg-gradient-to-r from-white to-zinc-400 font-black tracking-[0.2em] uppercase leading-none drop-shadow-sm">
-                              Verified
+                              {badgeTop}
                             </span>
-                            <span className="text-[10px] text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-500 font-black tracking-[0.2em] uppercase leading-none mt-1 drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]">
-                              Credential
+                            <span className={`text-[10px] text-transparent bg-clip-text bg-gradient-to-r ${badgeColor} font-black tracking-[0.2em] uppercase leading-none mt-1 drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]`}>
+                              {badgeBottom}
                             </span>
                           </div>
                         </div>
