@@ -161,16 +161,7 @@ function ValidationContent() {
   const allVerified = experiences.every(exp => exp.verification_status === "Verified");
 
   return (
-    <div className="flex-1 flex flex-col min-h-screen bg-zinc-950 text-white overflow-hidden relative selection:bg-primary-500/30">
-      {/* Stunning Dynamic Background */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary-600/20 blur-[150px] rounded-full mix-blend-screen animate-pulse duration-10000" />
-        <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-emerald-600/20 blur-[150px] rounded-full mix-blend-screen animate-pulse duration-7000 delay-1000" />
-
-        {/* Subtle grid pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-30" />
-      </div>
-
+    <div className="flex-1 flex flex-col min-h-screen bg-zinc-950 text-white overflow-hidden relative selection:bg-white/30 selection:text-black">
       <main className="flex-1 flex flex-col items-center justify-center p-6 w-full max-w-5xl mx-auto min-h-screen relative z-10">
 
         {/* Custom Alert Modal */}
@@ -260,11 +251,10 @@ function ValidationContent() {
                 </button>
               )}
               <div className="text-center mb-16 relative">
-                <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-32 bg-primary-500/20 blur-[60px] rounded-full pointer-events-none" />
-                <h1 className="text-5xl md:text-6xl font-black mb-6 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-primary-300 to-white drop-shadow-[0_0_15px_rgba(139,92,246,0.3)] animate-pulse">
+                <h1 className="text-5xl md:text-6xl font-black mb-6 tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white via-zinc-200 to-zinc-500">
                   Experience Validation
                 </h1>
-                <p className="text-lg text-zinc-400 max-w-2xl mx-auto">
+                <p className="text-lg text-zinc-400 max-w-2xl mx-auto font-light leading-relaxed">
                   HireMind maintains a high-trust ecosystem. Please upload your digital certificates, offer letters, or verification IDs for the experiences you claimed.
                   <span className="block mt-2 text-yellow-500 font-semibold text-sm">
                     ⚠️ Note: You may skip this step and complete it later from your profile, but your I-Card will be marked as "Verification Pending".
@@ -279,31 +269,26 @@ function ValidationContent() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.1 }}
                     key={exp.id}
-                    className="bg-zinc-900/40 backdrop-blur-2xl border border-white/10 hover:border-primary-500/30 rounded-3xl p-6 shadow-2xl overflow-hidden relative group transition-all duration-500 hover:shadow-[0_0_40px_rgba(139,92,246,0.15)]"
+                    className="bg-zinc-900/20 backdrop-blur-3xl border border-white/5 hover:border-white/20 rounded-3xl p-8 shadow-2xl overflow-hidden relative group transition-all duration-700 hover:-translate-y-1"
                   >
-                    {/* Background gradient hint based on status */}
-                    <div className={`absolute inset-0 opacity-[0.03] pointer-events-none transition-colors duration-500 group-hover:opacity-[0.08] ${exp.verification_status === "Verified" ? "bg-emerald-500" :
-                      exp.verification_status === "Rejected" ? "bg-red-500" : "bg-primary-500"
-                      }`} />
-
-                    <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
                       <div className="flex-1">
-                        <h3 className="text-2xl font-bold text-white mb-1">{exp.role}</h3>
-                        <p className="text-primary-400 font-medium text-lg mb-2">{exp.company}</p>
-                        <p className="text-sm text-zinc-500 font-mono bg-black/40 inline-block px-3 py-1 rounded-lg">
+                        <h3 className="text-3xl font-extrabold text-white tracking-tight mb-2">{exp.role}</h3>
+                        <p className="text-zinc-300 font-medium text-xl tracking-wide mb-4">{exp.company}</p>
+                        <p className="text-sm text-zinc-500 font-mono bg-zinc-950/50 border border-white/5 inline-block px-4 py-1.5 rounded-lg">
                           {exp.start_date || "Unknown"} — {exp.end_date || "Present"}
                         </p>
                       </div>
 
                       <div className="flex-shrink-0 flex items-center justify-end">
                         {exp.verification_status === "Verified" ? (
-                          <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30">
-                            <ShieldCheck className="w-10 h-10 text-emerald-400 mb-2" />
-                            <span className="text-emerald-400 font-bold text-sm tracking-widest uppercase">Verified</span>
+                          <div className="flex flex-col items-center justify-center p-5 rounded-2xl bg-emerald-500/5 border border-emerald-500/20">
+                            <ShieldCheck className="w-10 h-10 text-emerald-400 mb-3" />
+                            <span className="text-emerald-400 font-bold text-xs tracking-[0.2em] uppercase">Verified</span>
                           </div>
                         ) : (
-                          <div className="flex flex-col gap-3 min-w-[220px]">
-                            <label className="relative flex items-center justify-center px-4 py-3 bg-zinc-950 border border-zinc-700 hover:border-primary-500 hover:bg-zinc-900 rounded-xl cursor-pointer transition-all group">
+                          <div className="flex flex-col gap-4 min-w-[240px]">
+                            <label className="relative flex items-center justify-center px-6 py-4 bg-zinc-950 border border-white/5 hover:border-white/20 hover:bg-zinc-900/50 rounded-2xl cursor-pointer transition-all duration-300 group">
                               <input
                                 type="file"
                                 accept="image/*"
@@ -355,9 +340,9 @@ function ValidationContent() {
                               <button
                                 onClick={() => handleValidate(exp.id)}
                                 disabled={!selectedFiles[exp.id]}
-                                className={`flex items-center justify-center gap-2 py-3 rounded-xl font-bold transition-all ${!selectedFiles[exp.id]
-                                  ? "bg-zinc-800 text-zinc-500 cursor-not-allowed"
-                                  : "bg-primary-600 hover:bg-primary-500 text-white shadow-[0_0_20px_rgba(139,92,246,0.3)]"
+                                className={`flex items-center justify-center gap-2 py-4 rounded-2xl font-bold tracking-wide transition-all duration-300 ${!selectedFiles[exp.id]
+                                  ? "bg-zinc-900 text-zinc-600 border border-white/5 cursor-not-allowed"
+                                  : "bg-white text-black hover:scale-[1.02] shadow-[0_0_30px_rgba(255,255,255,0.2)]"
                                   }`}
                               >
                                 Run AI Validation
@@ -381,9 +366,9 @@ function ValidationContent() {
                 <div className="mt-12">
                   <button
                     onClick={() => router.push("/results")}
-                    className={`flex items-center gap-2 px-8 py-4 rounded-full font-bold text-lg transition-all ${allVerified
-                      ? "bg-emerald-500 text-black hover:bg-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.4)]"
-                      : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700 hover:text-white"
+                    className={`flex items-center gap-3 px-10 py-5 rounded-full font-bold text-lg tracking-wide transition-all duration-500 ${allVerified
+                      ? "bg-white text-black hover:bg-zinc-200 hover:scale-[1.02] shadow-[0_0_40px_rgba(255,255,255,0.3)]"
+                      : "bg-zinc-900 text-zinc-400 border border-white/5 hover:text-white hover:border-white/20 hover:bg-zinc-800"
                       }`}
                   >
                     {allVerified ? "Go to Results" : "Skip to Results"}
