@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   BrainCircuit, ArrowLeft, Trophy, Flame, Star, Zap, Eye,
   MessageSquare, Code, TrendingUp, Users, Target, BookOpen,
-  Lock, Crown, Medal, Award, User, RefreshCw, IdCard, Download, Share2, Share, CheckCircle2, ShieldAlert
+  Lock, Crown, Medal, Award, User, RefreshCw, IdCard, Download, Share2, Share, CheckCircle2, ShieldAlert, PenTool
 } from "lucide-react";
 import Image from "next/image";
 import { API_BASE_URL } from "../config";
@@ -165,31 +165,41 @@ export default function ProfilePage() {
           {validationData?.experiences?.length > 0 && validationData.experiences.some((e: any) => e.verification_status !== "Verified") && (
             <button
               onClick={() => router.push("/validation?from=profile")}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-orange-500/10 border border-orange-500/30 hover:bg-orange-500/20 text-orange-400 text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
+              className="group flex items-center justify-center h-9 px-3 rounded-xl bg-orange-500/10 border border-orange-500/30 hover:bg-orange-500/20 text-orange-400 text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
             >
-              <ShieldAlert className="w-4 h-4" />
-              <span className="hidden sm:inline">Verify Experiences</span>
+              <ShieldAlert className="w-4 h-4 shrink-0" />
+              <span className="overflow-hidden max-w-0 group-hover:max-w-[200px] group-hover:ml-2 whitespace-nowrap transition-all duration-300 ease-in-out opacity-0 group-hover:opacity-100">
+                Verify Experiences
+              </span>
             </button>
           )}
 
           <button
             onClick={() => router.push("/action-plan")}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900 border border-white/5 hover:border-zinc-700 text-white text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
+            className="group flex items-center justify-center h-9 px-3 rounded-xl bg-zinc-900 border border-white/5 hover:border-zinc-700 text-white text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
           >
-            <span className="hidden sm:inline">Action Plan</span>
+            <Target className="w-4 h-4 shrink-0" />
+            <span className="overflow-hidden max-w-0 group-hover:max-w-[200px] group-hover:ml-2 whitespace-nowrap transition-all duration-300 ease-in-out opacity-0 group-hover:opacity-100">
+              Action Plan
+            </span>
           </button>
           <button
             onClick={() => setShowSignatureModal(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900 border border-white/5 hover:border-zinc-700 text-white text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
+            className="group flex items-center justify-center h-9 px-3 rounded-xl bg-zinc-900 border border-white/5 hover:border-zinc-700 text-white text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
           >
-            <span className="hidden sm:inline">Draw Signature</span>
+            <PenTool className="w-4 h-4 shrink-0" />
+            <span className="overflow-hidden max-w-0 group-hover:max-w-[200px] group-hover:ml-2 whitespace-nowrap transition-all duration-300 ease-in-out opacity-0 group-hover:opacity-100">
+              Draw Signature
+            </span>
           </button>
           <button
             onClick={() => setShowICardModal(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white text-xs font-bold uppercase tracking-wider shadow-[0_0_15px_rgba(139,92,246,0.3)] hover:shadow-[0_0_25px_rgba(139,92,246,0.5)] transition-all cursor-pointer"
+            className="group flex items-center justify-center h-9 px-3 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white text-xs font-bold uppercase tracking-wider shadow-[0_0_15px_rgba(139,92,246,0.3)] hover:shadow-[0_0_25px_rgba(139,92,246,0.5)] transition-all cursor-pointer"
           >
-            <IdCard className="w-4 h-4" />
-            <span className="hidden sm:inline">View I-Card</span>
+            <IdCard className="w-4 h-4 shrink-0" />
+            <span className="overflow-hidden max-w-0 group-hover:max-w-[200px] group-hover:ml-2 whitespace-nowrap transition-all duration-300 ease-in-out opacity-0 group-hover:opacity-100">
+              I-Card
+            </span>
           </button>
         </div>
       </header>
@@ -236,7 +246,6 @@ export default function ProfilePage() {
             {/* Info */}
             <div className="flex-1 text-center md:text-left">
               <div className="flex items-center gap-2 justify-center md:justify-start mb-1">
-                <span className="text-[11px] text-violet-400 font-bold uppercase tracking-[0.2em]">Current Rank</span>
                 {myRank && (
                   <span className="px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[10px] font-bold">
                     #{myRank} Global
@@ -244,26 +253,42 @@ export default function ProfilePage() {
                 )}
               </div>
               <h2 className="text-4xl font-extrabold text-white">{gData?.rank_title ?? "Recruit"}</h2>
-              <p className="text-zinc-400 text-sm mt-1">
-                {user?.username} · {gData?.total_xp?.toLocaleString() ?? 0} Total XP
-                {gData?.streak && gData.streak > 1 ? ` · 🔥 ${gData.streak}-Day Streak` : ""}
-              </p>
+              {gData?.streak && gData.streak > 1 ? (
+                <p className="text-orange-400 font-medium text-sm mt-1">
+                  🔥 {gData.streak}-Day Streak
+                </p>
+              ) : null}
 
               {/* XP Progress bar */}
-              <div className="mt-5 max-w-md mx-auto md:mx-0">
-                <div className="flex justify-between text-[10px] text-zinc-500 font-semibold mb-1.5">
-                  <span>{gData?.xp_into_level?.toLocaleString() ?? 0} XP into level</span>
-                  <span>{nextTier ? `${nextTier.rank} at ${nextTier.xp.toLocaleString()} XP` : "Max Level!"}</span>
+              <div className="mt-6 max-w-md mx-auto md:mx-0">
+                <div className="flex justify-between items-end mb-2">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-1">Progress</span>
+                    <span className="text-sm font-bold text-white">{gData?.xp_into_level?.toLocaleString() ?? 0} <span className="text-zinc-500 font-normal">XP</span></span>
+                  </div>
+                  <div className="flex flex-col text-right">
+                    <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-1">{nextTier ? nextTier.rank : "Max Level"}</span>
+                    <span className="text-sm font-bold text-white">{nextTier ? nextTier.xp.toLocaleString() : "---"} <span className="text-zinc-500 font-normal">XP</span></span>
+                  </div>
                 </div>
-                <div className="w-full bg-zinc-800 border border-white/5 h-3 rounded-full overflow-hidden">
+                <div className="relative w-full h-3 bg-zinc-950 rounded-full border border-white/10 overflow-hidden shadow-inner">
                   <motion.div
                     initial={{ width: "0%" }}
                     animate={{ width: `${gData?.progress_pct ?? 0}%` }}
                     transition={{ duration: 1.5, ease: "easeOut", delay: 0.3 }}
-                    className={`h-full rounded-full bg-gradient-to-r ${currentTier.color} shadow-[0_0_10px_rgba(139,92,246,0.4)]`}
-                  />
+                    className={`relative h-full rounded-full bg-gradient-to-r ${currentTier.color}`}
+                  >
+                    {/* Inner highlight */}
+                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-white/20 to-transparent" />
+                    {/* Glowing head */}
+                    <div className="absolute top-0 right-0 w-8 h-full bg-gradient-to-l from-white/50 to-transparent" />
+                  </motion.div>
                 </div>
-                <div className="text-right text-[10px] text-zinc-600 mt-1">{gData?.progress_pct ?? 0}% to Level {(gData?.level ?? 1) + 1}</div>
+                <div className="mt-3 text-center">
+                  <span className="inline-block px-3 py-1 rounded-full bg-zinc-900 border border-white/5 text-[10px] text-zinc-400 font-bold tracking-wider">
+                    {gData?.progress_pct ?? 0}% to Level {(gData?.level ?? 1) + 1}
+                  </span>
+                </div>
               </div>
             </div>
 
