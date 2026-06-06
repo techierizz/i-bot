@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Request
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
@@ -8,6 +9,7 @@ import json
 from services.llm_service import extract_resume_context
 from services.interview_service import generate_interview_response, evaluate_interview
 from services.email_service import send_study_reminder
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from database import (
     init_db,
     create_user,
@@ -645,3 +647,12 @@ async def trigger_reminders():
     except Exception as e:
         print(f"Error triggering reminders: {e}")
         raise HTTPException(status_code=500, detail="Failed to trigger reminders")
+
+scheduler = AsyncIOScheduler()
+
+@app.on_event("startup")
+def start_scheduler():
+    # Run the email reminders task every 24 hours
+    scheduler.add_job(trigger_reminders, 'interval', hours=24)
+    scheduler.start()
+    print("Background email scheduler started.")
