@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   BrainCircuit, ArrowLeft, Trophy, Flame, Star, Zap, Eye,
   MessageSquare, Code, TrendingUp, Users, Target, BookOpen,
-  Lock, Crown, Medal, Award, User, RefreshCw, IdCard, Download, Share2, Share, CheckCircle2, ShieldAlert, PenTool
+  Lock, Crown, Medal, Award, User, RefreshCw, IdCard, Download, Share2, Share, CheckCircle2, ShieldAlert, PenTool, ClipboardList
 } from "lucide-react";
 import Image from "next/image";
 import { API_BASE_URL } from "../config";
@@ -176,16 +176,16 @@ export default function ProfilePage() {
 
           <button
             onClick={() => router.push("/action-plan")}
-            className="group flex items-center justify-center h-9 px-3 rounded-xl bg-zinc-900 border border-white/5 hover:border-zinc-700 text-white text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
+            className="group flex items-center justify-center h-9 px-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/20 text-emerald-400 text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
           >
-            <Target className="w-4 h-4 shrink-0" />
+            <ClipboardList className="w-4 h-4 shrink-0" />
             <span className="overflow-hidden max-w-0 group-hover:max-w-[200px] group-hover:ml-2 whitespace-nowrap transition-all duration-300 ease-in-out opacity-0 group-hover:opacity-100">
               Action Plan
             </span>
           </button>
           <button
             onClick={() => setShowSignatureModal(true)}
-            className="group flex items-center justify-center h-9 px-3 rounded-xl bg-zinc-900 border border-white/5 hover:border-zinc-700 text-white text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
+            className="group flex items-center justify-center h-9 px-3 rounded-xl bg-blue-500/10 border border-blue-500/30 hover:bg-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
           >
             <PenTool className="w-4 h-4 shrink-0" />
             <span className="overflow-hidden max-w-0 group-hover:max-w-[200px] group-hover:ml-2 whitespace-nowrap transition-all duration-300 ease-in-out opacity-0 group-hover:opacity-100">
@@ -226,12 +226,7 @@ export default function ProfilePage() {
           <div className="flex flex-col md:flex-row items-center gap-8">
             {/* Level orb */}
             <div className="relative shrink-0">
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
-                className={`absolute inset-0 rounded-full bg-gradient-to-br ${currentTier.color} opacity-20 blur-xl`}
-              />
-              <div className={`relative w-32 h-32 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(139,92,246,0.4)] bg-gradient-to-br ${currentTier.color} p-1`}>
+              <div className={`relative w-32 h-32 rounded-full flex items-center justify-center bg-gradient-to-br ${currentTier.color} p-1`}>
                 <div className="w-full h-full rounded-full bg-zinc-950 overflow-hidden relative">
                   <Image src={currentTier.image} alt={currentTier.rank} fill className="object-cover" />
                 </div>
