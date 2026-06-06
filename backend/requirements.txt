@@ -7,3 +7,5 @@ uvicorn[standard]==0.34.3
 psycopg2-binary==2.9.12
 groq
 playwright
+resend==2.4.0
+apscheduler==3.10.4
