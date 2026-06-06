@@ -149,7 +149,8 @@ def get_user_performance_insights(user_id: int):
             if isinstance(interview.get("transcript"), str):
                 interview["transcript"] = json.loads(interview["transcript"])
             if interview.get("created_at"):
-                interview["created_at"] = interview["created_at"].isoformat()
+                if hasattr(interview["created_at"], "isoformat"):
+                    interview["created_at"] = interview["created_at"].isoformat()
         
     return {"status": "success", "data": insights}
 
