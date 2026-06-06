@@ -172,6 +172,18 @@ export default function ProfilePage() {
             </button>
           )}
           <button
+            onClick={() => router.push("/resume")}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900 border border-white/5 hover:border-zinc-700 text-white text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
+          >
+            <span className="hidden sm:inline">Resume Hub</span>
+          </button>
+          <button
+            onClick={() => router.push("/action-plan")}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900 border border-white/5 hover:border-zinc-700 text-white text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
+          >
+            <span className="hidden sm:inline">Action Plan</span>
+          </button>
+          <button
             onClick={() => setShowSignatureModal(true)}
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900 border border-white/5 hover:border-zinc-700 text-white text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
           >
