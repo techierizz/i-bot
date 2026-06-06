@@ -116,15 +116,18 @@ export default function ActionPlan() {
         </div>
 
         {tasks.length === 0 ? (
-          <div className="bg-zinc-900/50 backdrop-blur-xl border border-white/5 rounded-3xl p-12 text-center">
-            <Target className="w-16 h-16 text-zinc-600 mx-auto mb-4" />
-            <h3 className="text-2xl font-semibold mb-2">No active tasks yet</h3>
-            <p className="text-zinc-400 mb-6 max-w-md mx-auto">
-              Complete your first AI interview to generate a personalized action plan and roadmap.
-            </p>
-            <Link href="/interview" className="inline-flex px-6 py-3 bg-white text-black font-semibold rounded-xl hover:bg-zinc-200 transition-colors">
-              Start Interview
-            </Link>
+          <div className="relative group overflow-hidden bg-zinc-900/40 backdrop-blur-2xl border border-white/5 rounded-[2rem] p-16 text-center shadow-2xl flex flex-col items-center justify-center min-h-[400px]">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-primary-500/10 rounded-full blur-[100px] -mr-32 -mt-32 transition-transform duration-1000 group-hover:scale-150" />
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary-500/10 rounded-full blur-[100px] -ml-32 -mb-32 transition-transform duration-1000 group-hover:scale-150" />
+            
+            <div className="relative z-10 space-y-6">
+              <h3 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-zinc-500 tracking-tight">
+                No active tasks
+              </h3>
+              <p className="text-lg text-zinc-500 max-w-lg mx-auto leading-relaxed">
+                You're all caught up! When you complete an interview, your personalized roadmap tasks will appear here to help you level up your skills.
+              </p>
+            </div>
           </div>
         ) : (
           <div className="space-y-12">
@@ -145,17 +148,17 @@ export default function ActionPlan() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95 }}
-                      className="group bg-zinc-900/40 hover:bg-zinc-900/80 backdrop-blur-md border border-white/5 hover:border-white/10 rounded-2xl p-4 flex items-center gap-4 transition-all relative"
+                      className="group bg-zinc-900/40 hover:bg-zinc-800/60 backdrop-blur-xl border border-white/5 hover:border-primary-500/30 rounded-3xl p-6 flex items-center gap-6 transition-all duration-300 relative shadow-lg hover:shadow-[0_0_30px_rgba(139,92,246,0.15)]"
                     >
                       <button 
                         onClick={() => handleCompleteTask(task.id)}
-                        className="w-6 h-6 rounded-full border-2 border-zinc-600 hover:border-primary-400 flex items-center justify-center transition-colors shrink-0"
+                        className="w-8 h-8 rounded-full border-2 border-zinc-600 hover:border-primary-400 hover:bg-primary-500/10 flex items-center justify-center transition-all shrink-0 shadow-inner"
                       >
                         {/* Hover check state */}
-                        <Check className="w-3.5 h-3.5 text-primary-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <Check className="w-4 h-4 text-primary-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                       </button>
                       
-                      <p className="text-zinc-300 font-medium leading-relaxed">{task.task_text}</p>
+                      <p className="text-zinc-200 text-lg font-medium leading-relaxed tracking-wide">{task.task_text}</p>
                       
                       {/* XP Popup Animation */}
                       <AnimatePresence>
