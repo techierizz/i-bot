@@ -509,6 +509,38 @@ export default function ResultsPage() {
             {/* RIGHT COLUMN: Action Plan Navigation */}
             <div className="lg:col-span-7 flex flex-col gap-6">
               
+              {data.roadmap && data.roadmap.length > 0 && (
+                <div className="flex flex-col gap-4">
+                  <h3 className="text-xl font-bold text-white flex items-center gap-2 mb-2">
+                    <Target className="w-5 h-5 text-primary-400" /> 3-Week Skill Roadmap
+                  </h3>
+                  {data.roadmap.map((weekItem: any, idx: number) => (
+                    <div key={idx} className="glass-card p-5 rounded-2xl border border-white/5 bg-zinc-900/40 relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/5 blur-3xl rounded-full -mr-10 -mt-10 pointer-events-none" />
+                      <div className="flex items-start gap-4 relative z-10">
+                        <div className="w-10 h-10 rounded-xl bg-primary-500/10 border border-primary-500/20 flex items-center justify-center shrink-0">
+                          <span className="text-primary-400 font-black text-sm">W{weekItem.week}</span>
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="text-sm font-bold text-white mb-1">{weekItem.topic}</h4>
+                          <p className="text-xs text-zinc-400 mb-3 leading-relaxed">{weekItem.description}</p>
+                          <ul className="space-y-2">
+                            {weekItem.actions.map((action: string, i: number) => (
+                              <li key={i} className="flex items-start gap-2 text-xs text-zinc-300">
+                                <div className="w-4 h-4 rounded-full bg-zinc-800 border border-white/10 flex items-center justify-center shrink-0 mt-0.5">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-zinc-600" />
+                                </div>
+                                <span className="leading-relaxed">{action}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <div className="flex-1 flex flex-col gap-6 pt-4 lg:pt-0">
                 <div className="bg-zinc-900/50 backdrop-blur-xl border border-white/5 rounded-3xl p-8 md:p-10 text-center relative overflow-hidden group">
                   <div className="absolute top-0 right-0 w-64 h-64 bg-primary-500/10 rounded-full blur-3xl -mr-32 -mt-32 transition-transform duration-700 group-hover:scale-150" />
