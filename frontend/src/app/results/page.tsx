@@ -227,12 +227,6 @@ export default function ResultsPage() {
             }
           }
           
-          // Cache the evaluation so returning to this page doesn't re-evaluate
-          localStorage.setItem("hiremind_evaluation_result", JSON.stringify({
-            evaluation_data: result.data,
-            gamification: result.gamification
-          }));
-          
           setLoadingStep(loadingSteps.length - 1);
           setTimeout(() => setLoading(false), 500);
         } else {
@@ -509,42 +503,47 @@ export default function ResultsPage() {
             {/* RIGHT COLUMN: Action Plan Navigation */}
             <div className="lg:col-span-7 flex flex-col gap-6">
               
-              {data.roadmap && data.roadmap.length > 0 && (
-                <div className="flex flex-col gap-4">
-                  <h3 className="text-xl font-bold text-white flex items-center gap-2 mb-2">
-                    <Target className="w-5 h-5 text-primary-400" /> 3-Week Skill Roadmap
-                  </h3>
-                  {data.roadmap.map((weekItem: any, idx: number) => (
-                    <div key={idx} className="glass-card p-5 rounded-2xl border border-white/5 bg-zinc-900/40 relative overflow-hidden">
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/5 blur-3xl rounded-full -mr-10 -mt-10 pointer-events-none" />
-                      <div className="flex items-start gap-4 relative z-10">
-                        <div className="w-10 h-10 rounded-xl bg-primary-500/10 border border-primary-500/20 flex items-center justify-center shrink-0">
-                          <span className="text-primary-400 font-black text-sm">W{weekItem.week}</span>
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="text-sm font-bold text-white mb-1">{weekItem.topic}</h4>
-                          <p className="text-xs text-zinc-400 mb-3 leading-relaxed">{weekItem.description}</p>
-                          <ul className="space-y-2">
-                            {weekItem.actions.map((action: string, i: number) => (
-                              <li key={i} className="flex items-start gap-2 text-xs text-zinc-300">
-                                <div className="w-4 h-4 rounded-full bg-zinc-800 border border-white/10 flex items-center justify-center shrink-0 mt-0.5">
-                                  <div className="w-1.5 h-1.5 rounded-full bg-zinc-600" />
-                                </div>
-                                <span className="leading-relaxed">{action}</span>
-                              </li>
-                            ))}
-                          </ul>
+              {(!data.roadmap || data.roadmap.length === 0) ? (
+                <div className="flex-1 flex flex-col items-center justify-center text-center p-12 glass-card rounded-3xl border border-white/5 bg-zinc-900/40">
+                   <Target className="w-16 h-16 text-zinc-700 mb-6" />
+                   <h3 className="text-2xl font-bold text-zinc-500 mb-3">No Roadmap Generated</h3>
+                   <p className="text-zinc-600 text-base max-w-sm">You ended the interview early! Complete a full interview to receive your personalized 3-week study roadmap and action plan.</p>
+                </div>
+              ) : (
+                <>
+                  <div className="flex flex-col gap-4">
+                    <h3 className="text-xl font-bold text-white flex items-center gap-2 mb-2">
+                      <Target className="w-5 h-5 text-primary-400" /> 3-Week Skill Roadmap
+                    </h3>
+                    {data.roadmap.map((weekItem: any, idx: number) => (
+                      <div key={idx} className="glass-card p-5 rounded-2xl border border-white/5 bg-zinc-900/40 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/5 blur-3xl rounded-full -mr-10 -mt-10 pointer-events-none" />
+                        <div className="flex items-start gap-4 relative z-10">
+                          <div className="w-10 h-10 rounded-xl bg-primary-500/10 border border-primary-500/20 flex items-center justify-center shrink-0">
+                            <span className="text-primary-400 font-black text-sm">W{weekItem.week}</span>
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="text-sm font-bold text-white mb-1">{weekItem.topic}</h4>
+                            <p className="text-xs text-zinc-400 mb-3 leading-relaxed">{weekItem.description}</p>
+                            <ul className="space-y-2">
+                              {weekItem.actions.map((action: string, i: number) => (
+                                <li key={i} className="flex items-start gap-2 text-xs text-zinc-300">
+                                  <div className="w-4 h-4 rounded-full bg-zinc-800 border border-white/10 flex items-center justify-center shrink-0 mt-0.5">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-zinc-600" />
+                                  </div>
+                                  <span className="leading-relaxed">{action}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {data.roadmap && data.roadmap.length > 0 && (
-                <p className="text-zinc-500 text-sm italic mt-2 ml-2">
-                  For detailed tasks , visit action plan (the bell icon left of the profile).
-                </p>
+                    ))}
+                  </div>
+                  <p className="text-zinc-500 text-sm italic mt-2 ml-2">
+                    For detailed tasks , visit action plan (the bell icon left of the profile).
+                  </p>
+                </>
               )}
 
             </div>
