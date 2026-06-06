@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
@@ -7,6 +7,7 @@ import io
 import json
 from services.llm_service import extract_resume_context
 from services.interview_service import generate_interview_response, evaluate_interview
+from services.email_service import send_study_reminder
 from database import (
     init_db,
     create_user,
@@ -18,6 +19,12 @@ from database import (
     get_user_gamification,
     add_xp_to_user,
     get_leaderboard,
+    create_roadmap_tasks,
+    save_user_resume,
+    get_latest_user_resume,
+    get_user_roadmap_tasks,
+    complete_roadmap_task,
+    get_users_with_pending_tasks,
 )
 
 app = FastAPI(title="HireMind AI Backend", description="Backend for the autonomous AI interview simulator")
@@ -296,8 +303,23 @@ async def evaluate_endpoint(request: EvaluationRequest):
                     transcript=request.chat_history,
                     evaluation_data=evaluation_data
                 )
-                print(f"[*] Evaluation logged for user_id={user_id} (user_turns={user_turns})")
+                # Extract roadmap tasks
+                roadmap_tasks = []
+                for week in evaluation_data.get("roadmap", []):
+                    for action in week.get("actions", []):
+                        roadmap_tasks.append(f"{week.get('topic', 'Study')}: {action}")
                 
+                # Save roadmap tasks
+                create_roadmap_tasks(user_id=int(user_id), eval_id=0, tasks=roadmap_tasks)
+                print(f"[*] Evaluation and Roadmap tasks logged for user_id={user_id} (user_turns={user_turns})")
+                
+                # Update User Resume ATS feedback if a resume was used
+                if "raw_resume_text" in request.context and "resume_optimizer" in evaluation_data:
+                    save_user_resume(
+                        user_id=int(user_id), 
+                        raw_text=request.context["raw_resume_text"],
+                        ats_feedback_json=json.dumps(evaluation_data["resume_optimizer"])
+                    )
                 # Only award XP if the interview was meaningful
                 if is_meaningful:
                     xp_earned = evaluation_data.get("xp_earned", 1000)
@@ -525,3 +547,89 @@ async def validate_experience(
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         conn.close()
+
+# ─────────────────────────────────────────────────────────────────────────────
+# RESUME HUB ENDPOINTS
+# ─────────────────────────────────────────────────────────────────────────────
+class ResumeUploadRequest(BaseModel):
+    user_id: int
+    raw_text: str
+
+@app.get("/api/resume/{user_id}")
+async def get_user_resume_endpoint(user_id: int):
+    try:
+        resume = get_latest_user_resume(user_id)
+        if not resume:
+            return {"status": "success", "data": None}
+        return {"status": "success", "data": resume}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/resume")
+async def process_user_resume(request: ResumeUploadRequest):
+    try:
+        # Re-run ATS optimization standalone
+        from services.interview_service import optimize_resume_ats
+        ats_feedback = optimize_resume_ats(request.raw_text, "Software Engineer")
+        
+        save_user_resume(request.user_id, request.raw_text, json.dumps(ats_feedback))
+        return {"status": "success", "data": ats_feedback}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ROADMAP HUB ENDPOINTS
+# ─────────────────────────────────────────────────────────────────────────────
+@app.get("/api/roadmap/{user_id}")
+async def get_user_roadmap(user_id: int):
+    try:
+        tasks = get_user_roadmap_tasks(user_id)
+        return {"status": "success", "data": tasks}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+class CompleteTaskRequest(BaseModel):
+    user_id: int
+
+@app.post("/api/roadmap/{task_id}/complete")
+async def complete_task(task_id: int, request: CompleteTaskRequest):
+    try:
+        db_success = complete_roadmap_task(task_id, request.user_id)
+        if not db_success:
+            raise HTTPException(status_code=500, detail="Failed to update task")
+            
+        # Award gamification XP
+        add_xp_to_user(request.user_id, 50, [])
+        
+        return {"status": "success", "message": "Task completed and XP awarded"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/roadmap/reminders")
+async def trigger_reminders():
+    """
+    Simulates a cron job or manual trigger to send email reminders 
+    to all users who have pending roadmap tasks.
+    """
+    try:
+        users_with_pending = get_users_with_pending_tasks()
+        sent_count = 0
+        
+        for user in users_with_pending:
+            user_id = user["user_id"]
+            username = user["username"]
+            email = user.get("email", f"{username}@example.com") # fallback if no email field
+            
+            tasks = get_user_roadmap_tasks(user_id)
+            pending_tasks = [t for t in tasks if not t.get("is_completed", False)]
+            
+            if len(pending_tasks) > 0:
+                topics = [t["task_text"] for t in pending_tasks[:3]] # send top 3
+                success = send_study_reminder(username, email, len(pending_tasks), topics)
+                if success:
+                    sent_count += 1
+                    
+        return {"status": "success", "message": f"Sent {sent_count} reminders."}
+    except Exception as e:
+        print(f"Error triggering reminders: {e}")
+        raise HTTPException(status_code=500, detail="Failed to trigger reminders")
