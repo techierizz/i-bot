@@ -132,25 +132,26 @@ def update_settings(req: SettingsUpdateRequest):
         update_system_settings(updates)
     return {"status": "success"}
 
-@app.get("/api/user/{user_id}/best_interview")
-def get_user_best_interview(user_id: int):
-    from database import get_best_interview
+@app.get("/api/user/{user_id}/performance_insights")
+def get_user_performance_insights(user_id: int):
+    from database import get_performance_insights
     import json
     
-    best = get_best_interview(user_id)
-    if not best:
+    insights = get_performance_insights(user_id)
+    if not insights:
         return {"status": "success", "data": None}
         
-    if isinstance(best.get("evaluation_data"), str):
-        best["evaluation_data"] = json.loads(best["evaluation_data"])
-    if isinstance(best.get("transcript"), str):
-        best["transcript"] = json.loads(best["transcript"])
+    for key in ["best_interview", "worst_interview"]:
+        interview = insights.get(key)
+        if interview:
+            if isinstance(interview.get("evaluation_data"), str):
+                interview["evaluation_data"] = json.loads(interview["evaluation_data"])
+            if isinstance(interview.get("transcript"), str):
+                interview["transcript"] = json.loads(interview["transcript"])
+            if interview.get("created_at"):
+                interview["created_at"] = interview["created_at"].isoformat()
         
-    # Format date
-    if best.get("created_at"):
-        best["created_at"] = best["created_at"].isoformat()
-        
-    return {"status": "success", "data": best}
+    return {"status": "success", "data": insights}
 
 @app.get("/api/user/{user_id}/stats")
 def get_user_statistics(user_id: int):
