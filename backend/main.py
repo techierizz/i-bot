@@ -216,6 +216,15 @@ async def upload_resume(
                         "INSERT INTO user_experiences (user_id, company, role, start_date, end_date) VALUES (%s, %s, %s, %s, %s)",
                         (user_id, company, role, start_date, end_date)
                     )
+                
+                # Also save the raw resume to the database immediately!
+                cursor.execute(
+                    """INSERT INTO user_resumes (user_id, raw_text) 
+                       VALUES (%s, %s) 
+                       ON CONFLICT (user_id) DO UPDATE 
+                       SET raw_text = EXCLUDED.raw_text, created_at = CURRENT_TIMESTAMP""",
+                    (user_id, resume_text)
+                )
                 conn.commit()
             except Exception as e:
                 print(f"Error saving experiences: {e}")
@@ -314,10 +323,11 @@ async def evaluate_endpoint(request: EvaluationRequest):
                 print(f"[*] Evaluation and Roadmap tasks logged for user_id={user_id} (user_turns={user_turns})")
                 
                 # Update User Resume ATS feedback if a resume was used
-                if "raw_resume_text" in request.context and "resume_optimizer" in evaluation_data:
+                raw_resume_text = request.context.get("raw_resume_text") or request.context.get("extracted_context", {}).get("raw_resume_text")
+                if raw_resume_text and "resume_optimizer" in evaluation_data:
                     save_user_resume(
                         user_id=int(user_id), 
-                        raw_text=request.context["raw_resume_text"],
+                        raw_text=raw_resume_text,
                         ats_feedback_json=json.dumps(evaluation_data["resume_optimizer"])
                     )
                 # Only award XP if the interview was meaningful
