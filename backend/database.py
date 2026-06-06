@@ -701,24 +701,6 @@ def update_system_settings(settings: Dict[str, Any]):
     conn.commit()
     conn.close()
 
-# ─────────────────────────────────────────────────────────────────────────────
-# RESUMES & ROADMAPS
-# ─────────────────────────────────────────────────────────────────────────────
-
-def save_user_resume(user_id: int, raw_text: str, ats_feedback_json: str = None) -> bool:
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    try:
-        cursor.execute(
-            """INSERT INTO user_resumes (user_id, raw_text, ats_feedback_json) 
-               VALUES (%s, %s, %s) 
-               ON CONFLICT (user_id) DO UPDATE 
-               SET raw_text = EXCLUDED.raw_text, 
-                   ats_feedback_json = EXCLUDED.ats_feedback_json,
-                   created_at = CURRENT_TIMESTAMP""",
-            (user_id, raw_text, ats_feedback_json)
-    }
-
 def get_user_gamification(user_id: int) -> Dict[str, Any]:
     conn = get_db_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -872,7 +854,7 @@ def get_leaderboard(limit: int = 10) -> List[Dict[str, Any]]:
             "total_xp":   r["total_xp"],
             "level":      r["level"],
             "rank_title": r["rank_title"],
-            "badges":     json.loads(r["badges"]),
+"badges":     json.loads(r["badges"]),
             "streak":     r["streak"],
         })
     return board
