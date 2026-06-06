@@ -6,10 +6,7 @@ import { UploadCloud, FileText, CheckCircle, AlertTriangle, ArrowLeft, Loader2, 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "../config";
-import * as pdfjsLib from "pdfjs-dist";
-
-// Ensure worker is configured for client-side PDF parsing
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+// We import pdfjsLib dynamically inside the function to avoid SSR module not found errors.
 
 export default function ResumeHub() {
   const router = useRouter();
@@ -50,6 +47,9 @@ export default function ResumeHub() {
   };
 
   const extractTextFromPDF = async (file: File): Promise<string> => {
+    const pdfjsLib = await import("pdfjs-dist");
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+    
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
     let fullText = "";
