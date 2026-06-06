@@ -14,6 +14,8 @@ export default function SetupPage() {
   
   const [candidateUser, setCandidateUser] = useState<any>(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [savedResume, setSavedResume] = useState<any>(null);
+  const [useSavedResume, setUseSavedResume] = useState(true);
 
   useEffect(() => {
     const session = localStorage.getItem("hiremind_user");
@@ -21,8 +23,22 @@ export default function SetupPage() {
       router.push("/login?redirect=/setup");
       return;
     }
-    setCandidateUser(JSON.parse(session));
+    const parsedUser = JSON.parse(session);
+    setCandidateUser(parsedUser);
     setIsCheckingAuth(false);
+
+    // Fetch existing resume
+    fetch(`${API_BASE_URL}/api/resume/${parsedUser.id}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.status === "success" && data.data) {
+          setSavedResume(data.data);
+          setUseSavedResume(true);
+        } else {
+          setUseSavedResume(false);
+        }
+      })
+      .catch(e => console.error("Failed to fetch resume", e));
   }, [router]);
   
   const [file, setFile] = useState<File | null>(null);
@@ -78,12 +94,33 @@ export default function SetupPage() {
   };
 
   const handleSubmit = async () => {
-    if (!file) return;
+    if (!useSavedResume && !file) return;
     
     setIsUploading(true);
     
+    // If using saved resume, we bypass the PDF upload endpoint and directly set context
+    if (useSavedResume && savedResume) {
+      const interviewContext = {
+        resume_text: savedResume.raw_text,
+        mode: selectedMode,
+        persona: selectedPersona,
+        question_limit: questionLimit,
+        raw_resume_text: savedResume.raw_text
+      };
+      localStorage.setItem("hiremind_context", JSON.stringify(interviewContext));
+      setUploadSuccess(true);
+      setTimeout(() => {
+        router.push("/interview");
+      }, 1000);
+      return;
+    }
+    
+    if (!file && !useSavedResume) return;
+    
     const formData = new FormData();
-    formData.append("file", file);
+    if (file) {
+      formData.append("file", file);
+    }
     formData.append("mode", selectedMode);
     formData.append("persona", selectedPersona);
     if (candidateUser?.id) {
@@ -197,52 +234,134 @@ export default function SetupPage() {
             transition={{ delay: 0.1 }}
             className="rounded-3xl bg-zinc-900/40 border border-white/5 p-8 flex flex-col h-full hover:border-primary-500/30 transition-all shadow-2xl backdrop-blur-xl"
           >
-            <div className="flex items-center gap-4 mb-8">
-              <h2 className="text-3xl font-bold">Upload Resume</h2>
+        <div className="bg-zinc-900/50 backdrop-blur-xl border border-white/5 rounded-3xl p-8 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-primary-500/10 rounded-full blur-3xl -mr-32 -mt-32 transition-transform duration-700 group-hover:scale-150" />
+          
+          <h2 className="text-2xl font-bold text-white flex items-center gap-3 mb-6">
+            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary-500/20 text-primary-400 text-sm">1</span>
+            Provide Your Resume
+          </h2>
+          
+          {savedResume ? (
+            <div className="space-y-4">
+              <div 
+                onClick={() => setUseSavedResume(true)}
+                className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex items-center gap-4 ${useSavedResume ? 'border-primary-500 bg-primary-500/10' : 'border-white/10 hover:border-white/20'}`}
+              >
+                <CheckCircle2 className={`w-6 h-6 ${useSavedResume ? 'text-primary-500' : 'text-zinc-600'}`} />
+                <div>
+                  <h4 className="font-semibold text-white">Use Saved Resume</h4>
+                  <p className="text-sm text-zinc-400">Last updated {new Date(savedResume.created_at).toLocaleDateString()}</p>
+                </div>
+              </div>
+
+              <div 
+                onClick={() => setUseSavedResume(false)}
+                className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex items-center gap-4 ${!useSavedResume ? 'border-primary-500 bg-primary-500/10' : 'border-white/10 hover:border-white/20'}`}
+              >
+                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${!useSavedResume ? 'border-primary-500' : 'border-zinc-600'}`}>
+                  {!useSavedResume && <div className="w-3 h-3 bg-primary-500 rounded-full" />}
+                </div>
+                <div>
+                  <h4 className="font-semibold text-white">Upload New Resume</h4>
+                  <p className="text-sm text-zinc-400">Upload a different PDF</p>
+                </div>
+              </div>
+
+              {!useSavedResume && (
+                <div 
+                  className={`mt-4 border-2 border-dashed rounded-2xl p-8 flex flex-col items-center justify-center text-center transition-all ${
+                    isDragging ? 'border-primary-500 bg-primary-500/10' : 'border-zinc-700 hover:border-zinc-500'
+                  }`}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                >
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    accept=".pdf"
+                    className="hidden"
+                  />
+                  
+                  {file ? (
+                    <div className="flex flex-col items-center">
+                      <FileText className="w-12 h-12 text-primary-400 mb-3" />
+                      <p className="font-medium text-white mb-1">{file.name}</p>
+                      <p className="text-sm text-zinc-400">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                      <button 
+                        onClick={() => setFile(null)}
+                        className="mt-4 text-sm text-red-400 hover:text-red-300"
+                      >
+                        Remove file
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <Upload className="w-12 h-12 text-zinc-500 mb-4" />
+                      <h3 className="text-lg font-medium text-white mb-2">Upload your resume</h3>
+                      <p className="text-zinc-400 text-sm mb-6 max-w-sm">
+                        Drag and drop your PDF resume here, or click to browse files.
+                      </p>
+                      <button 
+                        onClick={() => fileInputRef.current?.click()}
+                        className="px-6 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg transition-colors"
+                      >
+                        Select File
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
-            
+          ) : (
             <div 
-              className={`flex-1 flex flex-col items-center justify-center border-2 border-dashed rounded-2xl p-10 transition-all duration-300 ${
-                isDragging ? "border-primary-500 bg-primary-500/10 scale-105" : 
-                file ? "border-green-500/50 bg-green-500/5 shadow-[0_0_30px_rgba(34,197,94,0.1)]" : "border-zinc-700 hover:border-primary-500/50 hover:bg-zinc-800/50"
+              className={`border-2 border-dashed rounded-2xl p-10 flex flex-col items-center justify-center text-center transition-all ${
+                isDragging ? 'border-primary-500 bg-primary-500/10' : 'border-zinc-700 hover:border-zinc-500'
               }`}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
-              onClick={() => !file && fileInputRef.current?.click()}
             >
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                onChange={handleFileChange} 
-                accept=".pdf" 
-                className="hidden" 
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept=".pdf"
+                className="hidden"
               />
               
               {file ? (
-                <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="flex flex-col items-center text-center">
-                  <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mb-6 border border-green-500/50">
-                    <FileText className="w-10 h-10 text-green-400" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-white">{file.name}</h3>
-                  <p className="text-zinc-400 mt-2 font-medium">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                <div className="flex flex-col items-center">
+                  <FileText className="w-12 h-12 text-primary-400 mb-4" />
+                  <p className="font-medium text-white mb-2">{file.name}</p>
+                  <p className="text-sm text-zinc-400">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
                   <button 
-                    onClick={(e) => { e.stopPropagation(); setFile(null); }}
-                    className="mt-6 px-4 py-2 rounded-lg bg-red-500/10 text-red-400 font-semibold hover:bg-red-500/20 hover:text-red-300 transition-colors"
+                    onClick={() => setFile(null)}
+                    className="mt-4 text-sm text-red-400 hover:text-red-300 transition-colors"
                   >
                     Remove file
                   </button>
-                </motion.div>
-              ) : (
-                <div className="flex flex-col items-center text-center cursor-pointer">
-                  <div className={`w-20 h-20 rounded-full flex items-center justify-center mb-6 transition-colors ${isDragging ? "bg-primary-500/20" : "bg-zinc-800"}`}>
-                    <Upload className={`w-10 h-10 ${isDragging ? "text-primary-400" : "text-zinc-400"}`} />
-                  </div>
-                  <h3 className="text-2xl font-bold text-white mb-2">Drag & drop your PDF</h3>
-                  <p className="text-zinc-400 text-lg">or click to browse files</p>
                 </div>
+              ) : (
+                <>
+                  <Upload className="w-12 h-12 text-zinc-500 mb-4" />
+                  <h3 className="text-lg font-medium text-white mb-2">Upload your resume</h3>
+                  <p className="text-zinc-400 text-sm mb-6 max-w-sm">
+                    Drag and drop your PDF resume here, or click to browse files.
+                  </p>
+                  <button 
+                    onClick={() => fileInputRef.current?.click()}
+                    className="px-6 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl transition-colors font-medium"
+                  >
+                    Select File
+                  </button>
+                </>
               )}
             </div>
+          )}
+        </div>
           </motion.div>
 
           {/* Step 2: Configuration */}
@@ -290,6 +409,7 @@ export default function SetupPage() {
                   <button
                     key={p}
                     onClick={() => setSelectedPersona(p)}
+                    disabled={(!useSavedResume && !file) || isUploading}
                     className={`px-6 py-3 rounded-xl border text-base font-semibold transition-all duration-300 ${
                       selectedPersona === p 
                         ? "border-emerald-500 bg-emerald-500/20 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.2)]" 
