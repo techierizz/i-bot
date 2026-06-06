@@ -122,7 +122,7 @@ export default function Home() {
     if (candidateSession) setCandidateUser(JSON.parse(candidateSession));
     const adminSession = localStorage.getItem("hiremind_admin");
     if (adminSession) setAdminUser(JSON.parse(adminSession));
-    if (localStorage.getItem("hiremind_eval_id")) setHasCompletedInterview(true);
+    if (localStorage.getItem("hiremind_has_interviewed") === "true") setHasCompletedInterview(true);
   }, []);
 
   const handleLogout = () => {
