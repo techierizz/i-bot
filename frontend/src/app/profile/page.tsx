@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   BrainCircuit, ArrowLeft, Trophy, Flame, Star, Zap, Eye,
-  MessageSquare, Code, TrendingUp, Users, Target, BookOpen,
+  MessageSquare, Code, TrendingUp, TrendingDown, Users, Target, BookOpen,
   Lock, Crown, Medal, Award, User, RefreshCw, IdCard, Download, Share2, Share, CheckCircle2, ShieldAlert, PenTool, ClipboardList
 } from "lucide-react";
 import Image from "next/image";
@@ -84,8 +84,8 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"badges" | "leaderboard" | "roadmap">("badges");
   const [showAllBadgesModal, setShowAllBadgesModal] = useState(false);
-  const [bestInterview, setBestInterview] = useState<any>(null);
-  const [showBestModal, setShowBestModal] = useState(false);
+  const [insights, setInsights] = useState<any>(null);
+  const [showInsightsModal, setShowInsightsModal] = useState(false);
   const [stats, setStats] = useState<any>(null);
   const [showICardModal, setShowICardModal] = useState(false);
   const [showSignatureModal, setShowSignatureModal] = useState(false);
@@ -107,14 +107,14 @@ export default function ProfilePage() {
     Promise.all([
       fetch(`${API_BASE_URL}/api/gamification/${loggedUser.id}`).then(r => r.json()),
       fetch(`${API_BASE_URL}/api/leaderboard`).then(r => r.json()),
-      fetch(`${API_BASE_URL}/api/user/${loggedUser.id}/best_interview`).then(r => r.json()),
+      fetch(`${API_BASE_URL}/api/user/${loggedUser.id}/performance_insights`).then(r => r.json()),
       fetch(`${API_BASE_URL}/api/user/${loggedUser.id}/stats`).then(r => r.json()),
       fetch(`${API_BASE_URL}/api/user/${loggedUser.id}/experiences`).then(r => r.json()),
     ]).then(([gam, lb, best, userStats, validData]) => {
       setGData(gam);
       setLeaderboard(lb);
       if (best && best.status === "success" && best.data) {
-        setBestInterview(best.data);
+        setInsights(best.data);
       }
       if (userStats && userStats.status === "success" && userStats.data) {
         setStats(userStats.data);
@@ -305,41 +305,45 @@ export default function ProfilePage() {
           </div>
         </motion.div>
 
-        {/* Best Interview Spotlight Card */}
-        {bestInterview && (
+        {/* Performance Insights Card */}
+        {insights && insights.total_interviews > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05 }}
-            onClick={() => setShowBestModal(true)}
-            className="rounded-3xl border border-amber-500/30 bg-gradient-to-r from-zinc-900/80 via-amber-950/20 to-zinc-900/80 backdrop-blur-xl p-6 relative overflow-hidden shadow-[0_0_30px_rgba(245,158,11,0.1)] cursor-pointer group hover:border-amber-400/50 hover:shadow-[0_0_40px_rgba(245,158,11,0.2)] transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+            onClick={() => setShowInsightsModal(true)}
+            className="rounded-3xl border border-blue-500/30 bg-gradient-to-r from-zinc-900/80 via-blue-950/20 to-zinc-900/80 backdrop-blur-xl p-6 relative overflow-hidden shadow-[0_0_30px_rgba(59,130,246,0.1)] cursor-pointer group hover:border-blue-400/50 hover:shadow-[0_0_40px_rgba(59,130,246,0.2)] transition-all flex flex-col md:flex-row md:items-center justify-between gap-6"
           >
-            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-amber-500/50 to-transparent group-hover:via-amber-400 transition-all duration-700" />
+            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500/50 to-transparent group-hover:via-blue-400 transition-all duration-700" />
 
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 shrink-0 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-[0_0_15px_rgba(245,158,11,0.5)]">
-                <Trophy className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h3 className="text-sm font-black text-amber-400 uppercase tracking-widest flex items-center gap-2">
-                  Best Interview Ever <Star className="w-3.5 h-3.5 fill-amber-400" />
-                </h3>
-                <p className="text-xs text-zinc-400 mt-0.5">
-                  Achieved {bestInterview.overall}/100 Score • {bestInterview.mode} Mode
-                </p>
-              </div>
+            {/* Weakest Link */}
+            <div className="flex-1 flex items-center gap-4">
+               <div className="w-12 h-12 shrink-0 rounded-full bg-red-500/20 flex items-center justify-center text-red-400 shadow-[0_0_15px_rgba(239,68,68,0.3)]">
+                  <TrendingDown className="w-6 h-6" />
+               </div>
+               <div>
+                 <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Weakest Link</p>
+                 <p className="text-white font-semibold text-sm">{(insights.weakest_link?.category ?? "").replace("_", " ")}</p>
+                 <p className="text-zinc-400 text-xs">{insights.weakest_link?.average ?? 0} Avg Score</p>
+               </div>
             </div>
 
-            <div className="flex items-center gap-6 self-end sm:self-auto">
-              <div className="flex flex-col items-end">
-                <span className="text-lg font-black text-white">
-                  +{bestInterview.evaluation_data?.xp_earned?.toLocaleString() ?? 0} XP
-                </span>
-                <span className="text-[10px] text-zinc-500 uppercase tracking-wider">Earned</span>
-              </div>
-              <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-amber-500/10 group-hover:border-amber-500/30 transition-colors shrink-0">
-                <Eye className="w-4 h-4 text-zinc-400 group-hover:text-amber-400 transition-colors" />
-              </div>
+            {/* Growth */}
+            <div className="flex-1 flex items-center gap-4 md:border-l md:border-white/5 md:pl-6">
+               <div className="w-12 h-12 shrink-0 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+                  <TrendingUp className="w-6 h-6" />
+               </div>
+               <div>
+                 <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Growth Trajectory</p>
+                 <p className="text-white font-semibold text-sm">{insights.growth?.value > 0 ? '+' : ''}{insights.growth?.value} in {(insights.growth?.category ?? "").replace("_", " ")}</p>
+                 <p className="text-zinc-400 text-xs">First vs Recent</p>
+               </div>
+            </div>
+
+            {/* Action button */}
+            <div className="shrink-0 flex flex-col items-end md:border-l md:border-white/5 md:pl-6 pt-4 md:pt-0 border-t border-white/5 md:border-t-0 mt-4 md:mt-0">
+              <span className="text-blue-400 font-bold text-sm">Compare Best vs Worst</span>
+              <span className="text-zinc-500 text-[10px] uppercase tracking-wider mt-1 group-hover:text-zinc-300 transition-colors">View Full Insights &rarr;</span>
             </div>
           </motion.div>
         )}
@@ -654,31 +658,31 @@ export default function ProfilePage() {
             </motion.div>
           </div>
         )}
-        {/* Best Interview Modal */}
-        {showBestModal && bestInterview && (
+        {/* Insights Modal */}
+        {showInsightsModal && insights && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setShowBestModal(false)}
+              onClick={() => setShowInsightsModal(false)}
               className="absolute inset-0 bg-black/80 backdrop-blur-md"
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-2xl bg-zinc-950 border border-amber-500/20 rounded-[2rem] shadow-[0_0_50px_rgba(245,158,11,0.15)] overflow-hidden z-10 max-h-[90vh] flex flex-col"
+              className="relative w-full max-w-4xl bg-zinc-950 border border-blue-500/20 rounded-[2rem] shadow-[0_0_50px_rgba(59,130,246,0.15)] overflow-hidden z-10 max-h-[90vh] flex flex-col"
             >
-              <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-900/20 via-zinc-950/80 to-zinc-950/90" />
+              <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900/20 via-zinc-950/80 to-zinc-950/90" />
 
               <div className="relative z-10 p-6 border-b border-white/5 flex items-center justify-between bg-zinc-900/50 backdrop-blur-sm sticky top-0">
-                <h3 className="text-lg font-black text-amber-400 uppercase tracking-widest flex items-center gap-2">
-                  <Trophy className="w-5 h-5" />
-                  Best Interview Record
+                <h3 className="text-lg font-black text-blue-400 uppercase tracking-widest flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5" />
+                  Performance Insights
                 </h3>
                 <button
-                  onClick={() => setShowBestModal(false)}
+                  onClick={() => setShowInsightsModal(false)}
                   className="w-8 h-8 rounded-full bg-zinc-900 hover:bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
                 >
                   <span className="text-lg leading-none mb-0.5">&times;</span>
@@ -687,79 +691,77 @@ export default function ProfilePage() {
 
               <div className="relative z-10 p-8 overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent space-y-8">
 
-                {/* Header Stats */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  <div className="bg-zinc-900/50 rounded-2xl p-4 border border-white/5 text-center">
-                    <span className="block text-2xl font-black text-white">{bestInterview.overall}/100</span>
-                    <span className="text-[9px] text-zinc-500 uppercase tracking-wider">Overall Score</span>
-                  </div>
-                  <div className="bg-zinc-900/50 rounded-2xl p-4 border border-white/5 text-center">
-                    <span className="block text-2xl font-black text-amber-400">+{bestInterview.evaluation_data?.xp_earned?.toLocaleString() ?? 0}</span>
-                    <span className="text-[9px] text-zinc-500 uppercase tracking-wider">XP Earned</span>
-                  </div>
-                  <div className="bg-zinc-900/50 rounded-2xl p-4 border border-white/5 text-center">
-                    <span className="block text-2xl font-black text-white">{bestInterview.evaluation_data?.achievements?.length ?? 0}</span>
-                    <span className="text-[9px] text-zinc-500 uppercase tracking-wider">Badges</span>
-                  </div>
-                  <div className="bg-zinc-900/50 rounded-2xl p-4 border border-white/5 text-center">
-                    <span className="block text-2xl font-black text-white capitalize">{bestInterview.mode}</span>
-                    <span className="text-[9px] text-zinc-500 uppercase tracking-wider">Mode</span>
-                  </div>
-                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* BEST INTERVIEW */}
+                  <div className="space-y-6">
+                    <h4 className="text-sm font-black text-emerald-400 uppercase tracking-widest border-b border-emerald-500/20 pb-3 flex items-center gap-2">
+                      <Trophy className="w-4 h-4" /> Best Performance
+                    </h4>
+                    
+                    <div className="bg-emerald-950/20 border border-emerald-500/20 rounded-2xl p-6 text-center">
+                      <span className="block text-4xl font-black text-emerald-400">{insights.best_interview?.overall ?? 0}/100</span>
+                      <span className="text-[10px] text-zinc-400 uppercase tracking-wider mt-1 block">Overall Score</span>
+                      <p className="text-xs text-zinc-500 mt-3">{insights.best_interview?.mode} Mode</p>
+                    </div>
 
-                {/* Score Distribution */}
-                <div className="space-y-4">
-                  <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-widest border-b border-white/5 pb-2">Score Distribution</h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {[
-                      { key: "technical", label: "Technical Mastery", color: "from-blue-500 to-blue-400", bg: "bg-blue-500/20" },
-                      { key: "communication", label: "Communication", color: "from-emerald-500 to-emerald-400", bg: "bg-emerald-500/20" },
-                      { key: "problem_solving", label: "Problem Solving", color: "from-amber-500 to-amber-400", bg: "bg-amber-500/20" },
-                      { key: "confidence", label: "Confidence", color: "from-fuchsia-500 to-fuchsia-400", bg: "bg-fuchsia-500/20" },
-                    ].map(dim => {
-                      const val = bestInterview.evaluation_data?.scores?.[dim.key] ?? 0;
-                      return (
-                        <div key={dim.key} className="bg-zinc-900/40 p-4 rounded-xl border border-white/5 space-y-2">
-                          <div className="flex justify-between items-center text-[10px] font-bold">
-                            <span className="uppercase tracking-wider text-zinc-400">{dim.label}</span>
-                            <span className="text-white">{val}/100</span>
-                          </div>
-                          <div className={`h-2 rounded-full overflow-hidden ${dim.bg}`}>
-                            <div className={`h-full bg-gradient-to-r ${dim.color}`} style={{ width: `${val}%` }} />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Earned Badges */}
-                {bestInterview.evaluation_data?.achievements?.length > 0 && (
-                  <div className="space-y-4">
-                    <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-widest border-b border-white/5 pb-2">Badges Unlocked</h4>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                      {bestInterview.evaluation_data.achievements.map((ach: any, i: number) => {
-                        const badgeDef = ALL_BADGES.find(b => b.id === ach.id);
+                    <div className="space-y-3">
+                      {[
+                        { key: "technical", label: "Technical Mastery" },
+                        { key: "communication", label: "Communication" },
+                        { key: "problem_solving", label: "Problem Solving" },
+                        { key: "confidence", label: "Confidence" },
+                      ].map(dim => {
+                        const val = insights.best_interview?.evaluation_data?.scores?.[dim.key] ?? 0;
                         return (
-                          <div key={i} className="bg-zinc-900/40 p-3 rounded-xl border border-amber-500/10 flex flex-col items-center text-center gap-2">
-                            {badgeDef?.image ? (
-                              <div className="w-16 h-16 relative rounded-full overflow-hidden bg-zinc-950 border-2 border-white/10 shrink-0 shadow-[0_0_15px_rgba(245,158,11,0.2)]">
-                                <Image src={badgeDef.image} alt={ach.name} fill className="object-cover" />
-                              </div>
-                            ) : (
-                              <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
-                                <Star className="w-5 h-5" />
-                              </div>
-                            )}
-                            <div>
-                              <span className="block text-[10px] font-bold text-amber-400 uppercase tracking-wider leading-tight">{ach.name}</span>
+                          <div key={dim.key} className="bg-zinc-900/40 p-3 rounded-xl border border-white/5 space-y-2">
+                            <div className="flex justify-between items-center text-[10px] font-bold">
+                              <span className="uppercase tracking-wider text-zinc-400">{dim.label}</span>
+                              <span className="text-emerald-400">{val}/100</span>
+                            </div>
+                            <div className="h-1.5 rounded-full overflow-hidden bg-zinc-800">
+                              <div className="h-full bg-emerald-500" style={{ width: `${val}%` }} />
                             </div>
                           </div>
                         );
                       })}
                     </div>
                   </div>
-                )}
+
+                  {/* WORST INTERVIEW */}
+                  <div className="space-y-6 opacity-70 hover:opacity-100 transition-opacity">
+                    <h4 className="text-sm font-black text-red-400 uppercase tracking-widest border-b border-red-500/20 pb-3 flex items-center gap-2">
+                      <TrendingDown className="w-4 h-4" /> Worst Performance
+                    </h4>
+                    
+                    <div className="bg-red-950/20 border border-red-500/20 rounded-2xl p-6 text-center">
+                      <span className="block text-4xl font-black text-red-400">{insights.worst_interview?.overall ?? 0}/100</span>
+                      <span className="text-[10px] text-zinc-400 uppercase tracking-wider mt-1 block">Overall Score</span>
+                      <p className="text-xs text-zinc-500 mt-3">{insights.worst_interview?.mode} Mode</p>
+                    </div>
+
+                    <div className="space-y-3">
+                      {[
+                        { key: "technical", label: "Technical Mastery" },
+                        { key: "communication", label: "Communication" },
+                        { key: "problem_solving", label: "Problem Solving" },
+                        { key: "confidence", label: "Confidence" },
+                      ].map(dim => {
+                        const val = insights.worst_interview?.evaluation_data?.scores?.[dim.key] ?? 0;
+                        return (
+                          <div key={dim.key} className="bg-zinc-900/40 p-3 rounded-xl border border-white/5 space-y-2">
+                            <div className="flex justify-between items-center text-[10px] font-bold">
+                              <span className="uppercase tracking-wider text-zinc-400">{dim.label}</span>
+                              <span className="text-red-400">{val}/100</span>
+                            </div>
+                            <div className="h-1.5 rounded-full overflow-hidden bg-zinc-800">
+                              <div className="h-full bg-red-500" style={{ width: `${val}%` }} />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
 
               </div>
             </motion.div>
@@ -774,7 +776,7 @@ export default function ProfilePage() {
             user={user}
             gData={gData}
             stats={stats}
-            bestInterview={bestInterview}
+            bestInterview={insights?.best_interview}
             validationData={validationData}
             onClose={() => setShowICardModal(false)}
           />
