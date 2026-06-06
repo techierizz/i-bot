@@ -834,11 +834,16 @@ def get_leaderboard(limit: int = 10) -> List[Dict[str, Any]]:
     conn = get_db_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
     cursor.execute(
-        """SELECT u.username, g.user_id, g.total_xp, g.level, g.rank_title, g.badges, g.streak
+        """SELECT u.username, g.user_id, g.total_xp, g.level, g.rank_title, g.badges, g.streak,
+                  (SELECT COUNT(*) FROM evaluations e WHERE e.user_id = g.user_id) as interview_count
            FROM user_gamification g
            JOIN users u ON u.id = g.user_id
            WHERE u.role = 'candidate'
-           ORDER BY g.total_xp DESC
+           ORDER BY 
+               g.total_xp DESC,
+               g.streak DESC,
+               json_array_length(g.badges::json) DESC,
+               interview_count DESC
            LIMIT %s""",
         (limit,)
     )
