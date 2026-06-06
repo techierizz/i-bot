@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   BrainCircuit, ArrowLeft, Trophy, Flame, Star, Zap, Eye,
   MessageSquare, Code, TrendingUp, TrendingDown, Users, Target, BookOpen,
-  Lock, Crown, Medal, Award, User, RefreshCw, IdCard, Download, Share2, Share, CheckCircle2, ShieldAlert, PenTool, ClipboardList
+  Lock, Crown, Medal, Award, User, RefreshCw, IdCard, Download, Share2, Share, CheckCircle2, ShieldAlert, PenTool, ClipboardList, Lightbulb
 } from "lucide-react";
 import Image from "next/image";
 import { API_BASE_URL } from "../config";
@@ -306,57 +306,69 @@ export default function ProfilePage() {
           </div>
         </motion.div>
 
-        {/* Performance Insights Card */}
-        {/* Performance Insights Card */}
+        {/* Best Interview Record Card (Amber theme) */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05 }}
-          onClick={() => setShowInsightsModal(true)}
-          className="rounded-3xl border border-blue-500/30 bg-gradient-to-r from-zinc-900/80 via-blue-950/20 to-zinc-900/80 backdrop-blur-xl p-6 relative overflow-hidden shadow-[0_0_30px_rgba(59,130,246,0.1)] cursor-pointer group hover:border-blue-400/50 hover:shadow-[0_0_40px_rgba(59,130,246,0.2)] transition-all flex flex-col md:flex-row md:items-center justify-between gap-6"
+          className="bg-orange-500/5 border border-orange-500/20 rounded-[2rem] p-8 relative overflow-hidden mb-12"
         >
-          <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500/50 to-transparent group-hover:via-blue-400 transition-all duration-700" />
+          <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-orange-500/50 to-transparent" />
+          
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+            <h3 className="text-sm font-black text-orange-400 uppercase tracking-widest flex items-center gap-2">
+              <Lightbulb className="w-5 h-5" /> Best Interview Record
+            </h3>
+            <button 
+              onClick={() => setShowInsightsModal(true)}
+              className="px-6 py-2 bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 rounded-xl text-xs font-bold transition-all border border-orange-500/30 flex items-center gap-2 shadow-[0_0_15px_rgba(249,115,22,0.15)] hover:shadow-[0_0_20px_rgba(249,115,22,0.25)] cursor-pointer"
+            >
+              Performance Insights <TrendingUp className="w-3 h-3" />
+            </button>
+          </div>
 
-          {/* Weakest Link */}
-          <div className="flex-1 flex items-center gap-4">
-            <div className="w-12 h-12 shrink-0 rounded-full bg-red-500/20 flex items-center justify-center text-red-400 shadow-[0_0_15px_rgba(239,68,68,0.3)]">
-              {insights && insights.total_interviews >= 1 ? <TrendingDown className="w-6 h-6" /> : <Lock className="w-5 h-5 opacity-50" />}
+          <div className="flex flex-wrap gap-4 mb-8">
+            <div className="flex-1 bg-zinc-950/60 border border-white/5 rounded-2xl p-4 text-center min-w-[120px]">
+              <span className="block text-3xl font-black text-white">{insights?.best_interview?.overall ?? 0}/100</span>
+              <span className="text-[10px] text-zinc-500 uppercase tracking-wider mt-1 block">Overall Score</span>
             </div>
-            <div>
-              <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Weakest Link</p>
-              {insights && insights.total_interviews >= 1 ? (
-                <>
-                  <p className="text-white font-semibold text-sm">{(insights.weakest_link?.category ?? "").replace("_", " ")}</p>
-                  <p className="text-zinc-400 text-xs">{insights.weakest_link?.average ?? 0} Avg Score</p>
-                </>
-              ) : (
-                <p className="text-zinc-500 text-xs mt-1 font-medium">Complete an interview</p>
-              )}
+            <div className="flex-1 bg-zinc-950/60 border border-white/5 rounded-2xl p-4 text-center min-w-[120px]">
+              <span className="block text-3xl font-black text-orange-400">+{insights?.best_interview?.xp_gained ?? 0}</span>
+              <span className="text-[10px] text-zinc-500 uppercase tracking-wider mt-1 block">XP Gained</span>
+            </div>
+            <div className="flex-1 bg-zinc-950/60 border border-white/5 rounded-2xl p-4 text-center min-w-[120px]">
+              <span className="block text-3xl font-black text-white">{insights?.best_interview?.badges_earned ?? 0}</span>
+              <span className="text-[10px] text-zinc-500 uppercase tracking-wider mt-1 block">Badges Earned</span>
+            </div>
+            <div className="flex-1 bg-zinc-950/60 border border-white/5 rounded-2xl p-4 text-center min-w-[120px]">
+              <span className="block text-xl font-black text-white mt-1">{insights?.best_interview?.mode ?? "General"}</span>
+              <span className="text-[10px] text-zinc-500 uppercase tracking-wider mt-2 block">Mode</span>
             </div>
           </div>
 
-          {/* Growth */}
-          <div className="flex-1 flex items-center gap-4 md:border-l md:border-white/5 md:pl-6">
-            <div className="w-12 h-12 shrink-0 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
-              {insights && insights.total_interviews >= 2 ? <TrendingUp className="w-6 h-6" /> : <Lock className="w-5 h-5 opacity-50" />}
+          <div>
+            <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Evaluation Metrics</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                { key: "technical", label: "Technical Mastery" },
+                { key: "communication", label: "Communication" },
+                { key: "problem_solving", label: "Problem Solving" },
+                { key: "confidence", label: "Confidence" },
+              ].map(dim => {
+                const val = insights?.best_interview?.evaluation_data?.scores?.[dim.key] ?? 0;
+                return (
+                  <div key={dim.key} className="bg-zinc-950/40 p-4 rounded-xl border border-white/5">
+                    <div className="flex justify-between items-center text-[10px] font-bold mb-3">
+                      <span className="uppercase tracking-wider text-zinc-400">{dim.label}</span>
+                      <span className="text-orange-400">{val}/100</span>
+                    </div>
+                    <div className="h-1.5 rounded-full overflow-hidden bg-zinc-800">
+                      <div className="h-full bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]" style={{ width: `${val}%` }} />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-            <div>
-              <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Growth Trajectory</p>
-              {insights && insights.total_interviews >= 2 ? (
-                <>
-                  <p className="text-white font-semibold text-sm">{insights.growth?.value > 0 ? '+' : ''}{insights.growth?.value}% {(insights.growth?.category ?? "").replace("_", " ")}</p>
-                  <p className="text-zinc-400 text-xs">First vs Recent</p>
-                </>
-              ) : (
-                <p className="text-zinc-500 text-xs mt-1 font-medium">Requires 2+ interviews</p>
-              )}
-            </div>
-          </div>
-
-          {/* Action button */}
-          <div className="shrink-0 flex flex-col items-end md:border-l md:border-white/5 md:pl-6 pt-4 md:pt-0 border-t border-white/5 md:border-t-0 mt-4 md:mt-0">
-            <span className="text-blue-400 font-bold text-sm">Compare Best vs Worst</span>
-            <span className="text-zinc-500 text-[10px] uppercase tracking-wider mt-1 group-hover:text-zinc-300 transition-colors">View Full Insights &rarr;</span>
           </div>
         </motion.div>
 
@@ -702,6 +714,43 @@ export default function ProfilePage() {
               </div>
 
               <div className="relative z-10 p-8 overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent space-y-8">
+
+                {/* Additional Insights (Moved from main page) */}
+                <div className="flex flex-col md:flex-row gap-4">
+                  <div className="flex-1 bg-zinc-900/40 border border-white/5 rounded-2xl p-6 flex items-center gap-6">
+                    <div className="w-14 h-14 shrink-0 rounded-full bg-red-500/20 flex items-center justify-center text-red-400 shadow-[0_0_15px_rgba(239,68,68,0.3)]">
+                      {insights && insights.total_interviews >= 1 ? <TrendingDown className="w-7 h-7" /> : <Lock className="w-6 h-6 opacity-50" />}
+                    </div>
+                    <div>
+                      <p className="text-[11px] text-zinc-500 uppercase tracking-widest font-bold mb-1">Weakest Link</p>
+                      {insights && insights.total_interviews >= 1 ? (
+                        <>
+                          <p className="text-white font-bold text-lg">{(insights.weakest_link?.category ?? "").replace("_", " ")}</p>
+                          <p className="text-zinc-400 text-sm mt-0.5">{insights.weakest_link?.average ?? 0} Avg Score</p>
+                        </>
+                      ) : (
+                        <p className="text-zinc-500 text-sm mt-1 font-medium">Complete an interview</p>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="flex-1 bg-zinc-900/40 border border-white/5 rounded-2xl p-6 flex items-center gap-6">
+                    <div className="w-14 h-14 shrink-0 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+                      {insights && insights.total_interviews >= 2 ? <TrendingUp className="w-7 h-7" /> : <Lock className="w-6 h-6 opacity-50" />}
+                    </div>
+                    <div>
+                      <p className="text-[11px] text-zinc-500 uppercase tracking-widest font-bold mb-1">Growth Trajectory</p>
+                      {insights && insights.total_interviews >= 2 ? (
+                        <>
+                          <p className="text-white font-bold text-lg">{insights.growth?.value > 0 ? '+' : ''}{insights.growth?.value}% {(insights.growth?.category ?? "").replace("_", " ")}</p>
+                          <p className="text-zinc-400 text-sm mt-0.5">First vs Recent</p>
+                        </>
+                      ) : (
+                        <p className="text-zinc-500 text-sm mt-1 font-medium">Requires 2+ interviews</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   {/* BEST INTERVIEW */}
