@@ -90,9 +90,9 @@ export default function ActionPlan() {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white p-6 md:p-12 relative overflow-hidden">
-      <Link href="/profile" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors mb-8 relative z-10">
+      <Link href="/" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors mb-8 relative z-10">
         <ArrowLeft className="w-4 h-4" />
-        Back to Profile
+        Close Action Plan
       </Link>
 
       <div className="max-w-4xl mx-auto space-y-8 relative z-10">
