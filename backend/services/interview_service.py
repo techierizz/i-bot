@@ -514,7 +514,7 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
         if user_turns < question_limit:
             base_xp = 0
             parsed_response["scores"] = {"technical": 0, "communication": 0, "confidence": 0, "problem_solving": 0, "overall": 0}
-            parsed_response["feedback"]["overall_summary"] = "Interview ended before completion. Evaluation unavailable, but ATS Resume Optimization has been provided below based on your resume."
+            parsed_response["feedback"]["overall_summary"] = "Interview ended before completion. Evaluation unavailable, but ATS Resume Optimization has been provided in the resume hub in main page, based on your resume."
             parsed_response["achievements"] = []
             parsed_response["roadmap"] = []
             parsed_response["xp_earned"] = base_xp
