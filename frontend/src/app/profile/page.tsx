@@ -306,68 +306,26 @@ export default function ProfilePage() {
           </div>
         </motion.div>
 
-        {/* Best Interview Record Card (Amber theme) */}
+        {/* Performance Insights Strip Button */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05 }}
-          className="bg-orange-500/5 border border-orange-500/20 rounded-[2rem] p-8 relative overflow-hidden mb-12"
+          onClick={() => setShowInsightsModal(true)}
+          className="bg-orange-500/5 border border-orange-500/20 rounded-2xl p-4 flex items-center justify-between cursor-pointer hover:bg-orange-500/10 transition-colors mb-12 group"
         >
-          <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-orange-500/50 to-transparent" />
-          
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-            <h3 className="text-sm font-black text-orange-400 uppercase tracking-widest flex items-center gap-2">
-              <Lightbulb className="w-5 h-5" /> Best Interview Record
-            </h3>
-            <button 
-              onClick={() => setShowInsightsModal(true)}
-              className="px-6 py-2 bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 rounded-xl text-xs font-bold transition-all border border-orange-500/30 flex items-center gap-2 shadow-[0_0_15px_rgba(249,115,22,0.15)] hover:shadow-[0_0_20px_rgba(249,115,22,0.25)] cursor-pointer"
-            >
-              Performance Insights <TrendingUp className="w-3 h-3" />
-            </button>
-          </div>
-
-          <div className="flex flex-wrap gap-4 mb-8">
-            <div className="flex-1 bg-zinc-950/60 border border-white/5 rounded-2xl p-4 text-center min-w-[120px]">
-              <span className="block text-3xl font-black text-white">{insights?.best_interview?.overall ?? 0}/100</span>
-              <span className="text-[10px] text-zinc-500 uppercase tracking-wider mt-1 block">Overall Score</span>
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.2)]">
+              <Lightbulb className="w-6 h-6" />
             </div>
-            <div className="flex-1 bg-zinc-950/60 border border-white/5 rounded-2xl p-4 text-center min-w-[120px]">
-              <span className="block text-3xl font-black text-orange-400">+{insights?.best_interview?.xp_gained ?? 0}</span>
-              <span className="text-[10px] text-zinc-500 uppercase tracking-wider mt-1 block">XP Gained</span>
-            </div>
-            <div className="flex-1 bg-zinc-950/60 border border-white/5 rounded-2xl p-4 text-center min-w-[120px]">
-              <span className="block text-3xl font-black text-white">{insights?.best_interview?.badges_earned ?? 0}</span>
-              <span className="text-[10px] text-zinc-500 uppercase tracking-wider mt-1 block">Badges Earned</span>
-            </div>
-            <div className="flex-1 bg-zinc-950/60 border border-white/5 rounded-2xl p-4 text-center min-w-[120px]">
-              <span className="block text-xl font-black text-white mt-1">{insights?.best_interview?.mode ?? "General"}</span>
-              <span className="text-[10px] text-zinc-500 uppercase tracking-wider mt-2 block">Mode</span>
+            <div>
+              <h3 className="text-sm font-black text-orange-400 uppercase tracking-widest">Performance Insights</h3>
+              <p className="text-xs text-zinc-400 mt-0.5">Analyze your best and worst interviews</p>
             </div>
           </div>
-
-          <div>
-            <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Evaluation Metrics</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[
-                { key: "technical", label: "Technical Mastery" },
-                { key: "communication", label: "Communication" },
-                { key: "problem_solving", label: "Problem Solving" },
-                { key: "confidence", label: "Confidence" },
-              ].map(dim => {
-                const val = insights?.best_interview?.evaluation_data?.scores?.[dim.key] ?? 0;
-                return (
-                  <div key={dim.key} className="bg-zinc-950/40 p-4 rounded-xl border border-white/5">
-                    <div className="flex justify-between items-center text-[10px] font-bold mb-3">
-                      <span className="uppercase tracking-wider text-zinc-400">{dim.label}</span>
-                      <span className="text-orange-400">{val}/100</span>
-                    </div>
-                    <div className="h-1.5 rounded-full overflow-hidden bg-zinc-800">
-                      <div className="h-full bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]" style={{ width: `${val}%` }} />
-                    </div>
-                  </div>
-                );
-              })}
+          <div className="flex items-center gap-4 pr-2">
+            <div className="w-8 h-8 rounded-full bg-zinc-900 border border-white/5 flex items-center justify-center text-zinc-400 group-hover:text-orange-400 group-hover:border-orange-500/30 transition-all">
+              <span className="text-lg leading-none mb-0.5">&#8250;</span>
             </div>
           </div>
         </motion.div>
@@ -685,23 +643,17 @@ export default function ProfilePage() {
         {/* Insights Modal */}
         {showInsightsModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowInsightsModal(false)}
-              className="absolute inset-0 bg-black/80 backdrop-blur-md"
-            />
+            <div className="absolute inset-0 bg-zinc-950/80 backdrop-blur-sm" onClick={() => setShowInsightsModal(false)} />
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-4xl bg-zinc-950 border border-blue-500/20 rounded-[2rem] shadow-[0_0_50px_rgba(59,130,246,0.15)] overflow-hidden z-10 max-h-[90vh] flex flex-col"
+              className="relative w-full max-w-4xl bg-zinc-950 border border-orange-500/30 rounded-[2rem] shadow-[0_0_50px_rgba(249,115,22,0.15)] overflow-hidden z-10 max-h-[90vh] flex flex-col"
             >
-              <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900/20 via-zinc-950/80 to-zinc-950/90" />
+              <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-orange-900/20 via-zinc-950/80 to-zinc-950/90" />
 
-              <div className="relative z-10 p-6 border-b border-white/5 flex items-center justify-between bg-zinc-900/50 backdrop-blur-sm sticky top-0">
-                <h3 className="text-lg font-black text-blue-400 uppercase tracking-widest flex items-center gap-2">
+              <div className="relative z-10 p-6 border-b border-orange-500/20 flex items-center justify-between bg-orange-500/5 backdrop-blur-sm sticky top-0">
+                <h3 className="text-lg font-black text-orange-400 uppercase tracking-widest flex items-center gap-2">
                   <TrendingUp className="w-5 h-5" />
                   Performance Insights
                 </h3>
