@@ -170,6 +170,7 @@ export default function ResultsPage() {
         const cachedEvaluation = localStorage.getItem("hiremind_evaluation_result");
 
         if (cachedEvaluation) {
+           localStorage.setItem("hiremind_has_interviewed", "true");
            const parsed = JSON.parse(cachedEvaluation);
            if (parsed.evaluation_data) {
              setData(parsed.evaluation_data);
@@ -218,6 +219,7 @@ export default function ResultsPage() {
         const result = await response.json();
         
         if (result.status === "success") {
+          localStorage.setItem("hiremind_has_interviewed", "true");
           setData(result.data);
           
           if (result.gamification) {
@@ -226,6 +228,11 @@ export default function ResultsPage() {
               setShowLevelUpModal(true);
             }
           }
+          
+          localStorage.setItem("hiremind_evaluation_result", JSON.stringify({
+            evaluation_data: result.data,
+            gamification: result.gamification
+          }));
           
           setLoadingStep(loadingSteps.length - 1);
           setTimeout(() => setLoading(false), 500);
