@@ -162,6 +162,7 @@ export default function ProfilePage() {
         </div>
 
         <div className="flex gap-2">
+          {/* Verify Experiences Button */}
           {validationData?.experiences?.length > 0 && validationData.experiences.some((e: any) => e.verification_status !== "Verified") && (
             <button
               onClick={() => router.push("/validation?from=profile")}
