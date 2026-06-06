@@ -232,9 +232,9 @@ export default function SetupPage() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1 }}
-            className="rounded-3xl bg-zinc-900/40 border border-white/5 p-8 flex flex-col h-full hover:border-primary-500/30 transition-all shadow-2xl backdrop-blur-xl"
+            className="h-fit w-full"
           >
-        <div className="bg-zinc-900/50 backdrop-blur-xl border border-white/5 rounded-3xl p-8 relative overflow-hidden group">
+        <div className="bg-zinc-900/50 backdrop-blur-xl border border-white/5 rounded-3xl p-8 relative overflow-hidden group shadow-2xl hover:border-primary-500/30 transition-all">
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary-500/10 rounded-full blur-3xl -mr-32 -mt-32 transition-transform duration-700 group-hover:scale-150" />
           
           <h2 className="text-2xl font-bold text-white flex items-center gap-3 mb-6">
@@ -456,10 +456,10 @@ export default function SetupPage() {
         >
           <button
             onClick={handleSubmit}
-            disabled={!file || isUploading || uploadSuccess}
+            disabled={(!file && !useSavedResume) || isUploading || uploadSuccess}
             className={`flex items-center justify-center gap-3 px-10 py-5 rounded-2xl font-black text-xl transition-all duration-300 w-full md:w-auto ${
               uploadSuccess ? "bg-green-500 text-zinc-950 shadow-[0_0_40px_rgba(34,197,94,0.4)]" :
-              !file 
+              (!file && !useSavedResume)
                 ? "bg-zinc-800 text-zinc-500 cursor-not-allowed border border-zinc-700" 
                 : "bg-gradient-to-r from-primary-600 to-secondary-600 text-white shadow-[0_0_40px_rgba(139,92,246,0.3)] hover:shadow-[0_0_60px_rgba(139,92,246,0.5)] transform hover:scale-105 active:scale-95 cursor-pointer"
             }`}
