@@ -289,7 +289,7 @@ export default function ResultsPage() {
         <header className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0 z-20 relative">
           <div className="flex items-center gap-4 w-full md:w-auto">
             <button 
-              onClick={() => router.push("/setup")}
+              onClick={() => router.push("/")}
               className="p-2 rounded-xl bg-zinc-900 border border-white/5 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all flex items-center justify-center cursor-pointer"
             >
               <ArrowLeft className="w-5 h-5" />
