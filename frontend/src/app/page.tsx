@@ -105,6 +105,7 @@ const WordReveal = ({ text, className }: { text: string; className?: string }) =
 export default function Home() {
   const [candidateUser, setCandidateUser] = useState<any>(null);
   const [adminUser, setAdminUser] = useState<any>(null);
+  const [hasCompletedInterview, setHasCompletedInterview] = useState(false);
   const [showDemoModal, setShowDemoModal] = useState(false);
   
   const { scrollY, scrollYProgress } = useScroll();
@@ -121,6 +122,7 @@ export default function Home() {
     if (candidateSession) setCandidateUser(JSON.parse(candidateSession));
     const adminSession = localStorage.getItem("hiremind_admin");
     if (adminSession) setAdminUser(JSON.parse(adminSession));
+    if (localStorage.getItem("hiremind_eval_id")) setHasCompletedInterview(true);
   }, []);
 
   const handleLogout = () => {
@@ -171,6 +173,13 @@ export default function Home() {
               </>
             ) : candidateUser ? (
               <div className="flex items-center gap-2 sm:gap-4">
+                {hasCompletedInterview && (
+                  <Link href="/resume">
+                    <button className="text-xs sm:text-sm font-bold text-zinc-300 flex items-center gap-1.5 sm:gap-2 bg-zinc-900/50 glass px-2 sm:px-3 py-1.5 rounded-lg border border-white/5 hover:border-emerald-500/30 hover:bg-zinc-800/80 transition-all hover:scale-105 active:scale-95 cursor-pointer whitespace-nowrap">
+                      <FileText className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-400" /> <span className="hidden sm:inline">Resume Hub</span>
+                    </button>
+                  </Link>
+                )}
                 <Link href="/profile">
                   <button className="text-xs sm:text-sm font-bold text-zinc-300 flex items-center gap-1.5 sm:gap-2 bg-zinc-900/50 glass px-2 sm:px-3 py-1.5 rounded-lg border border-white/5 hover:border-primary-500/30 hover:bg-zinc-800/80 transition-all hover:scale-105 active:scale-95 cursor-pointer whitespace-nowrap">
                     <User className="w-3 h-3 sm:w-4 sm:h-4 text-primary-400" /> {candidateUser.username}
