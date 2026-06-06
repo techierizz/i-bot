@@ -294,11 +294,11 @@ def _enforce_rolling_window(cursor, user_id: int):
     if ids_to_delete:
         cursor.execute("DELETE FROM evaluations WHERE id = ANY(%s)", (ids_to_delete,))
 
-def get_best_interview(user_id: int) -> Optional[Dict[str, Any]]:
+def get_performance_insights(user_id: int) -> Optional[Dict[str, Any]]:
     conn = get_db_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
     
-    cursor.execute("SELECT * FROM evaluations WHERE user_id = %s", (user_id,))
+    cursor.execute("SELECT * FROM evaluations WHERE user_id = %s ORDER BY created_at ASC", (user_id,))
     evals = cursor.fetchall()
     conn.close()
     
@@ -306,9 +306,14 @@ def get_best_interview(user_id: int) -> Optional[Dict[str, Any]]:
         return None
         
     best_e = None
+    worst_e = None
     best_score = -1
-    best_xp = -1
-    best_badges = -1
+    worst_score = float('inf')
+    
+    total_tech = 0
+    total_comm = 0
+    total_conf = 0
+    total_prob = 0
     
     for e in evals:
         score = e["overall"] or 0
@@ -316,23 +321,65 @@ def get_best_interview(user_id: int) -> Optional[Dict[str, Any]]:
         xp = ed.get("xp_earned", 0)
         badges = len(ed.get("achievements", []))
         
+        # Best evaluation
         is_better = False
         if score > best_score:
             is_better = True
         elif score == best_score:
-            if xp > best_xp:
-                is_better = True
-            elif xp == best_xp:
-                if badges > best_badges:
+            if best_e:
+                best_ed = json.loads(best_e["evaluation_data"]) if isinstance(best_e["evaluation_data"], str) else (best_e["evaluation_data"] or {})
+                if xp > best_ed.get("xp_earned", 0):
                     is_better = True
-                    
         if is_better:
             best_score = score
-            best_xp = xp
-            best_badges = badges
             best_e = e
+
+        # Worst evaluation
+        if score < worst_score:
+            worst_score = score
+            worst_e = e
             
-    return best_e
+        total_tech += (e.get("technical") or 0)
+        total_comm += (e.get("communication") or 0)
+        total_conf += (e.get("confidence") or 0)
+        total_prob += (e.get("problem_solving") or 0)
+
+    n = len(evals)
+    avgs = {
+        "Technical Mastery": total_tech / n,
+        "Communication": total_comm / n,
+        "Confidence": total_conf / n,
+        "Problem Solving": total_prob / n,
+    }
+    
+    weakest_category = min(avgs, key=avgs.get)
+    
+    first_e = evals[0]
+    last_e = evals[-1]
+    
+    growth_areas = {
+        "Overall": (last_e["overall"] or 0) - (first_e["overall"] or 0),
+        "Technical": (last_e.get("technical") or 0) - (first_e.get("technical") or 0),
+        "Communication": (last_e.get("communication") or 0) - (first_e.get("communication") or 0),
+        "Confidence": (last_e.get("confidence") or 0) - (first_e.get("confidence") or 0),
+        "Problem Solving": (last_e.get("problem_solving") or 0) - (first_e.get("problem_solving") or 0),
+    }
+    
+    best_growth_cat = max(growth_areas, key=growth_areas.get)
+    
+    return {
+        "best_interview": best_e,
+        "worst_interview": worst_e,
+        "weakest_link": {
+            "category": weakest_category,
+            "average": round(avgs[weakest_category])
+        },
+        "growth": {
+            "category": best_growth_cat,
+            "value": growth_areas[best_growth_cat]
+        },
+        "total_interviews": n
+    }
 
 def save_evaluation(
     user_id: int,
