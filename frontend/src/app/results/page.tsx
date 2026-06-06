@@ -541,31 +541,11 @@ export default function ResultsPage() {
                 </div>
               )}
 
-              <div className="flex-1 flex flex-col gap-6 pt-4 lg:pt-0">
-                <div className="bg-zinc-900/50 backdrop-blur-xl border border-white/5 rounded-3xl p-8 md:p-10 text-center relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-64 h-64 bg-primary-500/10 rounded-full blur-3xl -mr-32 -mt-32 transition-transform duration-700 group-hover:scale-150" />
-                  <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -ml-32 -mb-32 transition-transform duration-700 group-hover:scale-150" />
-                  
-                  <div className="w-20 h-20 bg-zinc-950 border border-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl relative z-10">
-                    <Target className="w-10 h-10 text-primary-400" />
-                  </div>
-                  
-                  <h2 className="text-3xl font-bold text-white tracking-tight mb-4 relative z-10">
-                    Your Action Plan is Ready
-                  </h2>
-                  
-                  <p className="text-zinc-400 text-lg max-w-md mx-auto mb-8 leading-relaxed relative z-10">
-                    We've generated personalized study tasks based on your interview performance. Complete them to earn XP and level up!
-                  </p>
-                  
-                  <button 
-                    onClick={() => router.push("/action-plan")}
-                    className="relative z-10 inline-flex items-center gap-3 px-8 py-4 bg-white text-black font-bold rounded-2xl hover:scale-[1.02] shadow-[0_0_30px_rgba(255,255,255,0.15)] transition-all"
-                  >
-                    View Active Action Plan <ArrowRight className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
+              {data.roadmap && data.roadmap.length > 0 && (
+                <p className="text-zinc-500 text-sm italic mt-2 ml-2">
+                  For detailed tasks , visit action plan (the bell icon left of the profile).
+                </p>
+              )}
 
             </div>
 
