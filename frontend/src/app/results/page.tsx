@@ -98,9 +98,6 @@ export default function ResultsPage() {
   
   // Interactive component states
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"roadmap" | "resume">("roadmap");
-  const [expandedWeek, setExpandedWeek] = useState<number | null>(1);
-  const [roadmapChecked, setRoadmapChecked] = useState<Record<string, boolean>>({});
   const [hoveredScore, setHoveredScore] = useState<{ name: string; val: number } | null>(null);
   const [showBadgeVault, setShowBadgeVault] = useState(false);
 
@@ -281,70 +278,6 @@ export default function ResultsPage() {
   const coordinates = data ? getCoordinates(data.scores) : [];
   const polygonPoints = coordinates.map(c => `${c.x},${c.y}`).join(" ");
 
-  useEffect(() => {
-    // Load completed tasks from localStorage to prevent farming
-    const savedCompleted = localStorage.getItem("hiremind_completed_tasks");
-    if (savedCompleted) {
-      try {
-        const parsed = JSON.parse(savedCompleted);
-        const state: Record<string, boolean> = {};
-        parsed.forEach((k: string) => state[k] = true);
-        setRoadmapChecked(state);
-      } catch (e) { }
-    }
-  }, []);
-
-  const handleCheckboxToggle = async (weekIndex: number, actionIndex: number) => {
-    if (!data || !data.roadmap) return;
-    
-    const key = `${weekIndex}-${actionIndex}`;
-    const wasAlreadySaved = !!roadmapChecked[key];
-    
-    // Calculate total tasks in the roadmap
-    let totalTasks = 0;
-    data.roadmap.forEach(week => {
-        totalTasks += week.actions.length;
-    });
-
-    const newState = { ...roadmapChecked, [key]: !roadmapChecked[key] };
-    const trueKeys = Object.keys(newState).filter(k => newState[k]);
-    
-    setRoadmapChecked(newState);
-    localStorage.setItem("hiremind_completed_tasks", JSON.stringify(trueKeys));
-
-    // Check if ALL tasks are now checked
-    if (trueKeys.length === totalTasks && totalTasks > 0) {
-        const rewardClaimed = localStorage.getItem("hiremind_roadmap_reward_claimed");
-        if (!rewardClaimed) {
-            localStorage.setItem("hiremind_roadmap_reward_claimed", "true");
-            
-            // Give 200 XP once for completing the entire roadmap
-            try {
-                const session = localStorage.getItem("hiremind_user");
-                if (session) {
-                    const loggedUser = JSON.parse(session);
-                    const response = await fetch(`${API_BASE_URL}/api/gamification/add_xp`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            user_id: loggedUser.id,
-                            amount: 200
-                        })
-                    });
-                    const result = await response.json();
-                    if (result.status === "success" && result.gamification) {
-                        setGamification(result.gamification);
-                        if (result.gamification.level_up) {
-                            setTimeout(() => setShowLevelUpModal(true), 500);
-                        }
-                    }
-                }
-            } catch (err) {
-                console.error("Failed to add roadmap completion XP:", err);
-            }
-        }
-    }
-  };
 
   return (
     <div className="flex-1 flex flex-col w-full bg-background min-h-screen relative overflow-x-hidden p-4 md:p-8">
@@ -573,249 +506,33 @@ export default function ResultsPage() {
               )}
             </div>
 
-            {/* RIGHT COLUMN: Navigation Tabs + Details Widgets */}
+            {/* RIGHT COLUMN: Action Plan Navigation */}
             <div className="lg:col-span-7 flex flex-col gap-6">
               
-              {/* Premium Tab Navigation Menu */}
-              <div className="flex bg-zinc-950/50 backdrop-blur-xl p-1.5 rounded-[1.25rem] border border-white/[0.08] w-full relative z-10 shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
-                {[
-                  { id: "roadmap", label: "Learning Roadmap", icon: BookOpen },
-                  { id: "resume", label: "ATS Resume Optimizer", icon: FileText }
-                ].map((tab) => {
-                  const Icon = tab.icon;
-                  const isActive = activeTab === tab.id;
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id as any)}
-                      className={`relative flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-[11px] font-bold tracking-[0.1em] uppercase transition-all cursor-pointer z-10 ${
-                        isActive 
-                          ? "text-white" 
-                          : "text-zinc-500 hover:text-zinc-300"
-                      }`}
-                    >
-                      {isActive && (
-                        <motion.div 
-                          layoutId="activeTabPill"
-                          className="absolute inset-0 bg-gradient-to-r from-zinc-800/80 to-zinc-900/80 backdrop-blur-md rounded-xl border border-white/[0.15] shadow-[0_0_20px_rgba(0,0,0,0.6)] -z-10"
-                          transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                        />
-                      )}
-                      <Icon className={`w-4 h-4 z-10 transition-colors ${isActive ? "text-primary-400 drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]" : ""}`} />
-                      <span className="z-10">{tab.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Dynamic Content Panels based on Active Tab */}
-              <div className="flex-1">
-                
-                {/* 1. LEARNING ROADMAP TAB */}
-                {activeTab === "roadmap" && (
-                  <motion.div 
-                    initial={{ opacity: 0, x: 10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="flex flex-col gap-4"
+              <div className="flex-1 flex flex-col gap-6 pt-4 lg:pt-0">
+                <div className="bg-zinc-900/50 backdrop-blur-xl border border-white/5 rounded-3xl p-8 md:p-10 text-center relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-primary-500/10 rounded-full blur-3xl -mr-32 -mt-32 transition-transform duration-700 group-hover:scale-150" />
+                  <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -ml-32 -mb-32 transition-transform duration-700 group-hover:scale-150" />
+                  
+                  <div className="w-20 h-20 bg-zinc-950 border border-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl relative z-10">
+                    <Target className="w-10 h-10 text-primary-400" />
+                  </div>
+                  
+                  <h2 className="text-3xl font-bold text-white tracking-tight mb-4 relative z-10">
+                    Your Action Plan is Ready
+                  </h2>
+                  
+                  <p className="text-zinc-400 text-lg max-w-md mx-auto mb-8 leading-relaxed relative z-10">
+                    We've generated personalized study tasks based on your interview performance. Complete them to earn XP and level up!
+                  </p>
+                  
+                  <button 
+                    onClick={() => router.push("/action-plan")}
+                    className="relative z-10 inline-flex items-center gap-3 px-8 py-4 bg-white text-black font-bold rounded-2xl hover:scale-[1.02] shadow-[0_0_30px_rgba(255,255,255,0.15)] transition-all"
                   >
-                    {!data.roadmap || data.roadmap.length === 0 ? (
-                      <div className="p-10 text-center flex flex-col items-center justify-center bg-zinc-950/40 rounded-2xl border border-white/5 mt-4">
-                        <BookOpen className="w-12 h-12 text-zinc-600 mb-4 opacity-50" />
-                        <h3 className="text-zinc-300 font-bold mb-2">No Roadmap Generated</h3>
-                        <p className="text-xs text-zinc-500 max-w-sm">
-                          The interview was ended before enough data could be gathered. Complete at least one question in your next interview to receive a personalized learning roadmap.
-                        </p>
-                      </div>
-                    ) : (
-                      <>
-                        <div className="p-4 rounded-xl bg-primary-500/5 border border-primary-500/10 text-xs text-primary-300 flex items-start gap-2.5 mb-2 leading-relaxed">
-                          <Sparkles className="w-4 h-4 shrink-0 text-primary-400 mt-0.5" />
-                          <span>We custom-synthesized a 3-week learning horizon to patch specific gaps noticed during the interview session. Mark tasks completed to level up!</span>
-                        </div>
-
-                        <div className="relative border-l-2 border-primary-500/20 ml-4 pl-6 flex flex-col gap-8">
-                      {data.roadmap.map((week) => {
-                        const isExpanded = expandedWeek === week.week;
-                        return (
-                          <div key={week.week} className="relative group">
-                            {/* Glowing Marker Dot */}
-                            <div className={`absolute left-[-35px] top-4 w-5 h-5 rounded-full border-[3px] flex items-center justify-center transition-all duration-300 ${
-                              isExpanded 
-                                ? "bg-zinc-950 border-primary-400 shadow-[0_0_15px_rgba(139,92,246,0.8)] scale-110" 
-                                : "bg-zinc-950 border-zinc-700 group-hover:border-primary-500/50"
-                            }`}>
-                              {isExpanded && <div className="w-1.5 h-1.5 bg-primary-400 rounded-full animate-pulse" />}
-                            </div>
-
-                            <div 
-                              onClick={() => setExpandedWeek(isExpanded ? null : week.week)}
-                              className={`relative p-6 rounded-3xl transition-all duration-500 cursor-pointer select-none overflow-hidden ${
-                                isExpanded 
-                                  ? "bg-zinc-900/40 border border-primary-500/30 shadow-[0_0_40px_rgba(139,92,246,0.1)]" 
-                                  : "bg-zinc-950/40 border border-white/[0.05] hover:border-primary-500/20 hover:bg-zinc-900/20"
-                              }`}
-                            >
-                              {isExpanded && (
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/10 blur-[40px] pointer-events-none rounded-full" />
-                              )}
-                              <div className="flex justify-between items-center relative z-10">
-                                <div>
-                                  <span className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors ${isExpanded ? "text-primary-400" : "text-zinc-500"}`}>Week 0{week.week}</span>
-                                  <h4 className="text-lg font-bold text-white mt-1 tracking-tight">{week.topic}</h4>
-                                </div>
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${isExpanded ? "bg-primary-500/20 text-primary-400" : "bg-zinc-900 text-zinc-500 group-hover:text-zinc-300"}`}>
-                                  {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                                </div>
-                              </div>
-
-                              <AnimatePresence>
-                                {isExpanded && (
-                                  <motion.div 
-                                    initial={{ height: 0, opacity: 0, marginTop: 0 }}
-                                    animate={{ height: "auto", opacity: 1, marginTop: 16 }}
-                                    exit={{ height: 0, opacity: 0, marginTop: 0 }}
-                                    className="overflow-hidden relative z-10"
-                                    onClick={(e) => e.stopPropagation()}
-                                  >
-                                    <p className="text-sm text-zinc-400 leading-relaxed mb-5 font-medium">
-                                      {week.description}
-                                    </p>
-
-                                    <div className="flex flex-col gap-3">
-                                      {week.actions.map((act, actIdx) => {
-                                        const isChecked = !!roadmapChecked[`${week.week}-${actIdx}`];
-                                        return (
-                                          <div 
-                                            key={actIdx}
-                                            onClick={() => handleCheckboxToggle(week.week, actIdx)}
-                                            className={`group/task flex items-center gap-3.5 p-3.5 rounded-xl border transition-all duration-300 cursor-pointer ${
-                                              isChecked 
-                                                ? "bg-primary-500/5 border-primary-500/20" 
-                                                : "bg-zinc-950/50 border-white/[0.05] hover:border-white/10 hover:bg-zinc-900/50"
-                                            }`}
-                                          >
-                                            <div className={`w-5 h-5 rounded-md border-[1.5px] flex items-center justify-center shrink-0 transition-all duration-300 ${
-                                              isChecked 
-                                                ? "bg-primary-500 border-primary-500 text-white shadow-[0_0_10px_rgba(139,92,246,0.5)] scale-110" 
-                                                : "border-zinc-600 bg-transparent group-hover/task:border-zinc-400"
-                                            }`}>
-                                              {isChecked && <CheckCircle2 className="w-4 h-4" />}
-                                            </div>
-                                            <span className={`text-sm font-medium transition-all duration-300 ${isChecked ? "text-zinc-500 line-through" : "text-zinc-300 group-hover/task:text-white"}`}>
-                                              {act}
-                                            </span>
-                                          </div>
-                                        );
-                                      })}
-                                    </div>
-                                  </motion.div>
-                                )}
-                              </AnimatePresence>
-                            </div>
-                          </div>
-                        );
-                      })}
-                        </div>
-                      </>
-                    )}
-                  </motion.div>
-                )}
-
-                {/* 2. ATS RESUME OPTIMIZER TAB */}
-                {activeTab === "resume" && (
-                  <motion.div 
-                    initial={{ opacity: 0, x: 10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="flex flex-col gap-5"
-                  >
-                    {!data.resume_optimizer || (!data.resume_optimizer.line_modifications?.length && !data.resume_optimizer.top_tips?.length) ? (
-                      <div className="p-10 text-center flex flex-col items-center justify-center bg-zinc-950/40 rounded-2xl border border-white/5 mt-4">
-                        <FileText className="w-12 h-12 text-zinc-600 mb-4 opacity-50" />
-                        <h3 className="text-zinc-300 font-bold mb-2">No Resume Optimizations</h3>
-                        <p className="text-xs text-zinc-500 max-w-sm">
-                          Please upload your resume to receive ATS optimizations.
-                        </p>
-                      </div>
-                    ) : (
-                      <>
-                        {/* Impact Overview */}
-                        <div className="glass-card p-6 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-                              <Sparkles className="w-6 h-6" />
-                            </div>
-                            <div>
-                              <h4 className="text-base font-bold text-white">Estimated ATS Impact</h4>
-                              <p className="text-xs text-zinc-400">Projected score boost after rewriting your resume points</p>
-                            </div>
-                          </div>
-                          <div className="text-center sm:text-right">
-                            <span className="text-3xl font-extrabold text-emerald-400">+{Math.abs(data.resume_optimizer.ats_score_impact)}%</span>
-                            <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider block">Score Increase</span>
-                          </div>
-                        </div>
-
-                        {/* Top Tips (High Priority) */}
-                        {data.resume_optimizer.top_tips && data.resume_optimizer.top_tips.length > 0 && (
-                          <div className="flex flex-col gap-4 mt-2">
-                            <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
-                              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" /> Critical ATS Tips
-                            </h4>
-                            <div className="grid grid-cols-1 gap-3">
-                              {data.resume_optimizer.top_tips.map((tip, i) => (
-                                <div key={i} className="glass-card p-4 rounded-xl border-l-4 border-l-amber-500 flex items-start gap-3">
-                                  <div className="text-amber-500 mt-0.5">⚠️</div>
-                                  <p className="text-sm text-zinc-300 leading-relaxed">{tip}</p>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Line Modifications */}
-                        {data.resume_optimizer.line_modifications && data.resume_optimizer.line_modifications.length > 0 && (
-                          <div className="flex flex-col gap-4 mt-4">
-                            <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Surgical Line Edits</h4>
-                            {data.resume_optimizer.line_modifications.map((mod, i) => (
-                              <div key={i} className="glass-card p-5 rounded-2xl flex flex-col gap-3.5 border border-white/5 hover:border-primary-500/30 transition-colors">
-                                
-                                {/* Before card */}
-                                <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/10 flex items-start gap-3 relative overflow-hidden group">
-                                  <div className="absolute top-0 left-0 w-1 h-full bg-red-500/50" />
-                                  <div className="w-6 h-6 rounded-full bg-red-500/15 border border-red-500/20 flex items-center justify-center text-red-400 shrink-0 text-xs font-bold mt-1">
-                                    ✗
-                                  </div>
-                                  <div className="flex-1">
-                                    <span className="text-[10px] text-red-400 uppercase tracking-wider font-extrabold block mb-1">Found in your Resume</span>
-                                    <p className="text-zinc-400 text-sm italic font-medium leading-relaxed">"{mod.exact_line}"</p>
-                                    <div className="mt-3 p-2 rounded-lg bg-black/40 border border-white/5 inline-block">
-                                      <span className="text-[10px] text-zinc-500 font-bold uppercase block mb-0.5">Why it fails ATS</span>
-                                      <span className="text-xs text-zinc-300">{mod.modification_reason}</span>
-                                    </div>
-                                  </div>
-                                </div>
-
-                                {/* After card */}
-                                <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/10 flex items-start gap-3 relative overflow-hidden">
-                                  <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500/50" />
-                                  <div className="w-6 h-6 rounded-full bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0 text-xs font-bold mt-1">
-                                    ✓
-                                  </div>
-                                  <div className="flex-1">
-                                    <span className="text-[10px] text-emerald-400 uppercase tracking-wider font-extrabold block mb-1">Suggested ATS Rewrite</span>
-                                    <p className="text-white text-sm font-medium leading-relaxed">{mod.suggested_change}</p>
-                                  </div>
-                                </div>
-                                
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </>
-                    )}
-                  </motion.div>
-                )}
-
+                    View Active Action Plan <ArrowRight className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
 
             </div>
