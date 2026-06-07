@@ -605,14 +605,23 @@ export default function Home() {
                     ? "You have pending tasks in your action plan." 
                     : "You have completed your all tasks of your action plan."}
               </p>
-              <Link href="/action-plan" className="w-full mt-6">
+              {pendingTasksCount > 0 ? (
+                <Link href="/action-plan" className="w-full mt-6">
+                  <button
+                    onClick={() => setShowBellModal(false)}
+                    className="w-full py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-500 font-semibold rounded-xl transition-colors border border-amber-500/30"
+                  >
+                    View Action Plan
+                  </button>
+                </Link>
+              ) : (
                 <button
                   onClick={() => setShowBellModal(false)}
-                  className="w-full py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-500 font-semibold rounded-xl transition-colors border border-amber-500/30"
+                  className="w-full mt-6 py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-500 font-semibold rounded-xl transition-colors border border-amber-500/30"
                 >
-                  {pendingTasksCount > 0 ? "View Action Plan" : "Close"}
+                  Close
                 </button>
-              </Link>
+              )}
             </motion.div>
           </motion.div>
         )}
