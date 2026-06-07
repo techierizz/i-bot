@@ -45,8 +45,8 @@ export default function UserBox({ forceShow = false, className }: { forceShow?: 
   };
 
   if (!user) return null;
-  // Hide on certain pages if not forced. (Removed "/" so it shows on landing page)
-  if (!forceShow && (pathname === "/interview" || pathname === "/results" || pathname === "/profile" || pathname === "/validation" || pathname === "/resume" || pathname === "/action-plan")) {
+  // Hide on certain pages if not forced.
+  if (!forceShow && (pathname === "/" || pathname === "/interview" || pathname === "/results" || pathname === "/profile" || pathname === "/validation" || pathname === "/resume" || pathname === "/action-plan")) {
     return null;
   }
 
