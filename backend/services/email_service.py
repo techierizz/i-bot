@@ -12,6 +12,8 @@ def send_study_reminder(username: str, email: str, pending_tasks_count: int, pen
     try:
         subject = f"Your AI Interview Coach has some tasks for you!"
         
+        FRONTEND_URL = os.getenv("FRONTEND_URL", "https://hiremind-ai-eta.vercel.app")
+        
         html_body = f"""
 
 <h2>Hey {username},</h2>
@@ -21,7 +23,11 @@ def send_study_reminder(username: str, email: str, pending_tasks_count: int, pen
 {''.join([f'<li>{t}</li>' for t in pending_topics])}
 </ul>
 <p>Ready to dive back into your roadmap to improve your skills and earn some XP?</p>
-<p>Head over to your <strong>Action Plan</strong> to complete your tasks.</p>
+<div style="margin: 25px 0;">
+  <a href="{FRONTEND_URL}/action-plan" style="background-color: #f59e0b; color: #18181b; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+    Go to Action Plan
+  </a>
+</div>
 <br/>
 <p>Regards,<br/>The HireMind Team</p>
 """
