@@ -627,6 +627,7 @@ async def trigger_reminders():
     """
     try:
         users_with_pending = get_users_with_pending_tasks()
+        print(f"DEBUG: Found {len(users_with_pending)} users with pending tasks.")
         sent_count = 0
         
         for user in users_with_pending:
@@ -634,14 +635,23 @@ async def trigger_reminders():
             username = user["username"]
             email = user.get("email", f"{username}@example.com") # fallback if no email field
             
+            print(f"DEBUG: Checking user {username} (ID {user_id}), DB Email: {email}")
+            
             tasks = get_user_roadmap_tasks(user_id)
             pending_tasks = [t for t in tasks if not t.get("is_completed", False)]
             
             if len(pending_tasks) > 0:
                 topics = [t["task_text"] for t in pending_tasks[:3]] # send top 3
+                print(f"DEBUG: Sending to {email} with {len(pending_tasks)} tasks...")
+                
                 success = send_study_reminder(username, email, len(pending_tasks), topics)
                 if success:
+                    print(f"DEBUG: Successfully sent to {email}")
                     sent_count += 1
+                else:
+                    print(f"DEBUG: Failed to send to {email}")
+            else:
+                print(f"DEBUG: User {username} had no pending tasks found in get_user_roadmap_tasks()")
                     
         return {"status": "success", "message": f"Sent {sent_count} reminders."}
     except Exception as e:
