@@ -202,10 +202,10 @@ export default function Home() {
                 
                 <button 
                   onClick={() => setShowBellModal(true)}
-                  className="relative p-2 bg-zinc-900/80 backdrop-blur-md border border-amber-500/30 hover:border-amber-400 rounded-lg text-amber-500 hover:text-amber-400 hover:animate-[temple-bell_1.5s_ease-in-out_infinite] transition-all cursor-pointer shadow-[0_0_15px_rgba(245,158,11,0.2)]"
+                  className="group relative p-2 bg-zinc-900/80 backdrop-blur-md border border-amber-500/30 hover:border-amber-400 rounded-lg text-amber-500 hover:text-amber-400 transition-all cursor-pointer shadow-[0_0_15px_rgba(245,158,11,0.2)]"
                   title="Notifications"
                 >
-                  <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <Bell className="w-4 h-4 sm:w-5 sm:h-5 group-hover:animate-[temple-bell_1.5s_ease-in-out_infinite]" />
                   {pendingTasksCount > 0 && (
                     <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full" />
                   )}
