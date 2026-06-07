@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useRef, MouseEvent } from "react";
 import { motion, AnimatePresence, useScroll, useTransform, useMotionTemplate, useMotionValue, useSpring } from "framer-motion";
-import { Mic, LineChart, FileText, ArrowRight, LogOut, Shield, User, PlayCircle, CheckCircle2, ChevronDown, Sparkles, Activity, X } from "lucide-react";
+import { Mic, LineChart, FileText, ArrowRight, LogOut, Shield, User, PlayCircle, CheckCircle2, ChevronDown, Sparkles, Activity, X, Bell } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { API_BASE_URL } from "./config";
 
 // --- Components ---
 
@@ -107,6 +108,9 @@ export default function Home() {
   const [adminUser, setAdminUser] = useState<any>(null);
   const [hasCompletedInterview, setHasCompletedInterview] = useState(false);
   const [showDemoModal, setShowDemoModal] = useState(false);
+  const [pendingTasksCount, setPendingTasksCount] = useState(0);
+  const [totalTasksCount, setTotalTasksCount] = useState(0);
+  const [showBellModal, setShowBellModal] = useState(false);
   
   const { scrollY, scrollYProgress } = useScroll();
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
@@ -119,7 +123,22 @@ export default function Home() {
 
   useEffect(() => {
     const candidateSession = localStorage.getItem("hiremind_user");
-    if (candidateSession) setCandidateUser(JSON.parse(candidateSession));
+    if (candidateSession) {
+      const parsed = JSON.parse(candidateSession);
+      setCandidateUser(parsed);
+      
+      // Fetch roadmap tasks
+      fetch(`${API_BASE_URL}/api/roadmap/${parsed.id}`)
+        .then(r => r.json())
+        .then(data => {
+          if (data.status === "success" && data.data) {
+            const pending = data.data.filter((t: any) => !t.is_completed);
+            setPendingTasksCount(pending.length);
+            setTotalTasksCount(data.data.length);
+          }
+        })
+        .catch(e => console.error(e));
+    }
     const adminSession = localStorage.getItem("hiremind_admin");
     if (adminSession) setAdminUser(JSON.parse(adminSession));
     if (localStorage.getItem("hiremind_has_interviewed") === "true") setHasCompletedInterview(true);
@@ -180,6 +199,18 @@ export default function Home() {
                     </button>
                   </Link>
                 )}
+                
+                <button 
+                  onClick={() => setShowBellModal(true)}
+                  className="relative p-2 bg-zinc-900/80 backdrop-blur-md border border-amber-500/30 hover:border-amber-400 rounded-lg text-amber-500 hover:text-amber-400 hover:animate-[temple-bell_1.5s_ease-in-out_infinite] transition-all cursor-pointer shadow-[0_0_15px_rgba(245,158,11,0.2)]"
+                  title="Notifications"
+                >
+                  <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
+                  {pendingTasksCount > 0 && (
+                    <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full" />
+                  )}
+                </button>
+                
                 <Link href="/profile">
                   <button className="text-xs sm:text-sm font-bold text-zinc-300 flex items-center gap-1.5 sm:gap-2 bg-zinc-900/50 glass px-2 sm:px-3 py-1.5 rounded-lg border border-white/5 hover:border-primary-500/30 hover:bg-zinc-800/80 transition-all hover:scale-105 active:scale-95 cursor-pointer whitespace-nowrap">
                     <User className="w-3 h-3 sm:w-4 sm:h-4 text-primary-400" /> {candidateUser.username}
@@ -533,13 +564,60 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="w-full border-t border-white/5 py-12 text-center text-zinc-500 text-sm relative z-10 bg-zinc-950 flex flex-col items-center justify-center gap-4">
-        <div className="flex items-center gap-2 opacity-50 grayscale">
-           <Image src="/logo.png" alt="HireMind AI Logo" width={24} height={24} />
-           <span className="font-bold">HireMind AI</span>
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-zinc-500 text-sm">
+          <p>© {new Date().getFullYear()} HireMind AI. All rights reserved.</p>
+          <div className="flex gap-6">
+            <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <Link href="#" className="hover:text-white transition-colors">Terms of Service</Link>
+          </div>
         </div>
-        <p>© {new Date().getFullYear()} HireMind AI. All rights reserved.</p>
       </footer>
-      
+
+      {/* Bell Notification Modal */}
+      <AnimatePresence>
+        {showBellModal && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          >
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative w-full max-w-sm bg-zinc-900 border border-amber-500/30 rounded-2xl p-6 shadow-2xl flex flex-col items-center text-center"
+            >
+              <button 
+                onClick={() => setShowBellModal(false)}
+                className="absolute top-3 right-3 text-zinc-400 hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center mb-4 border border-amber-500/20">
+                <Bell className="w-8 h-8 text-amber-500 animate-[temple-bell_1.5s_ease-in-out_infinite]" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Action Plan</h3>
+              <p className="text-zinc-300 font-medium">
+                {totalTasksCount === 0 
+                  ? "You are all caught up!!" 
+                  : pendingTasksCount > 0 
+                    ? "You have pending tasks in your action plan." 
+                    : "You have completed your all tasks of your action plan."}
+              </p>
+              <Link href="/action-plan" className="w-full mt-6">
+                <button
+                  onClick={() => setShowBellModal(false)}
+                  className="w-full py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-500 font-semibold rounded-xl transition-colors border border-amber-500/30"
+                >
+                  {pendingTasksCount > 0 ? "View Action Plan" : "Close"}
+                </button>
+              </Link>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }
