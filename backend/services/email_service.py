@@ -1,13 +1,12 @@
 import logging
 import os
-import resend
-
-# Ensure API key is set for Resend
-resend.api_key = os.getenv("RESEND_API_KEY", "")
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 def send_study_reminder(username: str, email: str, pending_tasks_count: int, pending_topics: list) -> bool:
     """
-    Sends an email reminder using the Resend API.
+    Sends an email reminder using Gmail SMTP.
     """
     try:
         subject = f"Your AI Interview Coach has some tasks for you!"
@@ -32,20 +31,33 @@ def send_study_reminder(username: str, email: str, pending_tasks_count: int, pen
 <p>Regards,<br/>The HireMind Team</p>
 """
         
-        # We need a verified domain to send from in Resend, but for testing, Resend allows sending 
-        # from "onboarding@resend.dev" to the verified email address attached to the API key account.
-        params = {
-            "from": "onboarding@resend.dev",
-            "to": [email],
-            "subject": subject,
-            "html": html_body,
-        }
+        sender_email = os.getenv("GMAIL_ADDRESS")
+        sender_password = os.getenv("GMAIL_APP_PASSWORD")
+
+        if not sender_email or not sender_password:
+            logging.error("GMAIL_ADDRESS or GMAIL_APP_PASSWORD not set in environment.")
+            return False
+
+        # Create the email message
+        msg = MIMEMultipart()
+        msg['From'] = f"HireMind AI <{sender_email}>"
+        msg['To'] = email
+        msg['Subject'] = subject
+
+        # Attach the HTML body
+        msg.attach(MIMEText(html_body, 'html'))
+
+        # Connect to Gmail's SMTP server
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls() # Secure the connection
+        server.login(sender_email, sender_password)
         
-        # Send using the resend SDK
-        email_response = resend.Emails.send(params)
+        # Send email
+        server.send_message(msg)
+        server.quit()
         
-        logging.info(f"Email sent successfully via Resend to {email}: {email_response}")
+        logging.info(f"Email sent successfully via Gmail SMTP to {email}")
         return True
     except Exception as e:
-        logging.error(f"Error sending email via Resend: {e}")
+        logging.error(f"Error sending email via Gmail SMTP: {e}")
         return False
