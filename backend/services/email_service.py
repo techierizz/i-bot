@@ -62,9 +62,10 @@ def send_study_reminder(username: str, email: str, pending_tasks_count: int, pen
         logging.error(f"Error sending email via Gmail SMTP: {e}")
         return False
 
-def send_password_reset_email(email: str, reset_link: str) -> bool:
+def send_password_reset_email(email: str, reset_link: str) -> tuple[bool, str]:
     """
     Sends a password reset email using Gmail SMTP.
+    Returns (success, error_message).
     """
     try:
         sender_email = os.getenv("GMAIL_ADDRESS")
@@ -72,7 +73,7 @@ def send_password_reset_email(email: str, reset_link: str) -> bool:
 
         if not sender_email or not sender_password:
             logging.error("GMAIL_ADDRESS or GMAIL_APP_PASSWORD not set in environment.")
-            return False
+            return False, "GMAIL_ADDRESS or GMAIL_APP_PASSWORD not set in environment"
 
         subject = "Reset Your HireMind Password"
         
@@ -125,7 +126,8 @@ The HireMind Team
         server.quit()
         
         logging.info(f"Password reset email sent successfully to {email}")
-        return True
+        return True, ""
     except Exception as e:
+        error_str = str(e)
         logging.error(f"Error sending password reset email: {e}")
-        return False
+        return False, error_str
