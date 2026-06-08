@@ -6,6 +6,7 @@ from typing import List, Dict, Any, Optional
 import pypdf
 import io
 import json
+import os
 from services.llm_service import extract_resume_context
 from services.interview_service import generate_interview_response, evaluate_interview
 from services.email_service import send_study_reminder
