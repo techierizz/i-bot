@@ -57,9 +57,8 @@ def send_study_reminder(username: str, email: str, pending_tasks_count: int, pen
         # Attach the HTML body
         msg.attach(MIMEText(html_body, 'html'))
 
-        # Connect to Gmail's SMTP server
-        server = smtplib.SMTP('smtp.gmail.com', 587)
-        server.starttls() # Secure the connection
+        # Connect to Gmail's SMTP server using SSL on port 465
+        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
         server.login(sender_email, sender_password)
         
         # Send email
@@ -126,9 +125,8 @@ The HireMind Team
         msg.attach(part1)
         msg.attach(part2)
         
-        # Connect to Gmail's SMTP server
-        server = smtplib.SMTP('smtp.gmail.com', 587)
-        server.starttls()
+        # Connect to Gmail's SMTP server using SSL on port 465
+        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
         server.login(sender_email, sender_password)
         
         # Send email
