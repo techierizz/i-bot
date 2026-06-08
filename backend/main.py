@@ -80,6 +80,13 @@ class SettingsUpdateRequest(BaseModel):
 class SignatureUpdateRequest(BaseModel):
     signature_data: str
 
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
+
 # Endpoints
 @app.get("/health")
 def health_check():
@@ -103,6 +110,42 @@ def login_candidate(req: LoginRequest):
     if not user:
         raise HTTPException(status_code=401, detail="Invalid username or password.")
     return {"status": "success", "user": user}
+
+@app.post("/api/auth/forgot-password")
+def forgot_password(req: ForgotPasswordRequest):
+    from database import get_user_email, create_password_reset_token
+    from services.email_service import send_password_reset_email
+    
+    # We always return success to prevent email enumeration attacks
+    # but we only send the email if a valid token is generated
+    token = create_password_reset_token(req.email)
+    
+    if token:
+        # User is valid, send email
+        frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
+        reset_link = f"{frontend_url}/login?mode=reset&token={token}"
+        send_password_reset_email(req.email, reset_link)
+        
+    return {"status": "success", "message": "If that email is registered, a password reset link has been sent."}
+
+@app.post("/api/auth/reset-password")
+def reset_password(req: ResetPasswordRequest):
+    from database import verify_and_use_password_reset_token
+    import hashlib
+    import uuid
+    
+    # Hash the new password (simple hash implementation similar to database.py)
+    salt = uuid.uuid4().hex
+    password_hash = hashlib.sha256(salt.encode() + req.new_password.encode()).hexdigest()
+    db_password_hash = f"{password_hash}:{salt}"
+    
+    success = verify_and_use_password_reset_token(req.token, db_password_hash)
+    
+    if success:
+        return {"status": "success", "message": "Password has been successfully reset."}
+    else:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset token.")
+
 
 @app.post("/api/auth/admin/login")
 def login_admin(req: LoginRequest):
