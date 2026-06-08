@@ -19,7 +19,7 @@ export default function ActionPlan() {
   const [user, setUser] = useState<any>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   // Animation state for XP popup
   const [xpPopup, setXpPopup] = useState<{ id: number, message: string } | null>(null);
 
@@ -51,10 +51,10 @@ export default function ActionPlan() {
 
   const handleCompleteTask = async (taskId: number) => {
     if (!user) return;
-    
+
     // Optimistic update
     setTasks(prev => prev.map(t => t.id === taskId ? { ...t, is_completed: true } : t));
-    
+
     try {
       const res = await fetch(`${API_BASE_URL}/api/roadmap/${taskId}/complete`, {
         method: "POST",
@@ -62,7 +62,7 @@ export default function ActionPlan() {
         body: JSON.stringify({ user_id: user.id })
       });
       const data = await res.json();
-      
+
       if (data.status === "success") {
         // Show XP Gamification Popup
         setXpPopup({ id: taskId, message: `+50 XP` });
@@ -88,9 +88,17 @@ export default function ActionPlan() {
   const pendingTasks = tasks.filter(t => !t.is_completed);
   const completedTasks = tasks.filter(t => t.is_completed);
 
+  const handleClose = () => {
+    if (typeof window !== "undefined" && document.referrer.includes(window.location.host)) {
+      router.back();
+    } else {
+      router.push("/");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-zinc-950 text-white p-6 md:p-12 relative overflow-hidden">
-      <button onClick={() => router.back()} className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors mb-8 relative z-10 cursor-pointer">
+      <button onClick={handleClose} className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors mb-8 relative z-10 cursor-pointer">
         <ArrowLeft className="w-4 h-4" />
         Close Action Plan
       </button>
@@ -128,18 +136,18 @@ export default function ActionPlan() {
           </div>
         ) : (
           <div className="space-y-12">
-            
+
             {/* Pending Tasks */}
             <div className="space-y-4">
               <h2 className="text-xl font-semibold flex items-center gap-2">
                 <Target className="w-5 h-5 text-primary-400" />
                 Up Next ({pendingTasks.length})
               </h2>
-              
+
               <div className="grid gap-3">
                 <AnimatePresence>
                   {pendingTasks.map((task) => (
-                    <motion.div 
+                    <motion.div
                       key={task.id}
                       layout
                       initial={{ opacity: 0, y: 10 }}
@@ -147,15 +155,15 @@ export default function ActionPlan() {
                       exit={{ opacity: 0, scale: 0.95 }}
                       className="group bg-[#09090b] hover:bg-zinc-900 border border-white/5 hover:border-white/20 rounded-2xl p-5 flex items-center gap-5 transition-all duration-300 relative shadow-sm"
                     >
-                      <button 
+                      <button
                         onClick={() => handleCompleteTask(task.id)}
                         className="w-6 h-6 rounded-full border border-zinc-600 hover:border-white flex items-center justify-center transition-all shrink-0 bg-transparent"
                       >
                         <Check className="w-3.5 h-3.5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                       </button>
-                      
+
                       <p className="text-zinc-300 text-[15px] font-medium leading-relaxed tracking-tight">{task.task_text}</p>
-                      
+
                       {/* XP Popup Animation */}
                       <AnimatePresence>
                         {xpPopup?.id === task.id && (
@@ -188,7 +196,7 @@ export default function ActionPlan() {
                   <CheckCircle className="w-5 h-5" />
                   Completed ({completedTasks.length})
                 </h2>
-                
+
                 <div className="grid gap-2">
                   {completedTasks.map((task) => (
                     <div key={task.id} className="bg-zinc-900/20 rounded-xl p-3 flex items-center gap-3">
@@ -199,7 +207,7 @@ export default function ActionPlan() {
                 </div>
               </div>
             )}
-            
+
           </div>
         )}
       </div>
