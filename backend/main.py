@@ -122,13 +122,17 @@ def forgot_password(req: ForgotPasswordRequest):
     token = create_password_reset_token(req.email)
     
     email_sent = False
+    error_msg = ""
     if token:
         # User is valid, send email
         frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
         reset_link = f"{frontend_url}/login?mode=reset&token={token}"
-        email_sent = send_password_reset_email(req.email, reset_link)
+        email_sent, error_msg = send_password_reset_email(req.email, reset_link)
         
-    return {"status": "success", "message": f"If that email is registered, a password reset link has been sent. (Email Sent: {email_sent})"}
+    if email_sent:
+        return {"status": "success", "message": "If that email is registered, a password reset link has been sent. (Email Sent: True)"}
+    else:
+        return {"status": "success", "message": f"If that email is registered, a password reset link has been sent. (Email Sent: False | Error: {error_msg})"}
 
 @app.post("/api/auth/reset-password")
 def reset_password(req: ResetPasswordRequest):
