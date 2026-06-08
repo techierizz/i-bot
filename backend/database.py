@@ -1039,7 +1039,7 @@ def get_users_with_pending_tasks() -> List[Dict[str, Any]]:
             FROM users u
             JOIN roadmap_tasks r ON u.id = r.user_id
             WHERE r.is_completed = FALSE 
-            -- AND r.created_at <= NOW() - INTERVAL '2 days'
+            AND r.created_at <= NOW() - INTERVAL '2 days'
         ''')
         rows = cursor.fetchall()
         return rows
