@@ -104,6 +104,10 @@ def init_db():
     )
     """)
     
+    # Commit all previous table creations before attempting ALTER TABLEs
+    # so they don't get rolled back if ALTER TABLE throws an exception.
+    conn.commit()
+    
     # Add fraud columns to users if they don't exist
     try:
         cursor.execute("ALTER TABLE users ADD COLUMN fraud_strikes INTEGER DEFAULT 0")
