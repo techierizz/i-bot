@@ -49,6 +49,17 @@ def init_db():
         role TEXT NOT NULL DEFAULT 'candidate'
     )
     """)
+
+    # Create password_reset_tokens table
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS password_reset_tokens (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        token TEXT UNIQUE NOT NULL,
+        expires_at TIMESTAMP NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
     
     # Create evaluations table
     cursor.execute("""
@@ -1005,6 +1016,90 @@ def get_user_roadmap_tasks(user_id: int) -> List[Dict[str, Any]]:
         if r["created_at"]:
             r["created_at"] = r["created_at"].isoformat()
     return rows
+
+def get_user_email(username: str) -> str:
+    """Helper to fetch a user's email by their username."""
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    try:
+        cursor.execute("SELECT email FROM users WHERE username = %s", (username,))
+        row = cursor.fetchone()
+        return row["email"] if row else None
+    except Exception as e:
+        print(f"Error getting user email: {e}")
+        return None
+    finally:
+        conn.close()
+
+import secrets
+from datetime import datetime, timedelta
+
+def create_password_reset_token(email: str) -> str:
+    """Generates a secure password reset token for the given email, valid for 1 hour."""
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    try:
+        # Check if user exists with this email
+        cursor.execute("SELECT id FROM users WHERE email = %s", (email,))
+        user = cursor.fetchone()
+        if not user:
+            return None # User not found
+            
+        user_id = user["id"]
+        token = secrets.token_urlsafe(32)
+        expires_at = datetime.utcnow() + timedelta(hours=1)
+        
+        # Delete any existing tokens for this user
+        cursor.execute("DELETE FROM password_reset_tokens WHERE user_id = %s", (user_id,))
+        
+        # Insert new token
+        cursor.execute(
+            "INSERT INTO password_reset_tokens (user_id, token, expires_at) VALUES (%s, %s, %s)",
+            (user_id, token, expires_at)
+        )
+        conn.commit()
+        return token
+    except Exception as e:
+        print(f"Error creating reset token: {e}")
+        conn.rollback()
+        return None
+    finally:
+        conn.close()
+
+def verify_and_use_password_reset_token(token: str, new_password_hash: str) -> bool:
+    """Verifies a reset token and updates the user's password if valid."""
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    try:
+        # Check if token exists and is valid
+        cursor.execute("SELECT user_id, expires_at FROM password_reset_tokens WHERE token = %s", (token,))
+        row = cursor.fetchone()
+        
+        if not row:
+            return False # Invalid token
+            
+        if row["expires_at"] < datetime.utcnow():
+            # Delete expired token
+            cursor.execute("DELETE FROM password_reset_tokens WHERE token = %s", (token,))
+            conn.commit()
+            return False # Token expired
+            
+        user_id = row["user_id"]
+        
+        # Update user's password
+        cursor.execute("UPDATE users SET password_hash = %s WHERE id = %s", (new_password_hash, user_id))
+        
+        # Delete the used token
+        cursor.execute("DELETE FROM password_reset_tokens WHERE user_id = %s", (user_id,))
+        
+        conn.commit()
+        return True
+    except Exception as e:
+        print(f"Error verifying reset token: {e}")
+        conn.rollback()
+        return False
+    finally:
+        conn.close()
 
 def complete_roadmap_task(task_id: int, user_id: int) -> bool:
     """Marks task complete"""
