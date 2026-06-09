@@ -7,5 +7,7 @@ uvicorn[standard]==0.34.3
 psycopg2-binary==2.9.12
 groq
 playwright
-resend==2.4.0
 apscheduler==3.10.4
+google-api-python-client==2.115.0
+google-auth-httplib2==0.2.0
+google-auth-oauthlib==1.2.0
