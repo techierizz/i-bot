@@ -1,26 +1,51 @@
 import logging
 import os
-import smtplib
-import socket
+import base64
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-# Force IPv4 resolution to prevent [Errno 101] Network is unreachable
-# in cloud environments (like Render) that do not support IPv6 routing.
-orig_getaddrinfo = socket.getaddrinfo
+# Google API client imports
+from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
 
-def getaddrinfo_ipv4(host, port, family=0, type=0, proto=0, flags=0):
-    return orig_getaddrinfo(host, port, socket.AF_INET, type, proto, flags)
+def get_gmail_service():
+    """
+    Builds and returns the Gmail REST API service using the OAuth2 refresh token.
+    """
+    client_id = os.getenv("GMAIL_CLIENT_ID")
+    client_secret = os.getenv("GMAIL_CLIENT_SECRET")
+    refresh_token = os.getenv("GMAIL_REFRESH_TOKEN")
 
-socket.getaddrinfo = getaddrinfo_ipv4
+    if not client_id or not client_secret or not refresh_token:
+        logging.error("Missing GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, or GMAIL_REFRESH_TOKEN in environment.")
+        return None
+
+    # Construct the credentials object
+    creds = Credentials(
+        token=None,
+        refresh_token=refresh_token,
+        token_uri="https://oauth2.googleapis.com/token",
+        client_id=client_id,
+        client_secret=client_secret
+    )
+
+    try:
+        service = build('gmail', 'v1', credentials=creds)
+        return service
+    except Exception as e:
+        logging.error(f"Error building Gmail service: {e}")
+        return None
 
 def send_study_reminder(username: str, email: str, pending_tasks_count: int, pending_topics: list) -> bool:
     """
-    Sends an email reminder using Gmail SMTP.
+    Sends an email reminder using the Gmail REST API.
     """
     try:
+        service = get_gmail_service()
+        if not service:
+            return False
+
         subject = f"Your AI Interview Coach has some tasks for you!"
-        
         FRONTEND_URL = os.getenv("FRONTEND_URL", "https://hiremind-ai-eta.vercel.app")
         
         html_body = f"""
@@ -38,61 +63,40 @@ def send_study_reminder(username: str, email: str, pending_tasks_count: int, pen
   </a>
 </div>
 <br/>
-<p>Regards,<br/>The HireMind Team</p>
+<p>Best regards,<br/>The HireMind Team</p>
 """
-        
-        sender_email = os.getenv("GMAIL_ADDRESS")
-        sender_password = os.getenv("GMAIL_APP_PASSWORD")
-
-        if not sender_email or not sender_password:
-            logging.error("GMAIL_ADDRESS or GMAIL_APP_PASSWORD not set in environment.")
-            return False
-
-        # Create the email message
-        msg = MIMEMultipart()
-        msg['From'] = f"HireMind AI <{sender_email}>"
+        # Create message
+        msg = MIMEMultipart('alternative')
         msg['To'] = email
         msg['Subject'] = subject
-
-        # Attach the HTML body
         msg.attach(MIMEText(html_body, 'html'))
 
-        # Connect to Gmail's SMTP server using SSL on port 465
-        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-        server.login(sender_email, sender_password)
+        # Encode and send via REST API
+        raw_message = base64.urlsafe_b64encode(msg.as_bytes()).decode('utf-8')
+        service.users().messages().send(userId="me", body={'raw': raw_message}).execute()
         
-        # Send email
-        server.send_message(msg)
-        server.quit()
-        
-        logging.info(f"Email sent successfully via Gmail SMTP to {email}")
+        logging.info(f"Study reminder email sent successfully to {email}")
         return True
     except Exception as e:
-        logging.error(f"Error sending email via Gmail SMTP: {e}")
+        logging.error(f"Error sending email via Gmail REST API: {e}")
         return False
 
 def send_password_reset_email(email: str, reset_link: str) -> tuple[bool, str]:
     """
-    Sends a password reset email using Gmail SMTP.
+    Sends a password reset email using the Gmail REST API.
     Returns (success, error_message).
     """
     try:
-        sender_email = os.getenv("GMAIL_ADDRESS")
-        sender_password = os.getenv("GMAIL_APP_PASSWORD")
-
-        if not sender_email or not sender_password:
-            logging.error("GMAIL_ADDRESS or GMAIL_APP_PASSWORD not set in environment.")
-            return False, "GMAIL_ADDRESS or GMAIL_APP_PASSWORD not set in environment"
+        service = get_gmail_service()
+        if not service:
+            return False, "Missing Gmail OAuth credentials in environment"
 
         subject = "Reset Your HireMind Password"
         
-        # Create the email message using 'alternative' to support both text and HTML
         msg = MIMEMultipart('alternative')
-        msg['From'] = f"HireMind AI <{sender_email}>"
         msg['To'] = email
         msg['Subject'] = subject
 
-        # Plain text version
         text_body = f"""Someone requested a password reset for your HireMind account.
 
 If you made this request, please go to the following link to reset your password:
@@ -104,7 +108,6 @@ Regards,
 The HireMind Team
 """
         
-        # HTML version
         html_body = f"""
 <h2>Password Reset Request</h2>
 <p>Someone requested a password reset for your HireMind account.</p>
@@ -125,13 +128,9 @@ The HireMind Team
         msg.attach(part1)
         msg.attach(part2)
         
-        # Connect to Gmail's SMTP server using SSL on port 465
-        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-        server.login(sender_email, sender_password)
-        
-        # Send email
-        server.send_message(msg)
-        server.quit()
+        # Encode and send via REST API
+        raw_message = base64.urlsafe_b64encode(msg.as_bytes()).decode('utf-8')
+        service.users().messages().send(userId="me", body={'raw': raw_message}).execute()
         
         logging.info(f"Password reset email sent successfully to {email}")
         return True, ""
