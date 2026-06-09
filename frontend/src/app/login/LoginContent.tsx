@@ -10,7 +10,7 @@ import { API_BASE_URL } from "../config";
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectUrl = searchParams.get("redirect") || "/setup";
+  const redirectUrl = searchParams.get("redirect") || "/";
 
   const [mode, setMode] = useState<"login" | "register" | "forgot_password" | "reset_password">("login");
   const [username, setUsername] = useState("");
