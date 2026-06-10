@@ -773,37 +773,80 @@ export default function ResultsPage() {
       <div className="absolute top-[-9999px] left-[-9999px] z-[-1] pointer-events-none">
         <div 
           ref={scorecardRef}
-          className="w-[1200px] h-[630px] bg-zinc-950 flex flex-col items-center justify-center relative overflow-hidden"
+          className="w-[800px] h-[1100px] bg-zinc-950 flex flex-col items-center justify-between p-12 relative overflow-hidden rounded-3xl shadow-[0_0_100px_rgba(0,0,0,0.8)]"
           style={{ fontFamily: "'Inter', sans-serif" }}
         >
           {/* Background effects */}
-          <div className="absolute top-[-25%] left-[-25%] w-[150%] h-[150%] bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.15)_0%,transparent_50%)]" />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-zinc-950/90" />
+          <div className="absolute inset-0 bg-zinc-950" />
+          <div className="absolute top-[-30%] left-[-20%] w-[150%] h-[150%] bg-[radial-gradient(ellipse_at_top_right,rgba(139,92,246,0.3)_0%,transparent_50%)]" />
+          <div className="absolute bottom-[-30%] left-[-20%] w-[150%] h-[150%] bg-[radial-gradient(ellipse_at_bottom_left,rgba(59,130,246,0.25)_0%,transparent_50%)]" />
           
-          <div className="relative z-10 flex flex-col items-center">
-             <h1 className="text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-primary-300 to-zinc-400 tracking-tighter mb-4">
-               HireMind
-             </h1>
-             <p className="text-4xl text-zinc-400 font-bold mb-12">AI Interview Performance</p>
+          {/* Techy Grid Overlay */}
+          <div className="absolute inset-0 opacity-40" style={{ backgroundImage: 'radial-gradient(rgba(255,255,255,0.15) 2px, transparent 2px)', backgroundSize: '40px 40px' }} />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-zinc-950/80 to-zinc-950/95" />
+          
+          {/* Decorative Corner Brackets */}
+          <div className="absolute top-8 left-8 w-16 h-16 border-t-[3px] border-l-[3px] border-white/20 rounded-tl-2xl" />
+          <div className="absolute top-8 right-8 w-16 h-16 border-t-[3px] border-r-[3px] border-white/20 rounded-tr-2xl" />
+          <div className="absolute bottom-8 left-8 w-16 h-16 border-b-[3px] border-l-[3px] border-white/20 rounded-bl-2xl" />
+          <div className="absolute bottom-8 right-8 w-16 h-16 border-b-[3px] border-r-[3px] border-white/20 rounded-br-2xl" />
+
+          {/* Top Header */}
+          <div className="relative z-10 flex flex-col items-center mt-4 w-full">
+             <div className="flex items-center justify-between w-full px-8 mb-8">
+               <span className="text-zinc-400 font-mono text-sm tracking-widest border border-white/10 px-5 py-2 rounded-full bg-zinc-900/50 shadow-inner">ID: HM-{Math.floor(Math.random()*90000) + 10000}</span>
+               <span className="text-emerald-400 font-mono text-sm tracking-widest border border-emerald-500/20 px-5 py-2 rounded-full bg-emerald-500/10 flex items-center gap-2 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                 <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" /> VERIFIED
+               </span>
+             </div>
              
-             {data && (
-               <div className="flex gap-16 items-center">
-                 <div className="flex flex-col items-center bg-zinc-900/50 border border-white/10 rounded-3xl p-12 backdrop-blur-sm">
-                   <span className="text-3xl text-primary-400 font-black uppercase tracking-widest mb-4">Score</span>
-                   <span className="text-9xl font-black text-white drop-shadow-[0_0_30px_rgba(139,92,246,0.5)]">{data.scores.overall}</span>
-                   <span className="text-2xl text-zinc-500 mt-4 font-bold">/ 100</span>
-                 </div>
+             <h1 className="text-[5.5rem] font-black text-transparent bg-clip-text bg-gradient-to-b from-white via-zinc-200 to-zinc-500 tracking-tighter mb-4 drop-shadow-2xl">
+               HireMind AI
+             </h1>
+             <p className="text-xl text-primary-400 font-bold tracking-[0.4em] uppercase bg-primary-500/10 px-8 py-2.5 rounded-full border border-primary-500/20 shadow-[0_0_20px_rgba(139,92,246,0.15)]">Official Interview Certificate</p>
+          </div>
+          
+          {/* Main Score Area */}
+          {data && (
+            <div className="relative z-10 w-full flex flex-col items-center gap-10 mt-6">
+               {/* Huge Score Circle with concentric rings */}
+               <div className="relative w-[360px] h-[360px] flex items-center justify-center">
+                 {/* Outer dashed ring */}
+                 <div className="absolute inset-0 rounded-full border-[2px] border-dashed border-white/10" />
+                 {/* Inner glow ring */}
+                 <div className="absolute inset-5 rounded-full border-[8px] border-primary-500/60 bg-zinc-900/80 shadow-[0_0_120px_rgba(139,92,246,0.4)] backdrop-blur-xl" />
                  
-                 {gamification && (
-                   <div className="flex flex-col items-center bg-zinc-900/50 border border-white/10 rounded-3xl p-12 backdrop-blur-sm">
-                     <span className="text-3xl text-fuchsia-400 font-black uppercase tracking-widest mb-4">Rank</span>
-                     <span className="text-5xl font-black text-white text-center leading-tight max-w-[400px]">{gamification.rank_title}</span>
-                     <span className="text-2xl text-zinc-500 mt-6 font-bold">Level {gamification.level}</span>
-                   </div>
-                 )}
+                 <div className="relative flex flex-col items-center justify-center">
+                   <span className="text-lg text-primary-400 font-black uppercase tracking-[0.3em] mb-2">Overall Score</span>
+                   <span className="text-[130px] font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-400 leading-none drop-shadow-[0_0_40px_rgba(139,92,246,0.6)] tracking-tighter">{data.scores.overall}</span>
+                   <span className="text-xl text-zinc-500 mt-2 font-bold tracking-widest uppercase">/ 100 points</span>
+                 </div>
                </div>
-             )}
-             <p className="absolute -bottom-24 text-2xl text-zinc-500 font-bold tracking-widest">Prove your skills at hiremind-ai.vercel.app</p>
+               
+               {/* Rank info in a glassmorphic pill */}
+               {gamification && (
+                 <div className="flex flex-col items-center bg-zinc-900/40 border border-white/20 rounded-[2.5rem] p-10 w-full max-w-[85%] backdrop-blur-xl shadow-[0_30px_60px_rgba(0,0,0,0.4)] relative overflow-hidden">
+                   <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-transparent via-fuchsia-500 to-transparent opacity-80" />
+                   
+                   <span className="text-xl text-fuchsia-400 font-black uppercase tracking-[0.3em] mb-4 drop-shadow-[0_0_10px_rgba(217,70,239,0.3)]">Rank Achieved</span>
+                   <span className="text-[3.5rem] font-black text-white text-center leading-none drop-shadow-2xl">{gamification.rank_title}</span>
+                   
+                   <div className="mt-8 flex gap-4">
+                     <span className="px-6 py-2.5 bg-white/5 border border-white/10 rounded-full text-zinc-300 font-bold tracking-widest text-sm">LEVEL {gamification.level}</span>
+                     <span className="px-6 py-2.5 bg-white/5 border border-white/10 rounded-full text-zinc-300 font-bold tracking-widest text-sm text-yellow-400 border-yellow-400/20 bg-yellow-400/5">
+                       TOP {data.scores.overall >= 90 ? '1' : data.scores.overall >= 80 ? '5' : data.scores.overall >= 70 ? '10' : data.scores.overall >= 50 ? '25' : '50'}%
+                     </span>
+                   </div>
+                 </div>
+               )}
+            </div>
+          )}
+          
+          {/* Bottom Footer */}
+          <div className="relative z-10 mt-auto pt-6 flex flex-col items-center w-full">
+             <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8" />
+             <p className="text-lg text-zinc-500 font-bold tracking-[0.4em] mb-3 uppercase">Validate credentials at</p>
+             <p className="text-3xl text-white font-black tracking-widest drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">hiremind-ai.vercel.app</p>
           </div>
         </div>
       </div>
@@ -830,7 +873,7 @@ export default function ResultsPage() {
               
               <h2 className="text-2xl font-black text-white mb-6">Your Scorecard is Ready!</h2>
               
-              <img src={scorecardImage} alt="Scorecard" className="w-full h-auto rounded-2xl border border-white/10 shadow-2xl mb-8" />
+              <img src={scorecardImage} alt="Scorecard" className="w-full max-w-sm h-auto rounded-2xl border border-white/10 shadow-2xl mb-8 object-contain max-h-[55vh]" />
               
               <div className="flex gap-4 w-full">
                 <a 
