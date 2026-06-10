@@ -803,7 +803,7 @@ export default function ResultsPage() {
              <h1 className="text-[5.5rem] font-black text-white tracking-tighter mb-4">
                HireMind AI
              </h1>
-             <p className="text-xl text-primary-400 font-bold tracking-[0.4em] uppercase bg-primary-500/10 px-8 py-2.5 rounded-full border border-primary-500/20 shadow-[0_0_20px_rgba(139,92,246,0.15)]">Official Interview Certificate</p>
+             <p className="text-xl text-primary-400 font-bold tracking-[0.4em] uppercase bg-primary-500/10 px-8 py-2.5 rounded-full border border-primary-500/20">Official Interview Certificate</p>
           </div>
           
           {/* Main Score Area */}
