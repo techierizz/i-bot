@@ -846,8 +846,6 @@ export default function ResultsPage() {
           {/* Bottom Footer */}
           <div className="relative z-10 mt-auto pt-6 flex flex-col items-center w-full">
              <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8" />
-             <p className="text-lg text-zinc-500 font-bold tracking-[0.4em] mb-3 uppercase">Validate credentials at</p>
-             <p className="text-3xl text-white font-black tracking-widest">hiremind-ai.vercel.app</p>
           </div>
         </div>
       </div>
