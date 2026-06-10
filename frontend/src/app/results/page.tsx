@@ -2,12 +2,13 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toPng } from 'html-to-image';
 import { 
   BrainCircuit, CheckCircle2, Award, BookOpen, Sparkles,
   ChevronDown, ChevronUp, ArrowRight, Trophy, FileText,
   AlertCircle, RefreshCw, ArrowLeft, Zap, Eye, MessageSquare,
   Code, Map, X, Star, Flame, Lock, TrendingUp, Users, Shield,
-  Target, Clock, User
+  Target, Clock, User, Share2, Download
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -100,6 +101,24 @@ export default function ResultsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [hoveredScore, setHoveredScore] = useState<{ name: string; val: number } | null>(null);
   const [showBadgeVault, setShowBadgeVault] = useState(false);
+
+  // Scorecard State
+  const scorecardRef = useRef<HTMLDivElement>(null);
+  const [isGeneratingScorecard, setIsGeneratingScorecard] = useState(false);
+  const [scorecardImage, setScorecardImage] = useState<string | null>(null);
+
+  const handleGenerateScorecard = async () => {
+    if (!scorecardRef.current) return;
+    setIsGeneratingScorecard(true);
+    try {
+      const dataUrl = await toPng(scorecardRef.current, { cacheBust: true, pixelRatio: 2 });
+      setScorecardImage(dataUrl);
+    } catch (err) {
+      console.error("Failed to generate scorecard image", err);
+    } finally {
+      setIsGeneratingScorecard(false);
+    }
+  };
 
   // Simulated loading messages
   const loadingSteps = [
@@ -462,6 +481,16 @@ export default function ResultsPage() {
                 <p className="relative z-10 text-zinc-300 text-sm leading-loose max-w-sm font-medium">
                   {data.feedback.overall_summary}
                 </p>
+
+                {/* Scorecard Share Button */}
+                <button
+                  onClick={handleGenerateScorecard}
+                  disabled={isGeneratingScorecard}
+                  className="relative z-10 w-full py-3 mt-6 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#0a66c2] to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold transition-all shadow-[0_0_20px_rgba(10,102,194,0.3)] disabled:opacity-50 cursor-pointer"
+                >
+                  {isGeneratingScorecard ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Share2 className="w-5 h-5" />}
+                  {isGeneratingScorecard ? "Generating..." : "Share to LinkedIn"}
+                </button>
               </div>
 
               {/* Gamification Receipt Panel */}
@@ -735,6 +764,91 @@ export default function ResultsPage() {
                 </div>
               </div>
 
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Scorecard Generation Template (Hidden from UI) ─────────── */}
+      <div className="absolute top-[-9999px] left-[-9999px] z-[-1] pointer-events-none">
+        <div 
+          ref={scorecardRef}
+          className="w-[1200px] h-[630px] bg-zinc-950 flex flex-col items-center justify-center relative overflow-hidden"
+          style={{ fontFamily: "'Inter', sans-serif" }}
+        >
+          {/* Background effects */}
+          <div className="absolute top-[-25%] left-[-25%] w-[150%] h-[150%] bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.15)_0%,transparent_50%)]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-zinc-950/90" />
+          
+          <div className="relative z-10 flex flex-col items-center">
+             <h1 className="text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-primary-300 to-zinc-400 tracking-tighter mb-4">
+               HireMind
+             </h1>
+             <p className="text-4xl text-zinc-400 font-bold mb-12">AI Interview Performance</p>
+             
+             {data && (
+               <div className="flex gap-16 items-center">
+                 <div className="flex flex-col items-center bg-zinc-900/50 border border-white/10 rounded-3xl p-12 backdrop-blur-sm">
+                   <span className="text-3xl text-primary-400 font-black uppercase tracking-widest mb-4">Score</span>
+                   <span className="text-9xl font-black text-white drop-shadow-[0_0_30px_rgba(139,92,246,0.5)]">{data.scores.overall}</span>
+                   <span className="text-2xl text-zinc-500 mt-4 font-bold">/ 100</span>
+                 </div>
+                 
+                 {gamification && (
+                   <div className="flex flex-col items-center bg-zinc-900/50 border border-white/10 rounded-3xl p-12 backdrop-blur-sm">
+                     <span className="text-3xl text-fuchsia-400 font-black uppercase tracking-widest mb-4">Rank</span>
+                     <span className="text-5xl font-black text-white text-center leading-tight max-w-[400px]">{gamification.rank_title}</span>
+                     <span className="text-2xl text-zinc-500 mt-6 font-bold">Level {gamification.level}</span>
+                   </div>
+                 )}
+               </div>
+             )}
+             <p className="absolute -bottom-24 text-2xl text-zinc-500 font-bold tracking-widest">Prove your skills at hiremind-ai.vercel.app</p>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Scorecard Share Modal ─────────────────────────────── */}
+      <AnimatePresence>
+        {scorecardImage && (
+          <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setScorecardImage(null)}
+              className="absolute inset-0 bg-black/90 backdrop-blur-xl"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9 }}
+              className="relative z-10 w-full max-w-4xl bg-zinc-950 border border-white/10 rounded-3xl p-6 shadow-[0_0_80px_rgba(59,130,246,0.2)] flex flex-col items-center"
+            >
+              <button 
+                onClick={() => setScorecardImage(null)}
+                className="absolute top-4 right-4 p-2 rounded-xl bg-zinc-900 border border-white/5 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors z-20 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              
+              <h2 className="text-2xl font-black text-white mb-6">Your Scorecard is Ready!</h2>
+              
+              <img src={scorecardImage} alt="Scorecard" className="w-full h-auto rounded-2xl border border-white/10 shadow-2xl mb-8" />
+              
+              <div className="flex gap-4 w-full">
+                <a 
+                  href={scorecardImage}
+                  download="HireMind_Scorecard.png"
+                  className="flex-1 py-4 flex items-center justify-center gap-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-bold transition-all border border-white/5"
+                >
+                  <Download className="w-5 h-5" /> Download Image
+                </a>
+                <a 
+                  href="https://www.linkedin.com/feed/?shareActive=true"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 py-4 flex items-center justify-center gap-2 rounded-xl bg-[#0a66c2] hover:bg-[#084e96] text-white font-bold transition-all shadow-[0_0_20px_rgba(10,102,194,0.3)]"
+                >
+                  <Share2 className="w-5 h-5" /> Post on LinkedIn
+                </a>
+              </div>
             </motion.div>
           </div>
         )}
