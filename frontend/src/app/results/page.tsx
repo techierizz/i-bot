@@ -774,7 +774,7 @@ export default function ResultsPage() {
       <div className="absolute top-[-9999px] left-[-9999px] z-[-1] pointer-events-none">
         <div 
           ref={scorecardRef}
-          className="w-[800px] h-[1100px] bg-zinc-950 flex flex-col items-center justify-between p-12 relative overflow-hidden rounded-3xl shadow-[0_0_100px_rgba(0,0,0,0.8)]"
+          className="w-[800px] h-[1100px] bg-zinc-950 flex flex-col items-center justify-between p-12 relative overflow-hidden rounded-3xl"
           style={{ fontFamily: "'Inter', sans-serif" }}
         >
           {/* Background effects */}
