@@ -76,6 +76,7 @@ interface GamificationState {
 }
 
 interface EvaluationData {
+  id?: number;
   scores: EvaluationScores;
   feedback: EvaluationFeedback;
   roadmap: RoadmapWeek[];
@@ -794,7 +795,7 @@ export default function ResultsPage() {
           {/* Top Header */}
           <div className="relative z-10 flex flex-col items-center mt-4 w-full">
              <div className="flex items-center justify-between w-full px-8 mb-8">
-               <span className="text-zinc-400 font-mono text-sm tracking-widest border border-white/10 px-5 py-2 rounded-full bg-zinc-900/50 shadow-inner">ID: HM-{Math.floor(Math.random()*90000) + 10000}</span>
+               <span className="text-zinc-400 font-mono text-sm tracking-widest border border-white/10 px-5 py-2 rounded-full bg-zinc-900/50 shadow-inner">ID: HM-{data?.id ? String(data.id).padStart(5, '0') : String(Math.floor(Math.random()*90000) + 10000)}</span>
                <span className="text-emerald-400 font-mono text-sm tracking-widest border border-emerald-500/20 px-5 py-2 rounded-full bg-emerald-500/10 flex items-center gap-2 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" /> VERIFIED
                </span>
@@ -831,9 +832,9 @@ export default function ResultsPage() {
                    <span className="text-xl text-fuchsia-400 font-black uppercase tracking-[0.3em] mb-4">Rank Achieved</span>
                    <span className="text-[3.5rem] font-black text-white text-center leading-none">{gamification.rank_title}</span>
                    
-                   <div className="mt-8 flex gap-4">
-                     <span className="px-6 py-2.5 bg-white/5 border border-white/10 rounded-full text-zinc-300 font-bold tracking-widest text-sm">LEVEL {gamification.level}</span>
-                     <span className="px-6 py-2.5 bg-white/5 border border-white/10 rounded-full text-zinc-300 font-bold tracking-widest text-sm text-yellow-400 border-yellow-400/20 bg-yellow-400/5">
+                   <div className="mt-8 flex flex-row items-center justify-center gap-4">
+                     <span className="whitespace-nowrap flex items-center justify-center px-6 py-2.5 bg-white/5 border border-white/10 rounded-full text-zinc-300 font-bold tracking-widest text-sm">LEVEL {gamification.level}</span>
+                     <span className="whitespace-nowrap flex items-center justify-center px-6 py-2.5 bg-white/5 border border-white/10 rounded-full text-zinc-300 font-bold tracking-widest text-sm text-yellow-400 border-yellow-400/20 bg-yellow-400/5">
                        TOP {data.scores.overall >= 90 ? '1' : data.scores.overall >= 80 ? '5' : data.scores.overall >= 70 ? '10' : data.scores.overall >= 50 ? '25' : '50'}%
                      </span>
                    </div>
