@@ -814,22 +814,22 @@ export default function ResultsPage() {
                  {/* Outer dashed ring */}
                  <div className="absolute inset-0 rounded-full border-[2px] border-dashed border-white/10" />
                  {/* Inner glow ring */}
-                 <div className="absolute inset-5 rounded-full border-[8px] border-primary-500/60 bg-zinc-900/80 shadow-[0_0_120px_rgba(139,92,246,0.4)] backdrop-blur-xl" />
+                 <div className="absolute inset-5 rounded-full border-[8px] border-primary-500/60 bg-zinc-900 shadow-[0_0_80px_rgba(139,92,246,0.4)]" />
                  
                  <div className="relative flex flex-col items-center justify-center">
                    <span className="text-lg text-primary-400 font-black uppercase tracking-[0.3em] mb-2">Overall Score</span>
-                   <span className="text-[130px] font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-400 leading-none drop-shadow-[0_0_40px_rgba(139,92,246,0.6)] tracking-tighter">{data.scores.overall}</span>
+                   <span className="text-[130px] font-black text-white leading-none tracking-tighter">{data.scores.overall}</span>
                    <span className="text-xl text-zinc-500 mt-2 font-bold tracking-widest uppercase">/ 100 points</span>
                  </div>
                </div>
                
-               {/* Rank info in a glassmorphic pill */}
+               {/* Rank info in a solid pill */}
                {gamification && (
-                 <div className="flex flex-col items-center bg-zinc-900/40 border border-white/20 rounded-[2.5rem] p-10 w-full max-w-[85%] backdrop-blur-xl shadow-[0_30px_60px_rgba(0,0,0,0.4)] relative overflow-hidden">
+                 <div className="flex flex-col items-center bg-zinc-900 border border-white/20 rounded-[2.5rem] p-10 w-full max-w-[85%] shadow-2xl relative overflow-hidden">
                    <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-transparent via-fuchsia-500 to-transparent opacity-80" />
                    
-                   <span className="text-xl text-fuchsia-400 font-black uppercase tracking-[0.3em] mb-4 drop-shadow-[0_0_10px_rgba(217,70,239,0.3)]">Rank Achieved</span>
-                   <span className="text-[3.5rem] font-black text-white text-center leading-none drop-shadow-2xl">{gamification.rank_title}</span>
+                   <span className="text-xl text-fuchsia-400 font-black uppercase tracking-[0.3em] mb-4">Rank Achieved</span>
+                   <span className="text-[3.5rem] font-black text-white text-center leading-none">{gamification.rank_title}</span>
                    
                    <div className="mt-8 flex gap-4">
                      <span className="px-6 py-2.5 bg-white/5 border border-white/10 rounded-full text-zinc-300 font-bold tracking-widest text-sm">LEVEL {gamification.level}</span>
@@ -846,7 +846,7 @@ export default function ResultsPage() {
           <div className="relative z-10 mt-auto pt-6 flex flex-col items-center w-full">
              <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8" />
              <p className="text-lg text-zinc-500 font-bold tracking-[0.4em] mb-3 uppercase">Validate credentials at</p>
-             <p className="text-3xl text-white font-black tracking-widest drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">hiremind-ai.vercel.app</p>
+             <p className="text-3xl text-white font-black tracking-widest">hiremind-ai.vercel.app</p>
           </div>
         </div>
       </div>
