@@ -353,7 +353,7 @@ async def evaluate_endpoint(request: EvaluationRequest):
         if user_id:
             try:
                 # Always save the evaluation record (even for short sessions)
-                save_evaluation(
+                eval_id = save_evaluation(
                     user_id=int(user_id),
                     username=username,
                     mode=request.context.get("interview_mode", "General"),
@@ -365,6 +365,7 @@ async def evaluate_endpoint(request: EvaluationRequest):
                     transcript=request.chat_history,
                     evaluation_data=evaluation_data
                 )
+                evaluation_data["id"] = eval_id
                 # Extract roadmap tasks
                 roadmap_tasks = []
                 for week in evaluation_data.get("roadmap", []):
@@ -372,7 +373,7 @@ async def evaluate_endpoint(request: EvaluationRequest):
                         roadmap_tasks.append(f"{week.get('topic', 'Study')}: {action}")
                 
                 # Save roadmap tasks
-                create_roadmap_tasks(user_id=int(user_id), eval_id=0, tasks=roadmap_tasks)
+                create_roadmap_tasks(user_id=int(user_id), eval_id=eval_id, tasks=roadmap_tasks)
                 print(f"[*] Evaluation and Roadmap tasks logged for user_id={user_id} (user_turns={user_turns})")
                 
                 # Update User Resume ATS feedback if a resume was used
