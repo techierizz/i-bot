@@ -779,12 +779,12 @@ export default function ResultsPage() {
         >
           {/* Background effects */}
           <div className="absolute inset-0 bg-zinc-950" />
-          <div className="absolute top-[-30%] left-[-20%] w-[150%] h-[150%] bg-[radial-gradient(ellipse_at_top_right,rgba(139,92,246,0.3)_0%,transparent_50%)]" />
-          <div className="absolute bottom-[-30%] left-[-20%] w-[150%] h-[150%] bg-[radial-gradient(ellipse_at_bottom_left,rgba(59,130,246,0.25)_0%,transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(139,92,246,0.2)_0%,transparent_60%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(59,130,246,0.15)_0%,transparent_60%)]" />
           
           {/* Techy Grid Overlay */}
-          <div className="absolute inset-0 opacity-40" style={{ backgroundImage: 'radial-gradient(rgba(255,255,255,0.15) 2px, transparent 2px)', backgroundSize: '40px 40px' }} />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-zinc-950/80 to-zinc-950/95" />
+          <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(rgba(255,255,255,0.3) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-zinc-950/60 to-zinc-950/90" />
           
           {/* Decorative Corner Brackets */}
           <div className="absolute top-8 left-8 w-16 h-16 border-t-[3px] border-l-[3px] border-white/20 rounded-tl-2xl" />
