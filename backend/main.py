@@ -733,7 +733,7 @@ async def verify_public_profile(uid_string: str):
             
         conn = get_db_connection()
         cursor = conn.cursor(cursor_factory=RealDictCursor)
-        cursor.execute("SELECT id, username, created_at FROM users WHERE id = %s", (user_id,))
+        cursor.execute("SELECT id, username FROM users WHERE id = %s", (user_id,))
         user = cursor.fetchone()
         conn.close()
         
@@ -747,8 +747,7 @@ async def verify_public_profile(uid_string: str):
             "status": "success",
             "data": {
                 "user": {
-                    "username": user["username"],
-                    "created_at": user["created_at"].isoformat() if user["created_at"] else None
+                    "username": user["username"]
                 },
                 "gamification": g_state,
                 "stats": stats
