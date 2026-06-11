@@ -1105,7 +1105,8 @@ const HolographicICard = ({ user, gData, stats, bestInterview, validationData, o
                 {/* Real Scannable QR Code */}
                 {(() => {
                   const uidString = `UID-${(user?.id || 1000).toString().padStart(4, '0')}-HM-${(gData?.level || 1).toString().padStart(2, '0')}`;
-                  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(uidString)}`;
+                  const qrText = `HIREMIND VERIFIED PROFILE\n------------------------\nID: ${uidString}\nRank: ${gData?.current_rank || "Recruit"}\nLevel: ${gData?.level || 1}\nTotal XP: ${gData?.total_xp || 0}\nInterviews: ${stats?.total_interviews || 0}\nBest Score: ${bestInterview?.overall || stats?.highest_score || 0}/100\nBadges Earned: ${gData?.badges?.length || 0}`;
+                  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrText)}`;
                   return (
                     <div className="flex items-center justify-between mt-4 mb-2 w-full px-6">
                       <div className="flex flex-col items-start justify-center">
