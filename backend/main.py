@@ -716,3 +716,43 @@ def start_scheduler():
     scheduler.add_job(trigger_reminders, 'interval', hours=24)
     scheduler.start()
     print("Background email scheduler started.")
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PUBLIC VERIFICATION HUB ENDPOINTS
+# ─────────────────────────────────────────────────────────────────────────────
+@app.get("/api/verify/{uid_string}")
+async def verify_public_profile(uid_string: str):
+    from database import get_db_connection, get_user_gamification, get_user_stats
+    from psycopg2.extras import RealDictCursor
+    try:
+        parts = uid_string.split("-")
+        if len(parts) >= 2 and parts[0] == "UID":
+            user_id = int(parts[1])
+        else:
+            raise HTTPException(status_code=400, detail="Invalid UID format")
+            
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor.execute("SELECT id, username, created_at FROM users WHERE id = %s", (user_id,))
+        user = cursor.fetchone()
+        conn.close()
+        
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+            
+        g_state = get_user_gamification(user_id)
+        stats = get_user_stats(user_id)
+        
+        return {
+            "status": "success",
+            "data": {
+                "user": {
+                    "username": user["username"],
+                    "created_at": user["created_at"].isoformat() if user["created_at"] else None
+                },
+                "gamification": g_state,
+                "stats": stats
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
