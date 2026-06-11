@@ -66,21 +66,21 @@ export default function VerifyProfilePage() {
       <div className="w-full max-w-md relative z-10">
         
         {/* Verification Badge */}
-        <div className="flex flex-col items-center mb-8">
-          <div className="relative mb-4">
+        <div className="flex flex-col items-center mb-5">
+          <div className="relative mb-3">
             <div className="absolute inset-0 bg-emerald-500 blur-xl opacity-20 rounded-full" />
-            <div className="w-16 h-16 bg-emerald-500/10 border border-emerald-500/30 rounded-full flex items-center justify-center relative">
-              <ShieldCheck className="w-8 h-8 text-emerald-400" />
+            <div className="w-14 h-14 bg-emerald-500/10 border border-emerald-500/30 rounded-full flex items-center justify-center relative">
+              <ShieldCheck className="w-7 h-7 text-emerald-400" />
             </div>
           </div>
-          <h1 className="text-2xl font-black text-white tracking-tight">Verified Profile</h1>
-          <p className="text-emerald-400 font-mono text-sm tracking-widest mt-1 uppercase">Authenticity Confirmed</p>
+          <h1 className="text-xl font-black text-white tracking-tight">Verified Profile</h1>
+          <p className="text-emerald-400 font-mono text-[10px] tracking-widest mt-0.5 uppercase">Authenticity Confirmed</p>
         </div>
 
         {/* Profile Card */}
         <div className="bg-zinc-900/50 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
-          <div className="p-8 flex flex-col items-center text-center border-b border-white/5">
-            <div className="w-32 h-32 relative mb-6">
+          <div className="p-6 flex flex-col items-center text-center border-b border-white/5">
+            <div className="w-24 h-24 relative mb-4">
               <div className="absolute inset-0 bg-cyan-400/20 blur-xl rounded-full mix-blend-screen" />
               <img 
                 src={avatarUrl} 
@@ -121,8 +121,11 @@ export default function VerifyProfilePage() {
           </div>
         </div>
 
-        <div className="mt-8 text-center">
-          <p className="text-xs text-zinc-600 font-mono mb-4">ID: {uidString}</p>
+        <div className="mt-6 text-center">
+          <div className="inline-block px-4 py-1.5 bg-cyan-950/40 border border-cyan-500/40 rounded-full shadow-[0_0_15px_rgba(34,211,238,0.15)] mb-4">
+            <p className="text-xs text-cyan-400 font-black font-mono tracking-widest uppercase">ID: {uidString}</p>
+          </div>
+          <br/>
           <Link href="/" className="text-zinc-400 hover:text-white transition-colors text-sm font-medium">
             Create your own HireMind Profile
           </Link>
