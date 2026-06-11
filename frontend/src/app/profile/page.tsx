@@ -1046,8 +1046,10 @@ const HolographicICard = ({ user, gData, stats, bestInterview, validationData, o
                   {/* Profile / Rank Art */}
                   {(() => {
                     const seed = encodeURIComponent(generateUniqueName());
-                    // DiceBear generates deterministic, infinitely variable SVGs based on the seed
-                    const avatarUrl = `https://api.dicebear.com/9.x/bottts/svg?seed=${seed}&backgroundColor=transparent`;
+                    // Calculate a deterministic hue-rotation based on the unique name
+                    const hueRotate = Array.from(seed).reduce((acc, char) => acc + char.charCodeAt(0), 0) % 360;
+                    
+                    const avatarUrl = `https://robohash.org/${seed}.png?set=set1&size=400x400`;
 
                     return (
                       <div className="relative z-10 w-full h-full scale-[1.25] -translate-y-2 hover:scale-[1.30] transition-transform duration-500 flex items-center justify-center">
@@ -1055,8 +1057,8 @@ const HolographicICard = ({ user, gData, stats, bestInterview, validationData, o
                         <div className="absolute inset-0 bg-fuchsia-500/20 blur-[20px] rounded-full mix-blend-screen scale-75" />
                         <div className="absolute inset-0 bg-cyan-400/20 blur-[15px] rounded-full mix-blend-screen scale-50" />
 
-                        {/* The highly-detailed DiceBear robot with ambient shadows */}
-                        <div className="relative w-full h-full" style={{ filter: "drop-shadow(0 20px 25px rgba(0,0,0,0.9)) drop-shadow(0 0 15px rgba(192,132,252,0.4)) saturate(1.15) contrast(1.1)" }}>
+                        {/* The highly-detailed 3D Robohash robot with infinite color variation */}
+                        <div className="relative w-full h-full" style={{ filter: `drop-shadow(0 20px 25px rgba(0,0,0,0.9)) drop-shadow(0 0 15px rgba(192,132,252,0.4)) saturate(1.5) contrast(1.1) hue-rotate(${hueRotate}deg)` }}>
                           <img src={avatarUrl} alt="Unique AI Avatar" crossOrigin="anonymous" className="absolute inset-0 w-full h-full object-contain drop-shadow-2xl" />
                         </div>
                       </div>
