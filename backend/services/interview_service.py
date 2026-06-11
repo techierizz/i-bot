@@ -598,3 +598,70 @@ def evaluate_interview(context: dict, chat_history: list) -> dict:
             }
             
         return mock_data
+
+def optimize_resume_ats(raw_resume_text: str, target_role: str = "Software Engineer") -> dict:
+    """
+    Standalone ATS Resume Optimizer function that takes raw resume text and provides ATS suggestions.
+    """
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key or api_key == "YOUR_API_KEY_HERE":
+        return {
+            "ats_score_impact": 15,
+            "line_modifications": [
+                {
+                    "exact_line": "Responsible for maintaining the main React application and improving load times.",
+                    "modification_reason": "Shows direct technical action and quantifies the exact performance impact achieved.",
+                    "suggested_change": "Refactored main React application using dynamic imports and code-splitting, reducing initial bundle size by 35% and improving PageSpeed score from 68 to 92."
+                }
+            ],
+            "top_tips": [
+                "Your resume uses a complex two-column design that ATS parsers often scramble. Switch to a single-column format."
+            ]
+        }
+    
+    settings = get_system_settings()
+    prompt_temp = float(settings.get("prompt_temp", 0.7))
+    
+    system_prompt = f"""
+    You are an expert ATS Resume Optimizer.
+    
+    Raw Resume Text:
+    {raw_resume_text}
+    
+    Target Role: {target_role}
+
+    INSTRUCTIONS:
+    Provide ATS Resume Optimizer recommendations based STRICTLY on the Raw Resume Text above:
+    - Scan all the lines in the raw resume.
+    - Provide ats_score_impact: An integer between 20 and 85 representing the projected POSITIVE percentage score boost (do NOT use negative numbers).
+    - Provide line_modifications: find 3-5 exact sentences/lines from the resume that are poorly written or not ATS-friendly, and provide a suggested change along with a modification reason. The exact_line MUST be an exact match to a sentence in the raw text.
+    - Provide top_tips: Provide exactly 5 highly critical ATS formatting/content tips tailored to this resume. Do NOT use markdown bolding (**), asterisks, or bullet points in the strings. Provide plain text only.
+    
+    Return your output strictly in the following JSON format:
+    {{
+      "ats_score_impact": number,
+      "line_modifications": [
+        {{ "exact_line": "string", "modification_reason": "string", "suggested_change": "string" }}
+      ],
+      "top_tips": ["string", "string", "string", "string", "string"]
+    }}
+    """
+    
+    try:
+        client = genai.Client(api_key=api_key)
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=system_prompt,
+            config=genai.types.GenerateContentConfig(
+                temperature=prompt_temp,
+                response_mime_type="application/json"
+            )
+        )
+        return json.loads(response.text)
+    except Exception as e:
+        print(f"Error executing standalone ATS optimizer: {e}")
+        return {
+            "ats_score_impact": 0,
+            "line_modifications": [],
+            "top_tips": [f"Error connecting to AI for ATS Optimization: {str(e)}"]
+        }
