@@ -45,8 +45,7 @@ export default function UserBox({ forceShow = false, className }: { forceShow?: 
   };
 
   if (!user) return null;
-  // Hide on certain pages if not forced.
-  if (!forceShow && (pathname === "/" || pathname === "/interview" || pathname === "/results" || pathname === "/profile" || pathname === "/validation" || pathname === "/resume" || pathname === "/action-plan" || pathname.startsWith("/verify"))) {
+  if (!forceShow && (pathname === "/" || pathname === "/interview" || pathname === "/results" || pathname === "/profile" || pathname === "/validation" || pathname === "/resume" || pathname === "/action-plan" || pathname.startsWith("/verify") || pathname.startsWith("/learning") || pathname === "/credentials" || pathname.startsWith("/admin") || pathname.startsWith("/mentor"))) {
     return null;
   }
 
