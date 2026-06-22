@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, MouseEvent } from "react";
 import { motion, AnimatePresence, useScroll, useTransform, useMotionTemplate, useMotionValue, useSpring } from "framer-motion";
-import { Mic, LineChart, FileText, ArrowRight, LogOut, Shield, User, PlayCircle, CheckCircle2, ChevronDown, Sparkles, Activity, X, Bell } from "lucide-react";
+import { Mic, LineChart, FileText, ArrowRight, LogOut, Shield, User, PlayCircle, CheckCircle2, ChevronDown, Sparkles, Activity, X, Bell, BookOpen } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { API_BASE_URL } from "./config";
@@ -14,7 +14,7 @@ const AnimatedBackground = () => {
     <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none bg-zinc-950">
       {/* Base Grid */}
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
-      
+
       {/* Animated Orbs */}
       <motion.div
         animate={{
@@ -48,7 +48,7 @@ const TiltCard = ({ children, className }: { children: React.ReactNode; classNam
   const y = useMotionValue(0);
   const mouseXSpring = useSpring(x);
   const mouseYSpring = useSpring(y);
-  
+
   const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["10deg", "-10deg"]);
   const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-10deg", "10deg"]);
 
@@ -111,10 +111,10 @@ export default function Home() {
   const [pendingTasksCount, setPendingTasksCount] = useState(0);
   const [totalTasksCount, setTotalTasksCount] = useState(0);
   const [showBellModal, setShowBellModal] = useState(false);
-  
+
   const { scrollY, scrollYProgress } = useScroll();
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
-  
+
   const headerBg = useTransform(scrollY, [0, 50], ["rgba(9, 9, 11, 0)", "rgba(9, 9, 11, 0.8)"]);
   const headerBorder = useTransform(scrollY, [0, 50], ["rgba(255, 255, 255, 0)", "rgba(255, 255, 255, 0.05)"]);
   const headerPy = useTransform(scrollY, [0, 50], ["24px", "16px"]);
@@ -126,7 +126,7 @@ export default function Home() {
     if (candidateSession) {
       const parsed = JSON.parse(candidateSession);
       setCandidateUser(parsed);
-      
+
       // Fetch roadmap tasks
       fetch(`${API_BASE_URL}/api/roadmap/${parsed.id}`)
         .then(r => r.json())
@@ -157,11 +157,11 @@ export default function Home() {
       <AnimatedBackground />
 
       {/* Top Header Navigation */}
-      <motion.header 
-        style={{ 
-          backgroundColor: headerBg, 
-          borderBottomColor: headerBorder, 
-          paddingTop: headerPy, 
+      <motion.header
+        style={{
+          backgroundColor: headerBg,
+          borderBottomColor: headerBorder,
+          paddingTop: headerPy,
           paddingBottom: headerPy,
           backdropFilter: headerBackdrop,
           WebkitBackdropFilter: headerBackdrop
@@ -181,6 +181,11 @@ export default function Home() {
           <nav className="flex items-center gap-2 sm:gap-4">
             {adminUser ? (
               <>
+                                <Link href="/learning">
+                  <button className="px-3 sm:px-4 py-2 bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/30 text-violet-400 rounded-xl text-[10px] sm:text-sm font-bold uppercase tracking-wider flex items-center gap-1.5 sm:gap-2 transition-all hover:scale-105 active:scale-95 whitespace-nowrap">
+                    <BookOpen className="w-3 h-3 sm:w-4 sm:h-4" /> Learning Hub
+                  </button>
+                </Link>
                 <Link href="/admin/dashboard">
                   <button className="px-3 sm:px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 rounded-xl text-[10px] sm:text-sm font-bold uppercase tracking-wider flex items-center gap-1.5 sm:gap-2 transition-all hover:scale-105 active:scale-95 whitespace-nowrap">
                     <Shield className="w-3 h-3 sm:w-4 sm:h-4" /> Admin
@@ -192,26 +197,33 @@ export default function Home() {
               </>
             ) : candidateUser ? (
               <div className="flex items-center gap-2 sm:gap-4">
-                {hasCompletedInterview && (
+                {hasCompletedInterview && candidateUser.role !== "mentor" && (
                   <Link href="/resume">
                     <button className="text-xs sm:text-sm font-bold text-zinc-300 flex items-center gap-1.5 sm:gap-2 bg-zinc-900/50 glass px-2 sm:px-3 py-1.5 rounded-lg border border-white/5 hover:border-emerald-500/30 hover:bg-zinc-800/80 transition-all hover:scale-105 active:scale-95 cursor-pointer whitespace-nowrap">
                       <FileText className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-400" /> <span className="hidden sm:inline">Resume Hub</span>
                     </button>
                   </Link>
                 )}
-                
-                <button 
-                  onClick={() => setShowBellModal(true)}
-                  className="group relative p-2 bg-zinc-900/80 backdrop-blur-md border border-amber-500/30 hover:border-amber-400 rounded-lg text-amber-500 hover:text-amber-400 transition-all cursor-pointer shadow-[0_0_15px_rgba(245,158,11,0.2)]"
-                  title="Notifications"
-                >
-                  <Bell className="w-4 h-4 sm:w-5 sm:h-5 group-hover:animate-[temple-bell_1.5s_ease-in-out_infinite]" />
-                  {pendingTasksCount > 0 && (
-                    <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full" />
-                  )}
-                </button>
-                
-                <Link href="/profile">
+
+                {candidateUser.role !== "mentor" && (
+                  <button
+                    onClick={() => setShowBellModal(true)}
+                    className="group relative p-2 bg-zinc-900/80 backdrop-blur-md border border-amber-500/30 hover:border-amber-400 rounded-lg text-amber-500 hover:text-amber-400 transition-all cursor-pointer shadow-[0_0_15px_rgba(245,158,11,0.2)]"
+                    title="Notifications"
+                  >
+                    <Bell className="w-4 h-4 sm:w-5 sm:h-5 group-hover:animate-[temple-bell_1.5s_ease-in-out_infinite]" />
+                    {pendingTasksCount > 0 && (
+                      <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full" />
+                    )}
+                  </button>
+                )}
+
+                                <Link href="/learning">
+                  <button className="text-xs sm:text-sm font-bold text-zinc-300 flex items-center gap-1.5 sm:gap-2 bg-zinc-900/50 glass px-2 sm:px-3 py-1.5 rounded-lg border border-white/5 hover:border-violet-500/30 hover:bg-zinc-800/80 transition-all hover:scale-105 active:scale-95 cursor-pointer whitespace-nowrap">
+                    <BookOpen className="w-3 h-3 sm:w-4 sm:h-4 text-violet-400" /> <span className="hidden sm:inline">Learning Hub</span>
+                  </button>
+                </Link>
+                <Link href={candidateUser.role === "mentor" ? "/mentor/profile" : "/profile"}>
                   <button className="text-xs sm:text-sm font-bold text-zinc-300 flex items-center gap-1.5 sm:gap-2 bg-zinc-900/50 glass px-2 sm:px-3 py-1.5 rounded-lg border border-white/5 hover:border-primary-500/30 hover:bg-zinc-800/80 transition-all hover:scale-105 active:scale-95 cursor-pointer whitespace-nowrap">
                     <User className="w-3 h-3 sm:w-4 sm:h-4 text-primary-400" /> {candidateUser.username}
                   </button>
@@ -241,7 +253,7 @@ export default function Home() {
         {/* Section 1: Hero */}
         <section className="min-h-[90vh] flex flex-col items-center justify-center p-6 md:p-12 relative">
           <motion.div style={{ y }} className="text-center space-y-8 max-w-5xl mx-auto flex flex-col items-center">
-            
+
             <motion.div
               initial={{ scale: 0.8, opacity: 0, y: -20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -252,11 +264,11 @@ export default function Home() {
               The Future of Interview Prep
             </motion.div>
 
-            <WordReveal 
-              text="Don't just practice." 
-              className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[1.1]" 
+            <WordReveal
+              text="Don't just practice."
+              className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[1.1]"
             />
-            
+
             <motion.div
               initial={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
               animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
@@ -279,7 +291,7 @@ export default function Home() {
             >
               Step into a hyper-realistic, voice-driven AI interview. Get grilled like a real candidate, and get hired like a pro.
             </motion.p>
-            
+
 
           </motion.div>
 
@@ -396,7 +408,7 @@ export default function Home() {
                 >
                   <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/10 via-transparent to-transparent opacity-50" />
                   <div className="relative w-full h-full rounded-3xl overflow-hidden">
-                     <Image src="/context-aware.png" alt="Context Aware Analysis" fill className="object-cover transform group-hover:scale-105 transition-transform duration-700" />
+                    <Image src="/context-aware.png" alt="Context Aware Analysis" fill className="object-cover transform group-hover:scale-105 transition-transform duration-700" />
                   </div>
                 </motion.div>
               </div>
@@ -433,7 +445,7 @@ export default function Home() {
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-transparent opacity-50" />
                   <div className="relative w-full h-full rounded-3xl overflow-hidden">
-                     <Image src="/voice-driven.png" alt="Voice Driven Interview" fill className="object-cover transform group-hover:scale-105 transition-transform duration-700" />
+                    <Image src="/voice-driven.png" alt="Voice Driven Interview" fill className="object-cover transform group-hover:scale-105 transition-transform duration-700" />
                   </div>
                 </motion.div>
               </div>
@@ -469,7 +481,7 @@ export default function Home() {
                 >
                   <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/10 via-transparent to-transparent opacity-50" />
                   <div className="relative w-full h-full rounded-3xl overflow-hidden">
-                     <Image src="/actionable-feedback.png" alt="Actionable Feedback" fill className="object-cover transform group-hover:scale-105 transition-transform duration-700" />
+                    <Image src="/actionable-feedback.png" alt="Actionable Feedback" fill className="object-cover transform group-hover:scale-105 transition-transform duration-700" />
                   </div>
                 </motion.div>
               </div>
@@ -480,21 +492,21 @@ export default function Home() {
         {/* Final CTA */}
         <section className="py-40 px-6 relative border-t border-white/5 overflow-hidden flex items-center justify-center">
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-primary-900/30 pointer-events-none" />
-          
+
           {/* Particles */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-             {[...Array(20)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  animate={{
-                     y: [Math.random() * 500, Math.random() * -500],
-                     opacity: [0, 0.5, 0],
-                  }}
-                  transition={{ duration: 5 + Math.random() * 5, repeat: Infinity, delay: Math.random() * 5 }}
-                  className="absolute bg-white rounded-full w-1 h-1 blur-[1px]"
-                  style={{ left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%` }}
-                />
-             ))}
+            {[...Array(20)].map((_, i) => (
+              <motion.div
+                key={i}
+                animate={{
+                  y: [Math.random() * 500, Math.random() * -500],
+                  opacity: [0, 0.5, 0],
+                }}
+                transition={{ duration: 5 + Math.random() * 5, repeat: Infinity, delay: Math.random() * 5 }}
+                className="absolute bg-white rounded-full w-1 h-1 blur-[1px]"
+                style={{ left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%` }}
+              />
+            ))}
           </div>
 
           <motion.div
@@ -504,13 +516,19 @@ export default function Home() {
             transition={{ duration: 0.8 }}
             className="max-w-4xl mx-auto text-center space-y-10 relative z-10 glass-card p-12 md:p-20 rounded-[3rem] border border-white/10 shadow-[0_0_100px_rgba(139,92,246,0.15)]"
           >
-            <h2 className="text-5xl md:text-7xl font-black">Ready to land the offer?</h2>
-            <p className="text-xl md:text-2xl text-zinc-300 font-medium">Join thousands of engineers who mastered their interviews with HireMind AI.</p>
+            <h2 className="text-5xl md:text-7xl font-black">
+              {candidateUser?.role === "mentor" ? "Ready to shape the future?" : "Ready to land the offer?"}
+            </h2>
+            <p className="text-xl md:text-2xl text-zinc-300 font-medium">
+              {candidateUser?.role === "mentor" 
+                ? "Join our elite network of mentors guiding the next generation of engineers." 
+                : "Join thousands of engineers who mastered their interviews with HireMind AI."}
+            </p>
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-6">
-              <Link href="/setup" className="w-full sm:w-auto group">
+              <Link href={candidateUser?.role === "mentor" ? "/learning" : "/setup"} className="w-full sm:w-auto group">
                 <button className="w-full sm:w-auto px-12 py-6 bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-500 hover:to-secondary-500 rounded-2xl font-black text-white text-xl shadow-[0_0_40px_rgba(139,92,246,0.5)] transition-all hover:shadow-[0_0_80px_rgba(139,92,246,0.8)] hover:scale-105 active:scale-95 flex items-center justify-center gap-3 relative overflow-hidden">
                   <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] skew-x-12" />
-                  Start Your Free Interview <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform relative z-10" />
+                  {candidateUser?.role === "mentor" ? "Start Your Journey" : "Start Your Free Interview"} <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform relative z-10" />
                 </button>
               </Link>
               <button onClick={() => setShowDemoModal(true)} className="w-full sm:w-auto px-12 py-6 bg-zinc-900/80 border border-white/10 hover:bg-zinc-800 rounded-2xl font-bold text-xl transition-all flex items-center justify-center gap-3 backdrop-blur-md hover:scale-105 active:scale-95 hover:border-white/20 group">
@@ -526,33 +544,33 @@ export default function Home() {
       <AnimatePresence>
         {showDemoModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowDemoModal(false)}
               className="absolute inset-0 bg-black/95 backdrop-blur-3xl"
             />
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               className="relative w-full max-w-6xl aspect-video bg-zinc-950 border border-white/10 rounded-[2rem] shadow-[0_0_150px_rgba(139,92,246,0.15)] overflow-hidden z-10 flex items-center justify-center group"
             >
-              <button 
+              <button
                 onClick={() => setShowDemoModal(false)}
                 className="absolute top-6 right-6 w-12 h-12 rounded-full bg-zinc-900/80 border border-white/10 backdrop-blur-md flex items-center justify-center hover:bg-white/10 transition-colors z-20 text-zinc-400 hover:text-white hover:scale-110 active:scale-95"
               >
                 <X className="w-6 h-6" />
               </button>
-              
+
               <div className="absolute inset-0 bg-black flex flex-col items-center justify-center">
-                <video 
+                <video
                   className="w-full h-full object-contain"
                   controls
                   autoPlay
                   playsInline
-                  src="/demo.mp4"
+                  src={candidateUser?.role === "mentor" ? "/mentor_demo.mp4" : "/demo.mp4"}
                 >
                   Your browser does not support the video tag.
                 </video>
@@ -576,19 +594,19 @@ export default function Home() {
       {/* Bell Notification Modal */}
       <AnimatePresence>
         {showBellModal && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
           >
-            <motion.div 
+            <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               className="relative w-full max-w-sm bg-zinc-900 border border-amber-500/30 rounded-2xl p-6 shadow-2xl flex flex-col items-center text-center"
             >
-              <button 
+              <button
                 onClick={() => setShowBellModal(false)}
                 className="absolute top-3 right-3 text-zinc-400 hover:text-white transition-colors"
               >
@@ -599,10 +617,10 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-bold text-white mb-2">Action Plan</h3>
               <p className="text-zinc-300 font-medium">
-                {totalTasksCount === 0 
-                  ? "You are all caught up!!" 
-                  : pendingTasksCount > 0 
-                    ? "You have pending tasks in your action plan." 
+                {totalTasksCount === 0
+                  ? "You are all caught up!!"
+                  : pendingTasksCount > 0
+                    ? "You have pending tasks in your action plan."
                     : "You have completed your all tasks of your action plan."}
               </p>
               {pendingTasksCount > 0 ? (
