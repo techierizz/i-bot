@@ -18,7 +18,7 @@ export default function AdminLoginPage() {
     // If admin is already logged in, redirect immediately
     const existing = localStorage.getItem("hiremind_admin");
     if (existing) {
-      router.push("/admin/dashboard");
+      router.push("/");
     }
   }, [router]);
 
@@ -48,7 +48,7 @@ export default function AdminLoginPage() {
 
       // Save admin session state
       localStorage.setItem("hiremind_admin", JSON.stringify(resData.user));
-      router.push("/admin/dashboard");
+      router.push("/");
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred.");
     } finally {
