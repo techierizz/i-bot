@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { BrainCircuit, Lock, User, Mail, ArrowRight, AlertCircle, Sparkles } from "lucide-react";
+import { BrainCircuit, Lock, User, Mail, ArrowRight, AlertCircle, Sparkles, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { API_BASE_URL } from "../config";
 
@@ -21,6 +21,10 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const [role, setRole] = useState("candidate");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
 
   useEffect(() => {
     const urlMode = searchParams.get("mode");
@@ -128,8 +132,8 @@ export default function LoginPage() {
     try {
       const endpoint = mode === "login" ? "/api/auth/login" : "/api/auth/register";
       const payload = mode === "login"
-        ? { username, password }
-        : { username, email, password };
+        ? { username, password, role }
+        : { username, email, password, role };
 
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: "POST",
@@ -216,6 +220,52 @@ export default function LoginPage() {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
+
+            {/* Role */}
+            {(mode === "login" || mode === "register") && (
+              <div className="relative z-50">
+                <label className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider block mb-1.5">Account Role</label>
+                <div 
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="w-full bg-zinc-950/80 border border-white/5 rounded-xl px-3 py-3 text-xs text-white focus:outline-none focus:border-primary-500 transition-colors cursor-pointer flex justify-between items-center"
+                >
+                  <span>{role === 'candidate' ? 'Student / Candidate' : 'Industry Mentor'}</span>
+                  <ChevronDown className={`w-4 h-4 text-zinc-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                </div>
+                
+                <AnimatePresence>
+                  {isDropdownOpen && (
+                    <>
+                      <div 
+                        className="fixed inset-0 z-40" 
+                        onClick={() => setIsDropdownOpen(false)}
+                      />
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute top-[100%] mt-2 left-0 right-0 bg-zinc-900 border border-white/10 rounded-xl overflow-hidden z-50 shadow-[0_0_20px_rgba(0,0,0,0.5)]"
+                      >
+                        <div 
+                          onClick={() => { setRole('candidate'); setIsDropdownOpen(false); }}
+                          className={`px-3 py-3 text-xs cursor-pointer hover:bg-zinc-800 transition-colors ${role === 'candidate' ? 'text-primary-400 bg-zinc-800/50' : 'text-zinc-300'}`}
+                        >
+                          Student / Candidate
+                        </div>
+                        <div 
+                          onClick={() => { setRole('mentor'); setIsDropdownOpen(false); }}
+                          className={`px-3 py-3 text-xs cursor-pointer hover:bg-zinc-800 transition-colors border-t border-white/5 ${role === 'mentor' ? 'text-primary-400 bg-zinc-800/50' : 'text-zinc-300'}`}
+                        >
+                          Industry Mentor
+                        </div>
+                      </motion.div>
+                    </>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
+
 
             {/* Username */}
             {(mode === "login" || mode === "register") && (
