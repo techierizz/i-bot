@@ -873,7 +873,9 @@ class ExamCreateRequest(BaseModel):
     lesson_id: int
     exam_type: str  # "ai_generated" or "custom"
     title: Optional[str] = None
-    description: Optional[str] = None
+    instructions: Optional[str] = None
+    assignment_type: Optional[str] = "code_completion"
+    github_repo_url: Optional[str] = ""
     difficulty: Optional[str] = "Intermediate"
     language: Optional[str] = "python"
     boilerplate_code: Optional[str] = ""
@@ -919,6 +921,8 @@ class QuizSubmitRequest(BaseModel):
     warnings: Optional[int] = 0
     lesson_id: Optional[int] = None
     is_final: Optional[bool] = False
+    submission_type: Optional[str] = "code_completion"
+    pr_link: Optional[str] = None
     # Multi-question support
     student_codes: Optional[List[str]] = None        # one code string per question
     questions: Optional[List[Dict[str, Any]]] = None # question objects (title, description, test_cases, boilerplate_code)
@@ -1274,7 +1278,7 @@ def submit_quiz_route(req: QuizSubmitRequest):
                 exam_type = "final"
                 is_exam = True
         elif req.lesson_id is not None:
-            cursor.execute("SELECT id, status FROM course_exams WHERE course_id = %s AND lesson_id = %s", (req.course_id, req.lesson_id))
+            cursor.execute("SELECT id, status FROM course_assignments WHERE course_id = %s AND lesson_id = %s", (req.course_id, req.lesson_id))
             exam_row = cursor.fetchone()
             if exam_row:
                 exam_id = exam_row["id"]
@@ -1304,9 +1308,19 @@ def submit_quiz_route(req: QuizSubmitRequest):
             }
             score = 0
         else:
-            from services.learning_service import evaluate_ai_coding_challenge
+            if getattr(req, 'submission_type', '') in ["github_pr", "system_design"]:
+                eval_result = {
+                    "score": 0,
+                    "passed": False,
+                    "feedback": "Pending Manual Review by Mentor",
+                    "test_cases_run": []
+                }
+                score = 0
+            else:
+                from services.learning_service import evaluate_ai_coding_challenge
 
-            is_multi = (
+                is_multi = (
+
                 req.questions
                 and isinstance(req.questions, list)
                 and len(req.questions) > 0
@@ -1550,7 +1564,7 @@ def api_delete_course(course_id: int, req: DeletionRequest):
         SELECT COUNT(*) as count FROM exam_attempts
         WHERE status = 'in_progress'
           AND (
-            (exam_type = 'lesson' AND exam_id IN (SELECT id FROM course_exams WHERE course_id = %s))
+            (exam_type = 'lesson' AND exam_id IN (SELECT id FROM course_assignments WHERE course_id = %s))
             OR
             (exam_type = 'final' AND exam_id IN (SELECT id FROM course_final_exams WHERE course_id = %s))
           )
@@ -1891,7 +1905,7 @@ def add_or_generate_exam(req: ExamCreateRequest):
                 course_id=req.course_id,
                 lesson_id=req.lesson_id,
                 title=exam_data["title"],
-                description=description_to_store,
+                instructions=description_to_store,
                 difficulty=exam_data["difficulty"],
                 language=exam_data["language"],
                 boilerplate_code=boilerplate_to_store,
@@ -1904,7 +1918,7 @@ def add_or_generate_exam(req: ExamCreateRequest):
                 course_id=req.course_id,
                 lesson_id=req.lesson_id,
                 title=req.title,
-                description=req.description,
+                instructions=req.instructions, assignment_type=req.assignment_type, github_repo_url=req.github_repo_url,
                 difficulty=req.difficulty or "Intermediate",
                 language=req.language or "python",
                 boilerplate_code=req.boilerplate_code or "",
@@ -1954,7 +1968,7 @@ def fetch_lesson_exam(course_id: int, lesson_id: int, user_id: Optional[int] = N
     return exam
 
 @app.get("/api/learning/courses/{course_id}/exams")
-def fetch_course_exams(course_id: int, user_id: Optional[int] = None):
+def fetch_course_assignments(course_id: int, user_id: Optional[int] = None):
     if user_id is None:
         raise AssignedCourseException("You are not assigned to this course.")
     check_user_course_access(user_id, course_id)
@@ -1962,7 +1976,7 @@ def fetch_course_exams(course_id: int, user_id: Optional[int] = None):
     conn = get_db_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
     cursor.execute(
-        "SELECT id, lesson_id, title, difficulty, language FROM course_exams WHERE course_id = %s",
+        "SELECT id, lesson_id, title, difficulty, language FROM course_assignments WHERE course_id = %s",
         (course_id,)
     )
     rows = cursor.fetchall()
