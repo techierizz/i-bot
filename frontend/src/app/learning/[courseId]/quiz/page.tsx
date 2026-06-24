@@ -1536,20 +1536,22 @@ function CourseQuizPageContent() {
                 </div>
 
                 {/* Test cases indicator */}
-                <div className="p-6 rounded-2xl border border-white/5 bg-zinc-900/20 space-y-3">
-                  <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Target Test Cases</h4>
-                  <div className="space-y-2">
-                    {(quiz.is_multi
-                      ? (quiz.questions![activeQuestionIndex].test_cases || [])
-                      : quiz.test_cases
-                    ).map((tc: any, idx: number) => (
-                      <div key={idx} className="p-3 bg-zinc-950/80 rounded-xl border border-white/5 font-mono text-xs flex justify-between gap-4">
-                        <span className="text-zinc-500">In: <span className="text-violet-300">{tc.input}</span></span>
-                        <span className="text-zinc-500">Out: <span className="text-emerald-300">{tc.expected}</span></span>
-                      </div>
-                    ))}
+                {quiz.assignment_type !== "system_design" && (
+                  <div className="p-6 rounded-2xl border border-white/5 bg-zinc-900/20 space-y-3">
+                    <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Target Test Cases</h4>
+                    <div className="space-y-2">
+                      {(quiz.is_multi
+                        ? (quiz.questions![activeQuestionIndex].test_cases || [])
+                        : quiz.test_cases
+                      ).map((tc: any, idx: number) => (
+                        <div key={idx} className="p-3 bg-zinc-950/80 rounded-xl border border-white/5 font-mono text-xs flex justify-between gap-4">
+                          <span className="text-zinc-500">In: <span className="text-violet-300">{tc.input}</span></span>
+                          <span className="text-zinc-500">Out: <span className="text-emerald-300">{tc.expected}</span></span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* AI Proctoring Console Card */}
                 <div className="p-6 rounded-2xl border border-white/5 bg-zinc-900/20 space-y-4">
@@ -1594,52 +1596,56 @@ function CourseQuizPageContent() {
 
                 <div className="p-4 rounded-3xl border border-white/10 bg-zinc-900/30 space-y-4">
                   {/* Top Editor bar */}
-                  <div className="flex justify-between items-center text-xs font-mono text-zinc-500">
-                    <span className="flex items-center gap-1.5"><Code className="w-3.5 h-3.5 text-violet-400" /> solution.{quiz.language === "python" ? "py" : "js"}</span>
-                    <button
-                      onClick={() => {
-                        const activeBoilerplate = quiz.is_multi
-                          ? quiz.questions![activeQuestionIndex].boilerplate_code || ""
-                          : quiz.boilerplate_code || "";
-                        if (!confirmReset) {
-                          setConfirmReset(true);
-                          setTimeout(() => setConfirmReset(false), 3000);
-                        } else {
-                          setStudentCode(activeBoilerplate);
-                          const updated = [...studentCodes];
-                          updated[activeQuestionIndex] = activeBoilerplate;
-                          setStudentCodes(updated);
-                          setConfirmReset(false);
-                        }
-                      }}
-                      className={`transition-colors cursor-pointer ${confirmReset ? "text-red-400 hover:text-red-300 font-bold" : "text-zinc-500 hover:text-white"}`}
-                    >
-                      {confirmReset ? "[Confirm Reset?]" : "[Reset Boilerplate]"}
-                    </button>
-                  </div>
-
-                  {/* Language Selector & Code editor body */}
-                  <div className="flex justify-between items-center bg-zinc-950/80 px-4 py-2 border border-white/10 rounded-t-2xl">
-                    <div className="flex gap-2">
-                      {["python", "javascript", "java", "c++"].map(lang => (
-                        <button 
-                          key={lang}
-                          onClick={() => setSelectedLanguage(lang)}
-                          className={`text-[10px] px-3 py-1 uppercase tracking-wider font-bold rounded-lg transition-all ${selectedLanguage === lang ? "bg-violet-500 text-white" : "text-zinc-500 hover:text-zinc-300"}`}
+                  {quiz.assignment_type !== "system_design" && quiz.assignment_type !== "github_pr" && (
+                    <>
+                      <div className="flex justify-between items-center text-xs font-mono text-zinc-500">
+                        <span className="flex items-center gap-1.5"><Code className="w-3.5 h-3.5 text-violet-400" /> solution.{quiz.language === "python" ? "py" : "js"}</span>
+                        <button
+                          onClick={() => {
+                            const activeBoilerplate = quiz.is_multi
+                              ? quiz.questions![activeQuestionIndex].boilerplate_code || ""
+                              : quiz.boilerplate_code || "";
+                            if (!confirmReset) {
+                              setConfirmReset(true);
+                              setTimeout(() => setConfirmReset(false), 3000);
+                            } else {
+                              setStudentCode(activeBoilerplate);
+                              const updated = [...studentCodes];
+                              updated[activeQuestionIndex] = activeBoilerplate;
+                              setStudentCodes(updated);
+                              setConfirmReset(false);
+                            }
+                          }}
+                          className={`transition-colors cursor-pointer ${confirmReset ? "text-red-400 hover:text-red-300 font-bold" : "text-zinc-500 hover:text-white"}`}
                         >
-                          {lang}
+                          {confirmReset ? "[Confirm Reset?]" : "[Reset Boilerplate]"}
                         </button>
-                      ))}
-                    </div>
-                    <button
-                      onClick={handleRunCode}
-                      disabled={isExecuting || runCount >= maxRuns || studentCode.trim().length === 0}
-                      className={`text-xs font-bold uppercase tracking-wider px-4 py-1.5 rounded-lg flex items-center gap-1.5 transition-all ${runCount >= maxRuns ? "bg-red-500/10 text-red-500 cursor-not-allowed border border-red-500/20" : "bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border border-emerald-500/30"}`}
-                    >
-                      {isExecuting ? <div className="w-3 h-3 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" /> : <Terminal className="w-3.5 h-3.5" />}
-                      {runCount >= maxRuns ? "Limit Reached" : `Run Code (${maxRuns - runCount} Left)`}
-                    </button>
-                  </div>
+                      </div>
+
+                      {/* Language Selector & Code editor body */}
+                      <div className="flex justify-between items-center bg-zinc-950/80 px-4 py-2 border border-white/10 rounded-t-2xl">
+                        <div className="flex gap-2">
+                          {["python", "javascript", "java", "c++"].map(lang => (
+                            <button 
+                              key={lang}
+                              onClick={() => setSelectedLanguage(lang)}
+                              className={`text-[10px] px-3 py-1 uppercase tracking-wider font-bold rounded-lg transition-all ${selectedLanguage === lang ? "bg-violet-500 text-white" : "text-zinc-500 hover:text-zinc-300"}`}
+                            >
+                              {lang}
+                            </button>
+                          ))}
+                        </div>
+                        <button
+                          onClick={handleRunCode}
+                          disabled={isExecuting || runCount >= maxRuns || studentCode.trim().length === 0}
+                          className={`text-xs font-bold uppercase tracking-wider px-4 py-1.5 rounded-lg flex items-center gap-1.5 transition-all ${runCount >= maxRuns ? "bg-red-500/10 text-red-500 cursor-not-allowed border border-red-500/20" : "bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border border-emerald-500/30"}`}
+                        >
+                          {isExecuting ? <div className="w-3 h-3 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" /> : <Terminal className="w-3.5 h-3.5" />}
+                          {runCount >= maxRuns ? "Limit Reached" : `Run Code (${maxRuns - runCount} Left)`}
+                        </button>
+                      </div>
+                    </>
+                  )}
                   {quiz.assignment_type === "github_pr" ? (
                     <div className="flex flex-col gap-4 bg-zinc-950/90 border-x border-b border-white/10 p-6 h-[420px] overflow-y-auto">
                       <div className="bg-violet-500/10 border border-violet-500/20 p-4 rounded-xl text-sm">
