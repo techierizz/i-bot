@@ -331,6 +331,24 @@ def init_db():
     except Exception:
         conn.rollback()
 
+    try:
+        cursor.execute("ALTER TABLE quiz_submissions ADD COLUMN submission_type TEXT DEFAULT 'code_completion'")
+        conn.commit()
+    except Exception:
+        conn.rollback()
+
+    try:
+        cursor.execute("ALTER TABLE quiz_submissions ADD COLUMN pr_link TEXT")
+        conn.commit()
+    except Exception:
+        conn.rollback()
+
+    try:
+        cursor.execute("ALTER TABLE quiz_submissions ADD COLUMN external_validation_score INTEGER")
+        conn.commit()
+    except Exception:
+        conn.rollback()
+
     # Create proctoring_violations table
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS proctoring_violations (
@@ -346,19 +364,21 @@ def init_db():
     )
     """)
     conn.commit()
-# Create course_exams table
+# Create course_assignments table
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS course_exams (
+    CREATE TABLE IF NOT EXISTS course_assignments (
         id SERIAL PRIMARY KEY,
         course_id INTEGER NOT NULL,
         lesson_id INTEGER NOT NULL,
         title TEXT NOT NULL,
-        description TEXT NOT NULL,
+        assignment_type TEXT NOT NULL DEFAULT 'code_completion',
+        instructions TEXT NOT NULL,
         difficulty TEXT NOT NULL,
         language TEXT NOT NULL,
         boilerplate_code TEXT NOT NULL,
         test_cases TEXT NOT NULL,
         optimal_solution_explanation TEXT,
+        github_repo_url TEXT,
         created_by INTEGER NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (course_id) REFERENCES courses (id) ON DELETE CASCADE,
@@ -515,9 +535,9 @@ def init_db():
 
     # Execute column migrations to alter tables if needed
     for col_def in [
-        ("course_exams", "status", "TEXT DEFAULT 'active'"),
-        ("course_exams", "ended_at", "TIMESTAMP"),
-        ("course_exams", "ended_by", "INTEGER"),
+        ("course_assignments", "status", "TEXT DEFAULT 'active'"),
+        ("course_assignments", "ended_at", "TIMESTAMP"),
+        ("course_assignments", "ended_by", "INTEGER"),
         ("course_final_exams", "status", "TEXT DEFAULT 'active'"),
         ("course_final_exams", "ended_at", "TIMESTAMP"),
         ("course_final_exams", "ended_by", "INTEGER"),
@@ -1826,7 +1846,7 @@ def create_quiz_submission(user_id: int, username: str, course_id: int, course_t
                     exam_id = row["id"]
                     exam_type = "final"
             elif lesson_id is not None:
-                cursor.execute("SELECT id FROM course_exams WHERE course_id = %s AND lesson_id = %s", (course_id, lesson_id))
+                cursor.execute("SELECT id FROM course_assignments WHERE course_id = %s AND lesson_id = %s", (course_id, lesson_id))
                 row = cursor.fetchone()
                 if row:
                     exam_id = row["id"]
@@ -1895,33 +1915,33 @@ def get_quiz_submissions() -> List[Dict[str, Any]]:
     finally:
         conn.close()
 
-def create_course_exam(course_id: int, lesson_id: int, title: str, description: str, difficulty: str, language: str, boilerplate_code: str, test_cases: List[Dict[str, Any]], optimal_solution_explanation: str, created_by: int) -> Dict[str, Any]:
+def create_course_exam(course_id: int, lesson_id: int, title: str, instructions: str, assignment_type: str = "code_completion", github_repo_url: str = "", difficulty: str, language: str, boilerplate_code: str, test_cases: List[Dict[str, Any]], optimal_solution_explanation: str, created_by: int) -> Dict[str, Any]:
     conn = get_db_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
     try:
         test_cases_json = json.dumps(test_cases)
         cursor.execute(
-            "SELECT id FROM course_exams WHERE course_id = %s AND lesson_id = %s",
+            "SELECT id FROM course_assignments WHERE course_id = %s AND lesson_id = %s",
             (course_id, lesson_id)
         )
         existing = cursor.fetchone()
         if existing:
             cursor.execute(
                 """
-                UPDATE course_exams
-                SET title = %s, description = %s, difficulty = %s, language = %s, boilerplate_code = %s, test_cases = %s, optimal_solution_explanation = %s, created_by = %s
+                UPDATE course_assignments
+                SET title = %s, instructions = %s, assignment_type = %s, github_repo_url = %s, difficulty = %s, language = %s, boilerplate_code = %s, test_cases = %s, optimal_solution_explanation = %s, created_by = %s
                 WHERE id = %s
                 """,
-                (title, description, difficulty, language, boilerplate_code, test_cases_json, optimal_solution_explanation, created_by, existing["id"])
+                (title, instructions, assignment_type, github_repo_url, difficulty, language, boilerplate_code, test_cases_json, optimal_solution_explanation, created_by, existing["id"])
             )
             exam_id = existing["id"]
         else:
             cursor.execute(
                 """
-                INSERT INTO course_exams (course_id, lesson_id, title, description, difficulty, language, boilerplate_code, test_cases, optimal_solution_explanation, created_by)
+                INSERT INTO course_assignments (course_id, lesson_id, title, instructions, assignment_type, github_repo_url, difficulty, language, boilerplate_code, test_cases, optimal_solution_explanation, created_by)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id
                 """,
-                (course_id, lesson_id, title, description, difficulty, language, boilerplate_code, test_cases_json, optimal_solution_explanation, created_by)
+                (course_id, lesson_id, title, instructions, assignment_type, github_repo_url, difficulty, language, boilerplate_code, test_cases_json, optimal_solution_explanation, created_by)
             )
             exam_id = cursor.fetchone()["id"]
         conn.commit()
@@ -1938,8 +1958,8 @@ def get_course_exam(course_id: int, lesson_id: int) -> Optional[Dict[str, Any]]:
     try:
         cursor.execute(
             """
-            SELECT id, course_id, lesson_id, title, description, difficulty, language, boilerplate_code, test_cases, optimal_solution_explanation, created_by, created_at, status, ended_at, ended_by
-            FROM course_exams
+            SELECT id, course_id, lesson_id, title, instructions as description, assignment_type, github_repo_url, difficulty, language, boilerplate_code, test_cases, optimal_solution_explanation, created_by, created_at, status, ended_at, ended_by
+            FROM course_assignments
             WHERE course_id = %s AND lesson_id = %s
             """,
             (course_id, lesson_id)
@@ -1993,16 +2013,16 @@ def create_course_final_exam(course_id: int, title: str, description: str, diffi
                 SET title = %s, description = %s, difficulty = %s, language = %s, boilerplate_code = %s, test_cases = %s, optimal_solution_explanation = %s, created_by = %s
                 WHERE id = %s
                 """,
-                (title, description, difficulty, language, boilerplate_code, test_cases_json, optimal_solution_explanation, created_by, existing["id"])
+                (title, instructions as description, assignment_type, github_repo_url, difficulty, language, boilerplate_code, test_cases_json, optimal_solution_explanation, created_by, existing["id"])
             )
             exam_id = existing["id"]
         else:
             cursor.execute(
                 """
-                INSERT INTO course_final_exams (course_id, title, description, difficulty, language, boilerplate_code, test_cases, optimal_solution_explanation, created_by)
+                INSERT INTO course_final_exams (course_id, title, instructions as description, assignment_type, github_repo_url, difficulty, language, boilerplate_code, test_cases, optimal_solution_explanation, created_by)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id
                 """,
-                (course_id, title, description, difficulty, language, boilerplate_code, test_cases_json, optimal_solution_explanation, created_by)
+                (course_id, title, instructions as description, assignment_type, github_repo_url, difficulty, language, boilerplate_code, test_cases_json, optimal_solution_explanation, created_by)
             )
             exam_id = cursor.fetchone()["id"]
         conn.commit()
@@ -2019,7 +2039,7 @@ def get_course_final_exam(course_id: int) -> Optional[Dict[str, Any]]:
     try:
         cursor.execute(
             """
-            SELECT id, course_id, title, description, difficulty, language, boilerplate_code, test_cases, optimal_solution_explanation, created_by, created_at, status, ended_at, ended_by
+            SELECT id, course_id, title, instructions as description, assignment_type, github_repo_url, difficulty, language, boilerplate_code, test_cases, optimal_solution_explanation, created_by, created_at, status, ended_at, ended_by
             FROM course_final_exams
             WHERE course_id = %s
             """,
@@ -2096,7 +2116,7 @@ def check_syllabus_completion(user_id: int, course_id: int) -> bool:
     cursor = conn.cursor(cursor_factory=RealDictCursor)
     try:
         # Get all configured exams for this course
-        cursor.execute("SELECT lesson_id FROM course_exams WHERE course_id = %s", (course_id,))
+        cursor.execute("SELECT lesson_id FROM course_assignments WHERE course_id = %s", (course_id,))
         exam_rows = cursor.fetchall()
         configured_exam_lesson_ids = {e["lesson_id"] for e in exam_rows}
         
@@ -2348,7 +2368,7 @@ def start_exam_attempt(user_id: int, exam_id: int, exam_type: str) -> Dict[str, 
         if exam_type == "final":
             cursor.execute("SELECT status FROM course_final_exams WHERE id = %s", (exam_id,))
         else:
-            cursor.execute("SELECT status FROM course_exams WHERE id = %s", (exam_id,))
+            cursor.execute("SELECT status FROM course_assignments WHERE id = %s", (exam_id,))
         exam_row = cursor.fetchone()
         # If exam doesn't exist, we consider it not active
         if not exam_row:
@@ -2450,7 +2470,7 @@ def end_exam(exam_id: int, exam_type: str, ended_by: int) -> bool:
         else:
             cursor.execute(
                 """
-                UPDATE course_exams
+                UPDATE course_assignments
                 SET status = 'ended', ended_at = CURRENT_TIMESTAMP, ended_by = %s
                 WHERE id = %s
                 """,
@@ -2484,7 +2504,7 @@ def reopen_exam(exam_id: int, exam_type: str, reopened_by: int) -> bool:
         else:
             cursor.execute(
                 """
-                UPDATE course_exams
+                UPDATE course_assignments
                 SET status = 'active', ended_at = NULL, ended_by = NULL
                 WHERE id = %s
                 """,
@@ -2518,7 +2538,7 @@ def archive_exam(exam_id: int, exam_type: str, archived_by: int) -> bool:
         else:
             cursor.execute(
                 """
-                UPDATE course_exams
+                UPDATE course_assignments
                 SET status = 'archived'
                 WHERE id = %s
                 """,
@@ -2609,7 +2629,7 @@ def verify_exam_belongs_to_mentor(exam_id: int, exam_type: str, mentor_id: int) 
             cursor.execute(
                 """
                 SELECT ce.course_id 
-                FROM course_exams ce
+                FROM course_assignments ce
                 JOIN mentor_courses mc ON mc.course_id = ce.course_id
                 WHERE ce.id = %s AND mc.mentor_id = %s
                 """,
@@ -2673,7 +2693,7 @@ def get_latest_ended_exam_for_mentor(mentor_id: int) -> Optional[Dict[str, Any]]
             f"""
             SELECT ce.id, ce.course_id, ce.lesson_id, ce.title, ce.status, ce.ended_at, ce.ended_by, 'lesson' as exam_type,
                    c.title as course_title
-            FROM course_exams ce
+            FROM course_assignments ce
             JOIN courses c ON c.id = ce.course_id
             {course_filter.replace("course_id", "ce.course_id")} {"AND" if "WHERE" in course_filter else "WHERE"} ce.status = 'ended'
             """,
@@ -2741,7 +2761,7 @@ def get_archived_exams_for_mentor(mentor_id: int) -> List[Dict[str, Any]]:
             f"""
             SELECT ce.id, ce.course_id, ce.lesson_id, ce.title, ce.status, ce.ended_at, ce.ended_by, 'lesson' as exam_type,
                    c.title as course_title
-            FROM course_exams ce
+            FROM course_assignments ce
             JOIN courses c ON c.id = ce.course_id
             {course_filter.replace("course_id", "ce.course_id")} {"AND" if "WHERE" in course_filter else "WHERE"} ce.status IN ('ended', 'archived')
             """,
@@ -2935,7 +2955,7 @@ def get_all_exams_for_mentor(mentor_id: int) -> List[Dict[str, Any]]:
             f"""
             SELECT ce.id, ce.course_id, ce.lesson_id, ce.title, ce.difficulty, ce.language, ce.status, ce.ended_at, ce.ended_by, 'lesson' as exam_type,
                    c.title as course_title
-            FROM course_exams ce
+            FROM course_assignments ce
             JOIN courses c ON c.id = ce.course_id
             {course_filter.replace("course_id", "ce.course_id")}
             """,
@@ -3293,16 +3313,16 @@ def update_exam(exam_id: int, exam_type: str, title: str, description: str, diff
                 SET title = %s, description = %s, difficulty = %s, language = %s, boilerplate_code = %s, test_cases = %s, optimal_solution_explanation = %s
                 WHERE id = %s
                 """,
-                (title, description, difficulty, language, boilerplate_code, test_cases_json, optimal_solution_explanation, exam_id)
+                (title, instructions as description, assignment_type, github_repo_url, difficulty, language, boilerplate_code, test_cases_json, optimal_solution_explanation, exam_id)
             )
         else:
             cursor.execute(
                 """
-                UPDATE course_exams
+                UPDATE course_assignments
                 SET title = %s, description = %s, difficulty = %s, language = %s, boilerplate_code = %s, test_cases = %s, optimal_solution_explanation = %s
                 WHERE id = %s
                 """,
-                (title, description, difficulty, language, boilerplate_code, test_cases_json, optimal_solution_explanation, exam_id)
+                (title, instructions as description, assignment_type, github_repo_url, difficulty, language, boilerplate_code, test_cases_json, optimal_solution_explanation, exam_id)
             )
         conn.commit()
         return cursor.rowcount > 0
@@ -3320,7 +3340,7 @@ def delete_exam(exam_id: int, exam_type: str) -> bool:
         if exam_type == "final":
             cursor.execute("DELETE FROM course_final_exams WHERE id = %s", (exam_id,))
         else:
-            cursor.execute("DELETE FROM course_exams WHERE id = %s", (exam_id,))
+            cursor.execute("DELETE FROM course_assignments WHERE id = %s", (exam_id,))
         conn.commit()
         return cursor.rowcount > 0
     except Exception as e:
@@ -3403,7 +3423,7 @@ def get_course_deletion_summary(course_id: int) -> Optional[Dict[str, Any]]:
         cursor.execute("SELECT COUNT(*) as count FROM course_lessons WHERE course_id = %s", (course_id,))
         lessons = cursor.fetchone()["count"]
         
-        cursor.execute("SELECT COUNT(*) as count FROM course_exams WHERE course_id = %s", (course_id,))
+        cursor.execute("SELECT COUNT(*) as count FROM course_assignments WHERE course_id = %s", (course_id,))
         lesson_exams = cursor.fetchone()["count"]
         
         cursor.execute("SELECT COUNT(*) as count FROM course_final_exams WHERE course_id = %s", (course_id,))
@@ -3425,7 +3445,7 @@ def get_course_deletion_summary(course_id: int) -> Optional[Dict[str, Any]]:
         
         cursor.execute("""
             SELECT COUNT(*) as count FROM exam_attempts
-            WHERE (exam_type = 'lesson' AND exam_id IN (SELECT id FROM course_exams WHERE course_id = %s))
+            WHERE (exam_type = 'lesson' AND exam_id IN (SELECT id FROM course_assignments WHERE course_id = %s))
                OR (exam_type = 'final' AND exam_id IN (SELECT id FROM course_final_exams WHERE course_id = %s))
         """, (course_id, course_id))
         exam_attempts = cursor.fetchone()["count"]
@@ -3456,7 +3476,7 @@ def execute_course_purge(course_id: int) -> bool:
     cursor = conn.cursor()
     try:
         # Fetch exam_id lists to delete attempts manually since there is no CASCADE
-        cursor.execute("SELECT id FROM course_exams WHERE course_id = %s", (course_id,))
+        cursor.execute("SELECT id FROM course_assignments WHERE course_id = %s", (course_id,))
         lesson_exam_ids = [row["id"] if isinstance(row, dict) else row[0] for row in cursor.fetchall()]
         
         cursor.execute("SELECT id FROM course_final_exams WHERE course_id = %s", (course_id,))
@@ -3488,8 +3508,8 @@ def execute_course_purge(course_id: int) -> bool:
         # 7. Delete course_final_exams
         cursor.execute("DELETE FROM course_final_exams WHERE course_id = %s", (course_id,))
         
-        # 8. Delete course_exams
-        cursor.execute("DELETE FROM course_exams WHERE course_id = %s", (course_id,))
+        # 8. Delete course_assignments
+        cursor.execute("DELETE FROM course_assignments WHERE course_id = %s", (course_id,))
         
         # 9. Delete course_lessons
         cursor.execute("DELETE FROM course_lessons WHERE course_id = %s", (course_id,))
