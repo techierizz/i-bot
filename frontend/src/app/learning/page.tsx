@@ -1058,25 +1058,29 @@ export default function LearningCatalogPage() {
                           className="w-full px-4 py-3 rounded-xl bg-zinc-900 border border-white/5 text-sm text-white focus:outline-none focus:border-violet-500 transition-all min-h-[100px]"
                         />
                       </div>
-                      <div className="space-y-2 md:col-span-2">
-                        <label className="text-[10px] text-zinc-400 font-bold uppercase">Boilerplate Code</label>
-                        <textarea
-                          required={examType === "custom"}
-                          placeholder="e.g. def find_missing(nums):"
-                          value={examBoilerplate}
-                          onChange={(e) => setExamBoilerplate(e.target.value)}
-                          className="w-full px-4 py-3 rounded-xl bg-zinc-900 border border-white/5 text-sm text-violet-300 focus:outline-none focus:border-violet-500 transition-all min-h-[100px] font-mono"
-                        />
-                      </div>
-                      <div className="space-y-2 md:col-span-2">
-                        <label className="text-[10px] text-zinc-400 font-bold uppercase">Optimal Solution Explanation</label>
-                        <textarea
-                          placeholder="Explain how to solve the problem optimally..."
-                          value={examOptimalExplanation}
-                          onChange={(e) => setExamOptimalExplanation(e.target.value)}
-                          className="w-full px-4 py-3 rounded-xl bg-zinc-900 border border-white/5 text-sm text-white focus:outline-none focus:border-violet-500 transition-all min-h-[80px]"
-                        />
-                      </div>
+                      {!(assignmentType === "github_pr" || assignmentType === "system_design") && (
+                        <>
+                          <div className="space-y-2 md:col-span-2">
+                            <label className="text-[10px] text-zinc-400 font-bold uppercase">Boilerplate Code</label>
+                            <textarea
+                              required={examType === "custom"}
+                              placeholder="e.g. def find_missing(nums):"
+                              value={examBoilerplate}
+                              onChange={(e) => setExamBoilerplate(e.target.value)}
+                              className="w-full px-4 py-3 rounded-xl bg-zinc-900 border border-white/5 text-sm text-violet-300 focus:outline-none focus:border-violet-500 transition-all min-h-[100px] font-mono"
+                            />
+                          </div>
+                          <div className="space-y-2 md:col-span-2">
+                            <label className="text-[10px] text-zinc-400 font-bold uppercase">Optimal Solution Explanation</label>
+                            <textarea
+                              placeholder="Explain how to solve the problem optimally..."
+                              value={examOptimalExplanation}
+                              onChange={(e) => setExamOptimalExplanation(e.target.value)}
+                              className="w-full px-4 py-3 rounded-xl bg-zinc-900 border border-white/5 text-sm text-white focus:outline-none focus:border-violet-500 transition-all min-h-[80px]"
+                            />
+                          </div>
+                        </>
+                      )}
                       {!(assignmentType === "github_pr" || assignmentType === "system_design") && (
 <div className="space-y-4 md:col-span-2 border-t border-white/5 pt-4">
                         <div className="flex justify-between items-center">
