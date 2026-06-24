@@ -1932,7 +1932,7 @@ def create_course_exam(course_id: int, lesson_id: int, title: str, instructions:
                 SET title = %s, instructions = %s, assignment_type = %s, github_repo_url = %s, difficulty = %s, language = %s, boilerplate_code = %s, test_cases = %s, optimal_solution_explanation = %s, created_by = %s
                 WHERE id = %s
                 """,
-                (title, description, difficulty, language, boilerplate_code, test_cases_json, optimal_solution_explanation, created_by, existing["id"])
+                (title, instructions, assignment_type, github_repo_url, difficulty, language, boilerplate_code, test_cases_json, optimal_solution_explanation, created_by, existing["id"])
             )
             exam_id = existing["id"]
         else:
