@@ -33,6 +33,8 @@ interface CodingChallenge {
   boilerplate_code: string;
   test_cases: any[];
   optimal_solution_explanation: string;
+  assignment_type?: string;
+  github_repo_url?: string;
   // Multi-question exams
   is_multi?: boolean;
   questions?: SingleQuestion[];
@@ -74,6 +76,7 @@ function CourseQuizPageContent() {
 
   // Challenge workspace states
   const [studentCode, setStudentCode] = useState("");
+  const [prLink, setPrLink] = useState("");
   const [quizFinished, setQuizFinished] = useState(false);
   const quizFinishedRef = useRef(false);
   const [submitting, setSubmitting] = useState(false);
@@ -1036,6 +1039,8 @@ function CourseQuizPageContent() {
           warnings: cheatWarnings,
           lesson_id: lessonId ? Number(lessonId) : null,
           is_final: isFinal,
+          submission_type: quiz.assignment_type || "code_completion",
+          pr_link: prLink,
           // Multi-question fields
           ...(isMulti && {
             student_codes: latestCodes,
@@ -1633,25 +1638,57 @@ function CourseQuizPageContent() {
                       {runCount >= maxRuns ? "Limit Reached" : `Run Code (${maxRuns - runCount} Left)`}
                     </button>
                   </div>
-                  <div className="flex font-mono text-sm bg-zinc-950/90 border-x border-b border-white/10 overflow-hidden h-[420px]">
-                    <Editor
-                      height="100%"
-                      language={selectedLanguage === "c++" ? "cpp" : selectedLanguage}
-                      theme="vs-dark"
-                      value={studentCode}
-                      onChange={(val) => setStudentCode(val || "")}
-                      options={{
-                        minimap: { enabled: false },
-                        fontSize: 14,
-                        padding: { top: 16 },
-                        scrollBeyondLastLine: false,
-                        smoothScrolling: true,
-                        cursorBlinking: "smooth",
-                        cursorSmoothCaretAnimation: "on",
-                        formatOnPaste: true
-                      }}
-                    />
-                  </div>
+                  {quiz.assignment_type === "github_pr" ? (
+                    <div className="flex flex-col gap-4 bg-zinc-950/90 border-x border-b border-white/10 p-6 h-[420px] overflow-y-auto">
+                      <div className="bg-violet-500/10 border border-violet-500/20 p-4 rounded-xl text-sm">
+                        <h4 className="font-bold text-violet-400 mb-2">GitHub Pull Request Assignment</h4>
+                        <p className="text-zinc-300 mb-2">1. Fork and clone the base repository below.</p>
+                        <a href={quiz.github_repo_url} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline break-all block mb-2">{quiz.github_repo_url}</a>
+                        <p className="text-zinc-300 mb-2">2. Fix the issues locally on your machine.</p>
+                        <p className="text-zinc-300 mb-2">3. Open a Pull Request back to the original repository.</p>
+                        <p className="text-zinc-300">4. Paste your Pull Request URL below and submit.</p>
+                      </div>
+                      <div className="mt-4">
+                        <label className="text-xs text-zinc-400 font-bold uppercase mb-2 block">Your Pull Request URL</label>
+                        <input
+                          type="text"
+                          value={prLink}
+                          onChange={(e) => setPrLink(e.target.value)}
+                          placeholder="https://github.com/username/repo/pull/1"
+                          className="w-full px-4 py-3 rounded-xl bg-zinc-900 border border-white/10 text-white focus:outline-none focus:border-violet-500"
+                        />
+                      </div>
+                    </div>
+                  ) : quiz.assignment_type === "system_design" ? (
+                    <div className="flex font-mono text-sm bg-zinc-950/90 border-x border-b border-white/10 overflow-hidden h-[420px]">
+                      <textarea
+                        value={studentCode}
+                        onChange={(e) => setStudentCode(e.target.value)}
+                        placeholder="Write your system design architecture here (Markdown supported)..."
+                        className="w-full h-full p-6 bg-transparent text-zinc-300 resize-none outline-none focus:ring-0 leading-relaxed font-sans"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex font-mono text-sm bg-zinc-950/90 border-x border-b border-white/10 overflow-hidden h-[420px]">
+                      <Editor
+                        height="100%"
+                        language={selectedLanguage === "c++" ? "cpp" : selectedLanguage}
+                        theme="vs-dark"
+                        value={studentCode}
+                        onChange={(val) => setStudentCode(val || "")}
+                        options={{
+                          minimap: { enabled: false },
+                          fontSize: 14,
+                          padding: { top: 16 },
+                          scrollBeyondLastLine: false,
+                          smoothScrolling: true,
+                          cursorBlinking: "smooth",
+                          cursorSmoothCaretAnimation: "on",
+                          formatOnPaste: true
+                        }}
+                      />
+                    </div>
+                  )}
                   
                   {/* Execution Output Window */}
                   {executionOutput && (
