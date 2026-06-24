@@ -1915,7 +1915,7 @@ def get_quiz_submissions() -> List[Dict[str, Any]]:
     finally:
         conn.close()
 
-def create_course_exam(course_id: int, lesson_id: int, title: str, instructions: str, assignment_type: str = "code_completion", github_repo_url: str = "", difficulty: str, language: str, boilerplate_code: str, test_cases: List[Dict[str, Any]], optimal_solution_explanation: str, created_by: int) -> Dict[str, Any]:
+def create_course_exam(course_id: int, lesson_id: int, title: str, instructions: str, difficulty: str, language: str, boilerplate_code: str, test_cases: List[Dict[str, Any]], optimal_solution_explanation: str, created_by: int, assignment_type: str = "code_completion", github_repo_url: str = "") -> Dict[str, Any]:
     conn = get_db_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
     try:
