@@ -318,6 +318,7 @@ export default function LearningCatalogPage() {
           github_repo_url: examScope === "lesson" && assignmentType === "github_pr" ? githubRepoUrl : undefined,
           title: examTitle || undefined,
           description: examDesc || undefined,
+          instructions: examDesc || undefined,
           difficulty: examDifficulty,
           num_questions: examNumQuestions,
           language: examLanguage,
