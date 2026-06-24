@@ -816,7 +816,7 @@ def save_evaluation(
         """
         INSERT INTO evaluations (
             user_id, username, mode, overall, technical, communication, confidence, problem_solving, transcript, evaluation_data
-        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id
         """,
         (
             user_id, username, mode, overall, technical, communication, confidence, problem_solving,
@@ -1932,14 +1932,14 @@ def create_course_exam(course_id: int, lesson_id: int, title: str, instructions:
                 SET title = %s, instructions = %s, assignment_type = %s, github_repo_url = %s, difficulty = %s, language = %s, boilerplate_code = %s, test_cases = %s, optimal_solution_explanation = %s, created_by = %s
                 WHERE id = %s
                 """,
-                (title, instructions, assignment_type, github_repo_url, difficulty, language, boilerplate_code, test_cases_json, optimal_solution_explanation, created_by, existing["id"])
+                (title, description, difficulty, language, boilerplate_code, test_cases_json, optimal_solution_explanation, created_by, existing["id"])
             )
             exam_id = existing["id"]
         else:
             cursor.execute(
                 """
                 INSERT INTO course_assignments (course_id, lesson_id, title, instructions, assignment_type, github_repo_url, difficulty, language, boilerplate_code, test_cases, optimal_solution_explanation, created_by)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id
                 """,
                 (course_id, lesson_id, title, instructions, assignment_type, github_repo_url, difficulty, language, boilerplate_code, test_cases_json, optimal_solution_explanation, created_by)
             )
@@ -2013,7 +2013,7 @@ def create_course_final_exam(course_id: int, title: str, description: str, diffi
                 SET title = %s, description = %s, difficulty = %s, language = %s, boilerplate_code = %s, test_cases = %s, optimal_solution_explanation = %s, created_by = %s
                 WHERE id = %s
                 """,
-                (title, instructions, assignment_type, github_repo_url, difficulty, language, boilerplate_code, test_cases_json, optimal_solution_explanation, created_by, existing["id"])
+                (title, description, difficulty, language, boilerplate_code, test_cases_json, optimal_solution_explanation, created_by, existing["id"])
             )
             exam_id = existing["id"]
         else:
@@ -2022,7 +2022,7 @@ def create_course_final_exam(course_id: int, title: str, description: str, diffi
                 INSERT INTO course_final_exams (course_id, title, description, difficulty, language, boilerplate_code, test_cases, optimal_solution_explanation, created_by)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id
                 """,
-                (course_id, title, instructions, difficulty, language, boilerplate_code, test_cases_json, optimal_solution_explanation, created_by)
+                (course_id, title, description, difficulty, language, boilerplate_code, test_cases_json, optimal_solution_explanation, created_by)
             )
             exam_id = cursor.fetchone()["id"]
         conn.commit()
@@ -3313,7 +3313,7 @@ def update_exam(exam_id: int, exam_type: str, title: str, description: str, diff
                 SET title = %s, description = %s, difficulty = %s, language = %s, boilerplate_code = %s, test_cases = %s, optimal_solution_explanation = %s
                 WHERE id = %s
                 """,
-                (title, instructions, assignment_type, github_repo_url, difficulty, language, boilerplate_code, test_cases_json, optimal_solution_explanation, exam_id)
+                (title, description, difficulty, language, boilerplate_code, test_cases_json, optimal_solution_explanation, exam_id)
             )
         else:
             cursor.execute(
@@ -3322,7 +3322,7 @@ def update_exam(exam_id: int, exam_type: str, title: str, description: str, diff
                 SET title = %s, description = %s, difficulty = %s, language = %s, boilerplate_code = %s, test_cases = %s, optimal_solution_explanation = %s
                 WHERE id = %s
                 """,
-                (title, instructions, assignment_type, github_repo_url, difficulty, language, boilerplate_code, test_cases_json, optimal_solution_explanation, exam_id)
+                (title, description, difficulty, language, boilerplate_code, test_cases_json, optimal_solution_explanation, exam_id)
             )
         conn.commit()
         return cursor.rowcount > 0
