@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef, Suspense } from "react";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -1660,13 +1662,22 @@ function CourseQuizPageContent() {
                       </div>
                     </div>
                   ) : quiz.assignment_type === "system_design" ? (
-                    <div className="flex font-mono text-sm bg-zinc-950/90 border-x border-b border-white/10 overflow-hidden h-[420px]">
+                    <div className="grid grid-cols-2 font-mono text-sm bg-zinc-950/90 border-x border-b border-white/10 overflow-hidden h-[420px]">
                       <textarea
                         value={studentCode}
                         onChange={(e) => setStudentCode(e.target.value)}
                         placeholder="Write your system design architecture here (Markdown supported)..."
-                        className="w-full h-full p-6 bg-transparent text-zinc-300 resize-none outline-none focus:ring-0 leading-relaxed font-sans"
+                        className="w-full h-full p-6 bg-transparent text-zinc-300 resize-none outline-none focus:ring-0 leading-relaxed font-sans border-r border-white/5"
                       />
+                      <div className="p-6 overflow-y-auto bg-zinc-950 text-zinc-300 font-sans prose prose-invert prose-violet prose-sm max-w-none">
+                        {studentCode ? (
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {studentCode}
+                          </ReactMarkdown>
+                        ) : (
+                          <p className="text-zinc-600 italic">Live Preview will appear here...</p>
+                        )}
+                      </div>
                     </div>
                   ) : (
                     <div className="flex font-mono text-sm bg-zinc-950/90 border-x border-b border-white/10 overflow-hidden h-[420px]">
