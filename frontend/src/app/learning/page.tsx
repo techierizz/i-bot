@@ -98,9 +98,40 @@ export default function LearningCatalogPage() {
   const [examCourseId, setExamCourseId] = useState("");
   const [examLessonId, setExamLessonId] = useState("");
   const [examScope, setExamScope] = useState("lesson");
-  const [examType, setExamType] = useState("ai_generated");
   const [assignmentType, setAssignmentType] = useState("code_completion");
+  const [examType, setExamType] = useState("ai_generated");
+
+  // Force custom mode for manual assignments
+  useEffect(() => {
+    if (assignmentType === "github_pr" || assignmentType === "system_design") {
+      setExamType("custom");
+    }
+  }, [assignmentType]);
+
   const [githubRepoUrl, setGithubRepoUrl] = useState("");
+
+  // Auto-fill templates based on assignment type
+  useEffect(() => {
+    const templates: Record<string, string> = {
+      code_completion: "Fill in the missing parts of the code to make it work. Do not modify the existing function signatures.",
+      bug_hunt: "There are several hidden bugs in the provided code. Find and fix them so that the tests pass.",
+      refactoring: "The provided code works but is poorly written. Refactor it to be clean, efficient, and follow Object-Oriented principles without breaking functionality.",
+      tdd: "Write code from scratch to satisfy the failing test cases. Focus on passing the tests one by one.",
+      github_pr: `1. Fork the provided GitHub repository.
+2. Clone it to your local machine and fix the issue.
+3. Open a Pull Request on the original repository.
+4. Paste your Pull Request URL below.`,
+      api_integration: "Write a script that connects to the provided API URL, fetches the JSON data, and parses it according to the requirements.",
+      system_design: "Design the architecture and database schema for the given system. You may use Markdown to format your response."
+    };
+
+    // Only auto-fill if empty or if it exactly matches another known template
+    const currentIsTemplate = Object.values(templates).includes(examDesc.trim()) || examDesc.trim() === "";
+    if (currentIsTemplate && assignmentType) {
+      setExamDesc(templates[assignmentType] || "");
+    }
+  }, [assignmentType]);
+
   const [examTitle, setExamTitle] = useState("");
   const [examDesc, setExamDesc] = useState("");
   const [examDifficulty, setExamDifficulty] = useState("Intermediate");
@@ -907,33 +938,35 @@ export default function LearningCatalogPage() {
                       </div>
                     </div>
                   )}
-                  <div className="space-y-2 md:col-span-2">
-                    <label className="text-[10px] text-zinc-400 font-bold uppercase block mb-1">Exam Mode</label>
-                    <div className="flex gap-4">
-                      <label className="flex items-center gap-2 text-sm text-zinc-300 cursor-pointer">
-                        <input
-                          type="radio"
-                          name="examType"
-                          value="ai_generated"
-                          checked={examType === "ai_generated"}
-                          onChange={() => setExamType("ai_generated")}
-                          className="w-4 h-4 accent-violet-500"
-                        />
-                        AI Generated (via Gemini AI)
-                      </label>
-                      <label className="flex items-center gap-2 text-sm text-zinc-300 cursor-pointer">
-                        <input
-                          type="radio"
-                          name="examType"
-                          value="custom"
-                          checked={examType === "custom"}
-                          onChange={() => setExamType("custom")}
-                          className="w-4 h-4 accent-violet-500"
-                        />
-                        Custom Coding Challenge
-                      </label>
+                  {!(assignmentType === "github_pr" || assignmentType === "system_design") && (
+                    <div className="space-y-2 md:col-span-2">
+                      <label className="text-[10px] text-zinc-400 font-bold uppercase block mb-1">Exam Mode</label>
+                      <div className="flex gap-4">
+                        <label className="flex items-center gap-2 text-sm text-zinc-300 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="examType"
+                            value="ai_generated"
+                            checked={examType === "ai_generated"}
+                            onChange={() => setExamType("ai_generated")}
+                            className="w-4 h-4 accent-violet-500"
+                          />
+                          AI Generated (via Gemini AI)
+                        </label>
+                        <label className="flex items-center gap-2 text-sm text-zinc-300 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="examType"
+                            value="custom"
+                            checked={examType === "custom"}
+                            onChange={() => setExamType("custom")}
+                            className="w-4 h-4 accent-violet-500"
+                          />
+                          Custom Coding Challenge
+                        </label>
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {examType === "ai_generated" ? (
                     <>
@@ -1044,7 +1077,8 @@ export default function LearningCatalogPage() {
                           className="w-full px-4 py-3 rounded-xl bg-zinc-900 border border-white/5 text-sm text-white focus:outline-none focus:border-violet-500 transition-all min-h-[80px]"
                         />
                       </div>
-                      <div className="space-y-4 md:col-span-2 border-t border-white/5 pt-4">
+                      {!(assignmentType === "github_pr" || assignmentType === "system_design") && (
+<div className="space-y-4 md:col-span-2 border-t border-white/5 pt-4">
                         <div className="flex justify-between items-center">
                           <label className="text-[10px] text-zinc-400 font-bold uppercase">Test Cases</label>
                           <button
@@ -1091,7 +1125,7 @@ export default function LearningCatalogPage() {
                           </div>
                         ))}
                       </div>
-                    </>
+)}                    </>
                   )}
 
                   <div className="md:col-span-2 flex justify-end gap-3 pt-2">
