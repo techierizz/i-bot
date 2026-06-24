@@ -99,6 +99,8 @@ export default function LearningCatalogPage() {
   const [examLessonId, setExamLessonId] = useState("");
   const [examScope, setExamScope] = useState("lesson");
   const [examType, setExamType] = useState("ai_generated");
+  const [assignmentType, setAssignmentType] = useState("code_completion");
+  const [githubRepoUrl, setGithubRepoUrl] = useState("");
   const [examTitle, setExamTitle] = useState("");
   const [examDesc, setExamDesc] = useState("");
   const [examDifficulty, setExamDifficulty] = useState("Intermediate");
@@ -281,6 +283,8 @@ export default function LearningCatalogPage() {
           course_id: Number(examCourseId),
           ...(isFinal ? {} : { lesson_id: Number(examLessonId) }),
           exam_type: examType,
+          assignment_type: examScope === "lesson" ? assignmentType : undefined,
+          github_repo_url: examScope === "lesson" && assignmentType === "github_pr" ? githubRepoUrl : undefined,
           title: examTitle || undefined,
           description: examDesc || undefined,
           difficulty: examDifficulty,
@@ -303,6 +307,8 @@ export default function LearningCatalogPage() {
         setExamCourseId("");
         setExamLessonId("");
         setExamType("ai_generated");
+        setAssignmentType("code_completion");
+        setGithubRepoUrl("");
         setExamTitle("");
         setExamDesc("");
         setExamDifficulty("Intermediate");
@@ -850,6 +856,7 @@ export default function LearningCatalogPage() {
                     />
                   </div>
                   {examScope === "lesson" ? (
+                    <>
                     <div className="space-y-2">
                       <label className="text-[10px] text-zinc-400 font-bold uppercase">Target Lesson</label>
                       <CustomSelect
@@ -860,6 +867,38 @@ export default function LearningCatalogPage() {
                         options={lessonsForCourse.map(l => ({ label: `Index ${l.order_index}: ${l.title}`, value: String(l.id) }))}
                       />
                     </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] text-zinc-400 font-bold uppercase">Assignment Type</label>
+                      <CustomSelect
+                        value={assignmentType}
+                        onChange={setAssignmentType}
+                        placeholder="Select Assignment Type"
+                        options={[
+                          { label: "Code Completion", value: "code_completion" },
+                          { label: "Bug Hunt", value: "bug_hunt" },
+                          { label: "Refactoring", value: "refactoring" },
+                          { label: "Test-Driven Development (TDD)", value: "tdd" },
+                          { label: "GitHub Pull Request", value: "github_pr" },
+                          { label: "API Integration", value: "api_integration" },
+                          { label: "System Design", value: "system_design" }
+                        ]}
+                      />
+                    </div>
+                    {assignmentType === "github_pr" && (
+                      <div className="space-y-2 md:col-span-2">
+                        <label className="text-[10px] text-zinc-400 font-bold uppercase block mb-1">GitHub Base Repository URL</label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="e.g. https://github.com/HireMindOrg/assignment-repo"
+                          value={githubRepoUrl}
+                          onChange={(e) => setGithubRepoUrl(e.target.value)}
+                          className="w-full px-4 py-3 rounded-xl bg-zinc-900 border border-white/5 text-sm text-white focus:outline-none focus:border-violet-500 transition-all"
+                        />
+                        <p className="text-[10px] text-zinc-500">Students will be asked to fork this repository, fix the broken code, and submit a PR link.</p>
+                      </div>
+                    )}
+                    </>
                   ) : (
                     <div className="space-y-2 flex flex-col justify-end pb-1.5">
                       <span className="text-[10px] text-zinc-500 font-bold uppercase">Target Syllabus</span>
@@ -977,7 +1016,7 @@ export default function LearningCatalogPage() {
                         />
                       </div>
                       <div className="space-y-2 md:col-span-2">
-                        <label className="text-[10px] text-zinc-400 font-bold uppercase">Challenge Description</label>
+                        <label className="text-[10px] text-zinc-400 font-bold uppercase">Instructions / Description</label>
                         <textarea
                           required={examType === "custom"}
                           placeholder="Provide the problem description, constraints, and examples..."
