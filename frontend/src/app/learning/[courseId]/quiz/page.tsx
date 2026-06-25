@@ -1217,29 +1217,43 @@ function CourseQuizPageContent() {
                 </p>
               </div>
 
-              <div className="border-t border-b border-white/5 py-6 space-y-4">
-                <h3 className="text-xs font-bold text-zinc-300 uppercase tracking-widest text-center md:text-left">Strict Proctoring Rules:</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                  <div className="p-4 rounded-xl bg-zinc-950/60 border border-white/5 space-y-1">
-                    <span className="font-bold text-white block">⏱️ 10-Minute Timer</span>
-                    <span className="text-zinc-500">You must solve the challenge and submit before time runs out.</span>
-                  </div>
-                  <div className="p-4 rounded-xl bg-zinc-950/60 border border-white/5 space-y-1">
-                    <span className="font-bold text-white block">🖥️ Fullscreen Required</span>
-                    <span className="text-zinc-500">You must grant fullscreen permission before the exam can begin.</span>
-                  </div>
-                  <div className="p-4 rounded-xl bg-zinc-950/60 border border-white/5 space-y-1">
-                    <span className="font-bold text-white block">🚫 No Tab/Window Swapping</span>
-                    <span className="text-zinc-500">Leaving the window or switching tabs instantly triggers a warning.</span>
-                  </div>
-                  <div className="p-4 rounded-xl bg-zinc-950/60 border border-white/5 space-y-1">
-                    <span className="font-bold text-white block">🎥 AI Webcam Gaze Tracking</span>
-                    <span className="text-zinc-500">Looking away from the screen for more than 4 seconds triggers a warning.</span>
+              {quiz?.assignment_type === "github_pr" ? (
+                <div className="border-t border-b border-white/5 py-6 space-y-4">
+                  <h3 className="text-xs font-bold text-zinc-300 uppercase tracking-widest text-center md:text-left">Take-Home Assignment Rules:</h3>
+                  <div className="grid grid-cols-1 gap-4 text-xs">
+                    <div className="p-4 rounded-xl bg-zinc-950/60 border border-white/5 space-y-1">
+                      <span className="font-bold text-white block">💻 Local Development</span>
+                      <span className="text-zinc-500">You will fork the repository and work on your own machine. You may leave this page and return when you are ready to submit your Pull Request.</span>
+                    </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <div className="border-t border-b border-white/5 py-6 space-y-4">
+                  <h3 className="text-xs font-bold text-zinc-300 uppercase tracking-widest text-center md:text-left">Strict Proctoring Rules:</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    <div className="p-4 rounded-xl bg-zinc-950/60 border border-white/5 space-y-1">
+                      <span className="font-bold text-white block">⏱️ 10-Minute Timer</span>
+                      <span className="text-zinc-500">You must solve the challenge and submit before time runs out.</span>
+                    </div>
+                    <div className="p-4 rounded-xl bg-zinc-950/60 border border-white/5 space-y-1">
+                      <span className="font-bold text-white block">🖥️ Fullscreen Required</span>
+                      <span className="text-zinc-500">You must grant fullscreen permission before the exam can begin.</span>
+                    </div>
+                    <div className="p-4 rounded-xl bg-zinc-950/60 border border-white/5 space-y-1">
+                      <span className="font-bold text-white block">🚫 No Tab/Window Swapping</span>
+                      <span className="text-zinc-500">Leaving the window or switching tabs instantly triggers a warning.</span>
+                    </div>
+                    <div className="p-4 rounded-xl bg-zinc-950/60 border border-white/5 space-y-1">
+                      <span className="font-bold text-white block">🎥 AI Webcam Gaze Tracking</span>
+                      <span className="text-zinc-500">Looking away from the screen for more than 4 seconds triggers a warning.</span>
+                    </div>
+                  </div>
+                </div>
+              )}
 
-              {/* ── Camera Permission Gate ───────────────────────────── */}
+              {quiz?.assignment_type !== "github_pr" && (
+                <>
+                  {/* ── Camera Permission Gate ───────────────────────────── */}
               <div className={`p-5 rounded-2xl border space-y-4 transition-all ${
                 camState === "granted"
                   ? "border-emerald-500/30 bg-emerald-500/5"
@@ -1363,6 +1377,8 @@ function CourseQuizPageContent() {
                   <li>3 Warnings: <span className="text-red-400 font-bold">Immediate failure and disqualification</span>.</li>
                 </ul>
               </div>
+                </>
+              )}
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
                 <button
@@ -1373,11 +1389,11 @@ function CourseQuizPageContent() {
                 </button>
                 <button
                   onClick={handleStartTest}
-                  disabled={fsState !== "granted" || camState !== "granted"}
-                  title={fsState !== "granted" ? "You must enable fullscreen first" : camState !== "granted" ? "You must allow camera first" : ""}
+                  disabled={quiz?.assignment_type !== "github_pr" ? (fsState !== "granted" || camState !== "granted") : false}
+                  title={quiz?.assignment_type !== "github_pr" ? (fsState !== "granted" ? "You must enable fullscreen first" : camState !== "granted" ? "You must allow camera first" : "") : ""}
                   className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-xl text-xs font-extrabold uppercase tracking-widest shadow-lg shadow-violet-500/25 hover:opacity-90 transition-all hover:scale-[1.02] cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed disabled:scale-100"
                 >
-                  Start Verification
+                  {quiz?.assignment_type === "github_pr" ? "Start Assignment" : "Start Verification"}
                 </button>
               </div>
             </motion.div>
