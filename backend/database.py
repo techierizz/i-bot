@@ -2043,7 +2043,7 @@ def get_course_final_exam(course_id: int) -> Optional[Dict[str, Any]]:
     try:
         cursor.execute(
             """
-            SELECT id, course_id, title, instructions as description, assignment_type, github_repo_url, difficulty, language, boilerplate_code, test_cases, optimal_solution_explanation, created_by, created_at, status, ended_at, ended_by
+            SELECT id, course_id, title, description, difficulty, language, boilerplate_code, test_cases, optimal_solution_explanation, created_by, created_at, status, ended_at, ended_by
             FROM course_final_exams
             WHERE course_id = %s
             """,
