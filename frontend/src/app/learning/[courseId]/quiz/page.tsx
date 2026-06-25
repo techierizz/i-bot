@@ -766,7 +766,7 @@ function CourseQuizPageContent() {
 
   // Countdown timer effect
   useEffect(() => {
-    if (!testStarted || quizFinished || loading || loadingQuiz || !quiz || activeWarningModal) return;
+    if (!testStarted || quizFinished || loading || loadingQuiz || !quiz || activeWarningModal || quiz.assignment_type === "github_pr") return;
 
     const interval = setInterval(() => {
       setTimeLeft((prev) => {
@@ -786,7 +786,7 @@ function CourseQuizPageContent() {
   // Prevent reload / tab close during test
   // Also send a keepalive fetch/beacon to submit as failed if they leave the tab/browser
   useEffect(() => {
-    if (!testStarted || quizFinished) return;
+    if (!testStarted || quizFinished || quiz?.assignment_type === "github_pr") return;
 
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       e.preventDefault();
@@ -1179,10 +1179,15 @@ function CourseQuizPageContent() {
         </div>
 
         <div className="flex items-center gap-4">
-          {quiz && !quizFinished && (
+          {quiz && !quizFinished && quiz.assignment_type !== "github_pr" && (
             <div className="px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 font-mono text-sm font-bold tracking-widest flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
               TIME LEFT: {formatTime(timeLeft)}
+            </div>
+          )}
+          {quiz && !quizFinished && quiz.assignment_type === "github_pr" && (
+            <div className="px-4 py-2 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 font-mono text-sm font-bold tracking-widest">
+              TAKE-HOME ASSIGNMENT
             </div>
           )}
           <div className="flex items-center gap-2">
@@ -1552,7 +1557,7 @@ function CourseQuizPageContent() {
                 </div>
 
                 {/* Test cases indicator */}
-                {quiz.assignment_type !== "system_design" && (
+                {quiz.assignment_type !== "system_design" && quiz.assignment_type !== "github_pr" && (
                   <div className="p-6 rounded-2xl border border-white/5 bg-zinc-900/20 space-y-3">
                     <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Target Test Cases</h4>
                     <div className="space-y-2">
@@ -1570,6 +1575,7 @@ function CourseQuizPageContent() {
                 )}
 
                 {/* AI Proctoring Console Card */}
+                {quiz.assignment_type !== "github_pr" && (
                 <div className="p-6 rounded-2xl border border-white/5 bg-zinc-900/20 space-y-4">
                   <div className="flex items-center justify-between">
                     <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-1.5">
@@ -1605,6 +1611,7 @@ function CourseQuizPageContent() {
                     🚨 <strong>Anti-Cheat Active:</strong> Switching tabs, losing window focus, or looking away from the screen for more than 4 seconds will trigger proctoring penalties.
                   </div>
                 </div>
+                )}
               </div>
 
               {/* Right Panel: Code Editor */}
