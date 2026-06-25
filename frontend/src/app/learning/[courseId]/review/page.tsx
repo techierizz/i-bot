@@ -402,12 +402,14 @@ export default function MentorReviewPage() {
                       <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-1.5">
                         <Code className="w-4 h-4 text-violet-400" /> Submitted Answer Code
                       </h3>
-                      <button
-                        onClick={() => setViewAsMarkdown(!viewAsMarkdown)}
-                        className="px-3 py-1 bg-zinc-900 border border-white/5 rounded-lg text-[10px] text-zinc-400 font-bold hover:text-white transition-all uppercase tracking-widest cursor-pointer"
-                      >
-                        {viewAsMarkdown ? "View as Raw Code" : "Render Markdown"}
-                      </button>
+                      {selectedSubmission.language?.toLowerCase() === "markdown" && (
+                        <button
+                          onClick={() => setViewAsMarkdown(!viewAsMarkdown)}
+                          className="px-3 py-1 bg-zinc-900 border border-white/5 rounded-lg text-[10px] text-zinc-400 font-bold hover:text-white transition-all uppercase tracking-widest cursor-pointer"
+                        >
+                          {viewAsMarkdown ? "View as Raw Code" : "Render Markdown"}
+                        </button>
+                      )}
                     </div>
                     {viewAsMarkdown ? (
                       <div className="p-4 bg-zinc-950 rounded-xl border border-white/5 max-h-[400px] overflow-auto text-zinc-300 font-sans prose prose-invert prose-violet prose-sm max-w-none">
