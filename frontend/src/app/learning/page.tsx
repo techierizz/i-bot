@@ -1188,9 +1188,7 @@ export default function LearningCatalogPage() {
                         <span className={`px-2.5 py-0.5 rounded-full border text-[10px] font-bold ${getDifficultyColor(course.difficulty)}`}>
                           {course.difficulty}
                         </span>
-                        <span className="text-zinc-600 text-xs flex items-center gap-1.5">
-                          <Clock className="w-3.5 h-3.5" /> 3 Modules
-                        </span>
+                        {/* Modules count removed */}
                       </div>
 
                       <div className="space-y-2">
@@ -1214,11 +1212,8 @@ export default function LearningCatalogPage() {
                       </div>
                     </div>
 
-                    <div className="border-t border-white/5 pt-4 flex items-center justify-between gap-4">
-                      <div className="text-left">
-                        <span className="text-[9px] text-zinc-500 uppercase block">Curator</span>
-                        <span className="text-xs font-bold text-zinc-300">@{course.mentor_name}</span>
-                      </div>
+                    <div className="border-t border-white/5 pt-4 flex items-center justify-end gap-4">
+                      {/* Curator info removed */}
 
                       {isCompleted ? (
                         <Link href={`/learning/${course.id}`}>
@@ -1283,9 +1278,7 @@ export default function LearningCatalogPage() {
                       <span className={`px-2.5 py-0.5 rounded-full border text-[10px] font-bold ${getDifficultyColor(course.difficulty)}`}>
                         {course.difficulty}
                       </span>
-                      <span className="text-zinc-600 text-xs flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5" /> 3 Modules
-                      </span>
+                      {/* Modules count removed */}
                     </div>
 
                     <div className="space-y-2">
@@ -1309,11 +1302,8 @@ export default function LearningCatalogPage() {
                     </div>
                   </div>
 
-                  <div className="border-t border-white/5 pt-4 flex items-center justify-between gap-4">
-                    <div className="text-left">
-                      <span className="text-[9px] text-zinc-500 uppercase block">Curator</span>
-                      <span className="text-xs font-bold text-zinc-300">@{course.mentor_name}</span>
-                    </div>
+                  <div className="border-t border-white/5 pt-4 flex items-center justify-end gap-4">
+                    {/* Curator info removed */}
 
                     {isCompleted ? (
                       <Link href={`/learning/${course.id}`}>
