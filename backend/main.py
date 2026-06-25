@@ -2560,7 +2560,7 @@ def download_certificate(cert_id: str):
         from reportlab.lib.utils import ImageReader
         import io
         
-        verify_url = f"https://hiremind-ai-eta.vercel.app/verify/{cert['certificate_id']}"
+        verify_url = f"https://hiremind-ai-eta.vercel.app/verify?id={cert['certificate_id']}"
         qr = qrcode.QRCode(
             version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_H,
