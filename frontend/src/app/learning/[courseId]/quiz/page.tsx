@@ -714,7 +714,7 @@ function CourseQuizPageContent() {
 
   // Tab Swapping / Blur / Fullscreen Exit Anti-Cheat Listeners
   useEffect(() => {
-    if (!testStarted || quizFinished || !quiz) return;
+    if (!testStarted || quizFinished || !quiz || quiz.assignment_type === "github_pr") return;
 
     const handleVisibilityChange = () => {
       if (document.hidden && !quizFinished && testStarted) {
