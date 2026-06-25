@@ -371,9 +371,12 @@ function CourseQuizPageContent() {
 
   // Phase 2 – actually start the exam (only called after fullscreen & camera granted)
   const handleStartTest = async () => {
-    if (!course || fsState !== "granted" || camState !== "granted") return;
+    const isGithubPr = (quiz?.assignment_type || initialAssignmentType) === "github_pr";
+    if (!course) return;
+    if (!isGithubPr && (fsState !== "granted" || camState !== "granted")) return;
+    
     // Ensure we are still in fullscreen (user might have Esc'd between clicks)
-    if (!document.fullscreenElement) {
+    if (!isGithubPr && !document.fullscreenElement) {
       setFsState("denied");
       return;
     }
