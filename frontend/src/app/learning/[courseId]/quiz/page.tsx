@@ -70,6 +70,7 @@ function CourseQuizPageContent() {
   const [quiz, setQuiz] = useState<CodingChallenge | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadingQuiz, setLoadingQuiz] = useState(false);
+  const [initialAssignmentType, setInitialAssignmentType] = useState<string | null>(null);
   const [quizError, setQuizError] = useState<string | null>(null);
 
   // Multi-question navigation
@@ -187,6 +188,7 @@ function CourseQuizPageContent() {
             const res = await fetch(url);
             if (res.ok) {
               const examDetails = await res.json();
+              setInitialAssignmentType(examDetails?.assignment_type || null);
               if ((examDetails.status === "ended" || examDetails.status === "archived") && !examDetails.has_active_session) {
                 setExamClosed(true);
                 setExamClosedMessage("This exam has been closed by your mentor. You cannot start a new attempt.");
@@ -513,7 +515,7 @@ function CourseQuizPageContent() {
 
   // Initialize MediaPipe FaceMesh & camera
   useEffect(() => {
-    if (!testStarted || !scriptsLoaded || typeof window === "undefined" || quizFinished) return;
+    if (!testStarted || !scriptsLoaded || typeof window === "undefined" || quizFinished || (quiz?.assignment_type || initialAssignmentType) === "github_pr") return;
 
     const FaceMeshClass = (window as any).FaceMesh;
     const CameraClass = (window as any).Camera;
@@ -714,7 +716,7 @@ function CourseQuizPageContent() {
 
   // Tab Swapping / Blur / Fullscreen Exit Anti-Cheat Listeners
   useEffect(() => {
-    if (!testStarted || quizFinished || !quiz || quiz.assignment_type === "github_pr") return;
+    if (!testStarted || quizFinished || !quiz || (quiz?.assignment_type || initialAssignmentType) === "github_pr") return;
 
     const handleVisibilityChange = () => {
       if (document.hidden && !quizFinished && testStarted) {
@@ -766,7 +768,7 @@ function CourseQuizPageContent() {
 
   // Countdown timer effect
   useEffect(() => {
-    if (!testStarted || quizFinished || loading || loadingQuiz || !quiz || activeWarningModal || quiz.assignment_type === "github_pr") return;
+    if (!testStarted || quizFinished || loading || loadingQuiz || !quiz || activeWarningModal || (quiz?.assignment_type || initialAssignmentType) === "github_pr") return;
 
     const interval = setInterval(() => {
       setTimeLeft((prev) => {
@@ -786,7 +788,7 @@ function CourseQuizPageContent() {
   // Prevent reload / tab close during test
   // Also send a keepalive fetch/beacon to submit as failed if they leave the tab/browser
   useEffect(() => {
-    if (!testStarted || quizFinished || quiz?.assignment_type === "github_pr") return;
+    if (!testStarted || quizFinished || (quiz?.assignment_type || initialAssignmentType) === "github_pr") return;
 
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       e.preventDefault();
@@ -1179,13 +1181,13 @@ function CourseQuizPageContent() {
         </div>
 
         <div className="flex items-center gap-4">
-          {quiz && !quizFinished && quiz.assignment_type !== "github_pr" && (
+          {quiz && !quizFinished && (quiz?.assignment_type || initialAssignmentType) !== "github_pr" && (
             <div className="px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 font-mono text-sm font-bold tracking-widest flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
               TIME LEFT: {formatTime(timeLeft)}
             </div>
           )}
-          {quiz && !quizFinished && quiz.assignment_type === "github_pr" && (
+          {quiz && !quizFinished && (quiz?.assignment_type || initialAssignmentType) === "github_pr" && (
             <div className="px-4 py-2 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 font-mono text-sm font-bold tracking-widest">
               TAKE-HOME ASSIGNMENT
             </div>
@@ -1222,7 +1224,7 @@ function CourseQuizPageContent() {
                 </p>
               </div>
 
-              {quiz?.assignment_type === "github_pr" ? (
+              {(quiz?.assignment_type || initialAssignmentType) === "github_pr" ? (
                 <div className="border-t border-b border-white/5 py-6 space-y-4">
                   <h3 className="text-xs font-bold text-zinc-300 uppercase tracking-widest text-center md:text-left">Take-Home Assignment Rules:</h3>
                   <div className="grid grid-cols-1 gap-4 text-xs">
@@ -1256,7 +1258,7 @@ function CourseQuizPageContent() {
                 </div>
               )}
 
-              {quiz?.assignment_type !== "github_pr" && (
+              {(quiz?.assignment_type || initialAssignmentType) !== "github_pr" && (
                 <>
                   {/* ── Camera Permission Gate ───────────────────────────── */}
               <div className={`p-5 rounded-2xl border space-y-4 transition-all ${
@@ -1394,11 +1396,11 @@ function CourseQuizPageContent() {
                 </button>
                 <button
                   onClick={handleStartTest}
-                  disabled={quiz?.assignment_type !== "github_pr" ? (fsState !== "granted" || camState !== "granted") : false}
-                  title={quiz?.assignment_type !== "github_pr" ? (fsState !== "granted" ? "You must enable fullscreen first" : camState !== "granted" ? "You must allow camera first" : "") : ""}
+                  disabled={(quiz?.assignment_type || initialAssignmentType) !== "github_pr" ? (fsState !== "granted" || camState !== "granted") : false}
+                  title={(quiz?.assignment_type || initialAssignmentType) !== "github_pr" ? (fsState !== "granted" ? "You must enable fullscreen first" : camState !== "granted" ? "You must allow camera first" : "") : ""}
                   className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-xl text-xs font-extrabold uppercase tracking-widest shadow-lg shadow-violet-500/25 hover:opacity-90 transition-all hover:scale-[1.02] cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed disabled:scale-100"
                 >
-                  {quiz?.assignment_type === "github_pr" ? "Start Assignment" : "Start Verification"}
+                  {(quiz?.assignment_type || initialAssignmentType) === "github_pr" ? "Start Assignment" : "Start Verification"}
                 </button>
               </div>
             </motion.div>
@@ -1557,7 +1559,7 @@ function CourseQuizPageContent() {
                 </div>
 
                 {/* Test cases indicator */}
-                {quiz.assignment_type !== "system_design" && quiz.assignment_type !== "github_pr" && (
+                {quiz.assignment_type !== "system_design" && (quiz?.assignment_type || initialAssignmentType) !== "github_pr" && (
                   <div className="p-6 rounded-2xl border border-white/5 bg-zinc-900/20 space-y-3">
                     <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Target Test Cases</h4>
                     <div className="space-y-2">
@@ -1575,7 +1577,7 @@ function CourseQuizPageContent() {
                 )}
 
                 {/* AI Proctoring Console Card */}
-                {quiz.assignment_type !== "github_pr" && (
+                {(quiz?.assignment_type || initialAssignmentType) !== "github_pr" && (
                 <div className="p-6 rounded-2xl border border-white/5 bg-zinc-900/20 space-y-4">
                   <div className="flex items-center justify-between">
                     <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-1.5">
@@ -1619,7 +1621,7 @@ function CourseQuizPageContent() {
 
                 <div className="p-4 rounded-3xl border border-white/10 bg-zinc-900/30 space-y-4">
                   {/* Top Editor bar */}
-                  {quiz.assignment_type !== "system_design" && quiz.assignment_type !== "github_pr" && (
+                  {quiz.assignment_type !== "system_design" && (quiz?.assignment_type || initialAssignmentType) !== "github_pr" && (
                     <>
                       <div className="flex justify-between items-center text-xs font-mono text-zinc-500">
                         <span className="flex items-center gap-1.5"><Code className="w-3.5 h-3.5 text-violet-400" /> solution.{quiz.language === "python" ? "py" : "js"}</span>
@@ -1669,7 +1671,7 @@ function CourseQuizPageContent() {
                       </div>
                     </>
                   )}
-                  {quiz.assignment_type === "github_pr" ? (
+                  {(quiz?.assignment_type || initialAssignmentType) === "github_pr" ? (
                     <div className="flex flex-col gap-4 bg-zinc-950/90 border-x border-b border-white/10 p-6 h-[420px] overflow-y-auto">
                       <div className="bg-violet-500/10 border border-violet-500/20 p-4 rounded-xl text-sm">
                         <h4 className="font-bold text-violet-400 mb-2">GitHub Pull Request Assignment</h4>
