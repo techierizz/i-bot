@@ -69,6 +69,7 @@ interface Course {
   tags: string[];
   mentor_name: string;
   created_at: string;
+  modules_count?: number;
 }
 
 interface Enrollment {
@@ -1188,7 +1189,9 @@ export default function LearningCatalogPage() {
                         <span className={`px-2.5 py-0.5 rounded-full border text-[10px] font-bold ${getDifficultyColor(course.difficulty)}`}>
                           {course.difficulty}
                         </span>
-                        {/* Modules count removed */}
+                        <span className="text-zinc-600 text-xs flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5" /> {course.modules_count || 0} Modules
+                        </span>
                       </div>
 
                       <div className="space-y-2">
@@ -1278,7 +1281,9 @@ export default function LearningCatalogPage() {
                       <span className={`px-2.5 py-0.5 rounded-full border text-[10px] font-bold ${getDifficultyColor(course.difficulty)}`}>
                         {course.difficulty}
                       </span>
-                      {/* Modules count removed */}
+                      <span className="text-zinc-600 text-xs flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5" /> {course.modules_count || 0} Modules
+                      </span>
                     </div>
 
                     <div className="space-y-2">
