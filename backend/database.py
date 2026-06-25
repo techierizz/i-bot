@@ -1554,7 +1554,8 @@ def get_courses() -> List[Dict[str, Any]]:
     conn = get_db_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
     cursor.execute("""
-        SELECT c.id, c.title, c.description, c.difficulty, c.tags, c.created_at, c.chatbot_enabled, u.username as mentor_name
+        SELECT c.id, c.title, c.description, c.difficulty, c.tags, c.created_at, c.chatbot_enabled, u.username as mentor_name,
+               (SELECT COUNT(*) FROM course_lessons cl WHERE cl.course_id = c.id) as modules_count
         FROM courses c
         JOIN users u ON u.id = c.created_by
         WHERE c.status = 'active'
@@ -1577,7 +1578,8 @@ def get_courses() -> List[Dict[str, Any]]:
             "tags": tags,
             "mentor_name": r["mentor_name"],
             "chatbot_enabled": bool(r.get("chatbot_enabled", 1)),
-            "created_at": r["created_at"].isoformat() if isinstance(r["created_at"], datetime) else str(r["created_at"])
+            "created_at": r["created_at"].isoformat() if isinstance(r["created_at"], datetime) else str(r["created_at"]),
+            "modules_count": r.get("modules_count", 0)
         })
     return courses_list
 
