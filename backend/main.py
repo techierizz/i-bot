@@ -956,7 +956,7 @@ def fetch_courses(student_id: Optional[int] = None, user_id: Optional[int] = Non
                     return get_courses()
                 elif u and u["role"] == "mentor":
                     cursor.execute("""
-                        SELECT c.id, c.title, c.description, c.difficulty, c.tags, c.created_at, c.chatbot_enabled, u.username as mentor_name,
+                        SELECT c.id, c.title, c.description, c.difficulty, c.tags, c.created_at, c.chatbot_enabled, u.username as mentor_name, (SELECT COUNT(*) FROM course_lessons cl WHERE cl.course_id = c.id) as modules_count,
                                (SELECT COUNT(*) FROM course_lessons cl WHERE cl.course_id = c.id) as modules_count
                         FROM courses c
                         JOIN users u ON u.id = c.created_by
@@ -966,7 +966,7 @@ def fetch_courses(student_id: Optional[int] = None, user_id: Optional[int] = Non
                     """, (sid,))
                 else:
                     cursor.execute("""
-                        SELECT c.id, c.title, c.description, c.difficulty, c.tags, c.created_at, c.chatbot_enabled, u.username as mentor_name,
+                        SELECT c.id, c.title, c.description, c.difficulty, c.tags, c.created_at, c.chatbot_enabled, u.username as mentor_name, (SELECT COUNT(*) FROM course_lessons cl WHERE cl.course_id = c.id) as modules_count,
                                (SELECT COUNT(*) FROM course_lessons cl WHERE cl.course_id = c.id) as modules_count
                         FROM courses c
                         JOIN users u ON u.id = c.created_by
@@ -1203,7 +1203,7 @@ def api_mentor_courses(mentor_id: int):
         
         if is_admin:
             cursor.execute("""
-                SELECT c.id, c.title, c.description, c.difficulty, c.tags, c.created_at, c.chatbot_enabled, u.username as mentor_name
+                SELECT c.id, c.title, c.description, c.difficulty, c.tags, c.created_at, c.chatbot_enabled, u.username as mentor_name, (SELECT COUNT(*) FROM course_lessons cl WHERE cl.course_id = c.id) as modules_count
                 FROM courses c
                 JOIN users u ON u.id = c.created_by
                 WHERE c.status = 'active'
@@ -1211,7 +1211,7 @@ def api_mentor_courses(mentor_id: int):
             """)
         else:
             cursor.execute("""
-                SELECT c.id, c.title, c.description, c.difficulty, c.tags, c.created_at, c.chatbot_enabled, u.username as mentor_name
+                SELECT c.id, c.title, c.description, c.difficulty, c.tags, c.created_at, c.chatbot_enabled, u.username as mentor_name, (SELECT COUNT(*) FROM course_lessons cl WHERE cl.course_id = c.id) as modules_count
                 FROM courses c
                 JOIN mentor_courses mc ON mc.course_id = c.id
                 JOIN users u ON u.id = c.created_by
