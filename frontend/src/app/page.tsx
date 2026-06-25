@@ -265,7 +265,7 @@ export default function Home() {
             </motion.div>
 
             <WordReveal
-              text="Don't just practice."
+              text="Don't just practice"
               className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[1.1]"
             />
 
@@ -276,10 +276,10 @@ export default function Home() {
               className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[1.1] relative"
             >
               <span className="absolute inset-0 blur-2xl opacity-40 bg-gradient-to-r from-primary-400 via-purple-400 to-secondary-400 bg-clip-text text-transparent animate-pulse">
-                Master the Interview.
+                Master the Interview
               </span>
               <span className="relative text-transparent bg-clip-text bg-gradient-to-r from-primary-400 via-fuchsia-400 to-secondary-400 bg-[length:200%_auto] animate-[gradient_8s_linear_infinite]">
-                Master the Interview.
+                Master the Interview
               </span>
             </motion.div>
 
@@ -289,7 +289,7 @@ export default function Home() {
               transition={{ delay: 1.2, duration: 0.8 }}
               className="text-lg md:text-2xl text-zinc-400 font-medium max-w-2xl mx-auto leading-relaxed pb-8 pt-6"
             >
-              Step into a hyper-realistic, voice-driven AI interview. Get grilled like a real candidate, and get hired like a pro.
+              Step into a hyper-realistic, voice-driven AI interview. Get grilled like a real candidate, and get hired like a pro
             </motion.p>
 
 
@@ -321,10 +321,10 @@ export default function Home() {
               className="text-center max-w-3xl mx-auto mb-20"
             >
               <h2 className="text-5xl md:text-6xl font-black mb-6 tracking-tight">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-400 drop-shadow-sm">Interviews are terrifying.</span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-400 drop-shadow-sm">Interviews are terrifying </span>
               </h2>
               <p className="text-xl text-zinc-400 leading-relaxed">
-                You apply, you wait, you finally get the call—and then you freeze. Without realistic practice and honest feedback, you're going in blind.
+                You apply, you wait, you finally get the call—and then you freeze. Without realistic practice and honest feedback, you're going in blind
               </p>
             </motion.div>
 
@@ -371,7 +371,7 @@ export default function Home() {
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400">Your Personal Interviewer</span>
               </h2>
               <p className="text-xl text-zinc-400">
-                A seamless flow designed to extract your best performance.
+                A seamless flow designed to extract your best performance
               </p>
             </motion.div>
 
@@ -521,8 +521,8 @@ export default function Home() {
             </h2>
             <p className="text-xl md:text-2xl text-zinc-300 font-medium">
               {candidateUser?.role === "mentor" 
-                ? "Join our elite network of mentors guiding the next generation of engineers." 
-                : "Join thousands of engineers who mastered their interviews with HireMind AI."}
+                ? "Join our elite network of mentors guiding the next generation of engineers" 
+                : "Join thousands of engineers who mastered their interviews with HireMind AI"}
             </p>
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-6">
               <Link href={candidateUser?.role === "mentor" ? "/learning" : "/setup"} className="w-full sm:w-auto group">
