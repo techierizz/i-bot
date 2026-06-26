@@ -355,6 +355,8 @@ def generate_exam_for_lesson_ai(course_title: str, lesson_title: str, lesson_con
         Topics to cover: {topics}
         Assignment Type: {assignment_type}
         
+        CRITICAL: The generated coding problem MUST strictly focus on and test the concepts mentioned in 'Topics to cover' ({topics}).
+        
         Difficulty: '{difficulty}' — use Leetcode-level rigor matching this difficulty.
         Number of tasks: exactly {num_questions}.
         
@@ -372,6 +374,8 @@ def generate_exam_for_lesson_ai(course_title: str, lesson_title: str, lesson_con
         Lesson content summary: {lesson_content[:500]}
         Topics to cover: {topics}
         Assignment Type: {assignment_type}
+        
+        CRITICAL: The generated coding problem MUST strictly focus on and test the concepts mentioned in 'Topics to cover' ({topics}).
         
         Difficulty: '{difficulty}' — use Leetcode-level rigor matching this difficulty.
         Number of tasks: exactly 1.
@@ -394,14 +398,24 @@ def generate_exam_for_lesson_ai(course_title: str, lesson_title: str, lesson_con
             )
         )
         result = json.loads(response.text)
-        result = _sanitize_boilerplate(result)
+        if assignment_type in ["code_completion", "tdd", "coding_challenge"]:
+            if is_multi:
+                for q in result.get("questions", []):
+                    _sanitize_boilerplate(q)
+            else:
+                result = _sanitize_boilerplate(result)
         return result
     except Exception as e:
         print(f"[!] Gemini exam generation error: {str(e)}. Attempting Grok fallback.")
         try:
             grok_response = call_grok_fallback(prompt)
             result = json.loads(grok_response)
-            result = _sanitize_boilerplate(result)
+            if assignment_type in ["code_completion", "tdd", "coding_challenge"]:
+                if is_multi:
+                    for q in result.get("questions", []):
+                        _sanitize_boilerplate(q)
+                else:
+                    result = _sanitize_boilerplate(result)
             return result
         except Exception as grok_e:
             print(f"[!] Grok fallback error: {str(grok_e)}. Using fallback challenge.")
