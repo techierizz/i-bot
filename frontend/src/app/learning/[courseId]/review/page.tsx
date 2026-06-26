@@ -21,6 +21,7 @@ interface StudentSubmission {
   challenge_title: string;
   student_code: string;
   question_description?: string;
+  boilerplate_code?: string;
   language: string;
   ai_score: number;
   mentor_score: number | null;
@@ -410,6 +411,18 @@ export default function MentorReviewPage() {
                             {selectedSubmission.question_description}
                           </ReactMarkdown>
                         </div>
+                      </div>
+                    )}
+
+                    {/* Initial Boilerplate Code */}
+                    {selectedSubmission.boilerplate_code && (
+                      <div className="space-y-3">
+                        <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-1.5">
+                          <Code className="w-4 h-4 text-blue-400" /> Initial Boilerplate Code
+                        </h3>
+                        <pre className="font-mono text-xs text-zinc-400 bg-zinc-950/60 p-4 rounded-xl border border-white/5 max-h-[250px] overflow-auto leading-relaxed tab-size-4">
+                          <code>{selectedSubmission.boilerplate_code}</code>
+                        </pre>
                       </div>
                     )}
 
