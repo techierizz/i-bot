@@ -20,6 +20,7 @@ interface StudentSubmission {
   course_title: string;
   challenge_title: string;
   student_code: string;
+  question_description?: string;
   language: string;
   ai_score: number;
   mentor_score: number | null;
@@ -397,20 +398,35 @@ export default function MentorReviewPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                   
                   {/* Left Column: Code viewer */}
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-1.5">
-                        <Code className="w-4 h-4 text-violet-400" /> Submitted Answer Code
-                      </h3>
-                      {selectedSubmission.language?.toLowerCase() === "markdown" && (
-                        <button
-                          onClick={() => setViewAsMarkdown(!viewAsMarkdown)}
-                          className="px-3 py-1 bg-zinc-900 border border-white/5 rounded-lg text-[10px] text-zinc-400 font-bold hover:text-white transition-all uppercase tracking-widest cursor-pointer"
-                        >
-                          {viewAsMarkdown ? "View as Raw Code" : "Render Markdown"}
-                        </button>
-                      )}
-                    </div>
+                  <div className="space-y-6">
+                    {/* Initial Question/Instructions */}
+                    {selectedSubmission.question_description && (
+                      <div className="space-y-3">
+                        <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-1.5">
+                          <Code className="w-4 h-4 text-emerald-400" /> Challenge Prompt
+                        </h3>
+                        <div className="p-4 bg-zinc-950/60 rounded-xl border border-white/5 max-h-[250px] overflow-auto text-zinc-300 font-sans prose prose-invert prose-emerald prose-sm max-w-none">
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {selectedSubmission.question_description}
+                          </ReactMarkdown>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-1.5">
+                          <Code className="w-4 h-4 text-violet-400" /> Submitted Answer Code
+                        </h3>
+                        {selectedSubmission.language?.toLowerCase() === "markdown" && (
+                          <button
+                            onClick={() => setViewAsMarkdown(!viewAsMarkdown)}
+                            className="px-3 py-1 bg-zinc-900 border border-white/5 rounded-lg text-[10px] text-zinc-400 font-bold hover:text-white transition-all uppercase tracking-widest cursor-pointer"
+                          >
+                            {viewAsMarkdown ? "View as Raw Code" : "Render Markdown"}
+                          </button>
+                        )}
+                      </div>
                     {viewAsMarkdown ? (
                       <div className="p-4 bg-zinc-950 rounded-xl border border-white/5 max-h-[400px] overflow-auto text-zinc-300 font-sans prose prose-invert prose-violet prose-sm max-w-none">
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
@@ -422,6 +438,7 @@ export default function MentorReviewPage() {
                         <code>{selectedSubmission.student_code}</code>
                       </pre>
                     )}
+                    </div>
                   </div>
 
                   {/* Right Column: AI Metrics & Grade Override form */}
