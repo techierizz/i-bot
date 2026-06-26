@@ -2664,7 +2664,11 @@ def get_submissions_for_exam(exam_id: int, exam_type: str) -> List[Dict[str, Any
             """
             SELECT qs.id, qs.user_id, qs.username, qs.course_id, qs.course_title, qs.challenge_title, 
                    qs.student_code, qs.language, qs.ai_score, qs.mentor_score, qs.warnings, qs.is_passed, 
-                   qs.feedback, qs.mentor_feedback, qs.lesson_id, qs.review_status, qs.exam_id, qs.exam_type, qs.created_at, qs.question_description
+                   qs.feedback, qs.mentor_feedback, qs.lesson_id, qs.review_status, qs.exam_id, qs.exam_type, qs.created_at,
+                   COALESCE(qs.question_description, 
+                            (SELECT instructions FROM course_assignments ca WHERE ca.id = qs.exam_id AND qs.exam_type = 'lesson'),
+                            (SELECT description FROM course_final_exams cfe WHERE cfe.id = qs.exam_id AND qs.exam_type = 'final'),
+                            '') as question_description
             FROM quiz_submissions qs
             WHERE qs.exam_id = %s AND qs.exam_type = %s
             ORDER BY qs.created_at DESC
@@ -3378,7 +3382,7 @@ def get_mentor_submissions(mentor_id: int) -> List[Dict[str, Any]]:
                        qs.feedback, qs.mentor_feedback, qs.created_at, qs.lesson_id, qs.is_final, qs.exam_id, qs.exam_type, qs.review_status,
                        COALESCE(qs.question_description, 
                                 (SELECT instructions FROM course_assignments ca WHERE ca.id = qs.exam_id AND qs.exam_type = 'lesson'),
-                                (SELECT instructions FROM course_final_exams cfe WHERE cfe.id = qs.exam_id AND qs.exam_type = 'final'),
+                                (SELECT description FROM course_final_exams cfe WHERE cfe.id = qs.exam_id AND qs.exam_type = 'final'),
                                 '') as question_description
                 FROM quiz_submissions qs
                 ORDER BY qs.created_at DESC
@@ -3390,7 +3394,7 @@ def get_mentor_submissions(mentor_id: int) -> List[Dict[str, Any]]:
                        qs.feedback, qs.mentor_feedback, qs.created_at, qs.lesson_id, qs.is_final, qs.exam_id, qs.exam_type, qs.review_status,
                        COALESCE(qs.question_description, 
                                 (SELECT instructions FROM course_assignments ca WHERE ca.id = qs.exam_id AND qs.exam_type = 'lesson'),
-                                (SELECT instructions FROM course_final_exams cfe WHERE cfe.id = qs.exam_id AND qs.exam_type = 'final'),
+                                (SELECT description FROM course_final_exams cfe WHERE cfe.id = qs.exam_id AND qs.exam_type = 'final'),
                                 '') as question_description
                 FROM quiz_submissions qs
                 JOIN mentor_courses mc ON mc.course_id = qs.course_id
@@ -3422,7 +3426,8 @@ def get_mentor_submissions(mentor_id: int) -> List[Dict[str, Any]]:
                 "is_final": bool(r.get("is_final", 0)),
                 "exam_id": r.get("exam_id"),
                 "exam_type": r.get("exam_type", "lesson"),
-                "review_status": r.get("review_status", "pending")
+                "review_status": r.get("review_status", "pending"),
+                "question_description": r.get("question_description", "")
             })
         return subs
     except Exception as e:
