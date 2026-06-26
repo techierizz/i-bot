@@ -1887,7 +1887,8 @@ def add_or_generate_exam(req: ExamCreateRequest):
                 lesson_content=lesson["content"],
                 topics=req.topics or "",
                 difficulty=req.difficulty or course["difficulty"],
-                num_questions=num_q
+                num_questions=num_q,
+                assignment_type=req.assignment_type or "code_completion"
             )
             
             # Normalise: multi-question exam has a "questions" list
@@ -1914,7 +1915,8 @@ def add_or_generate_exam(req: ExamCreateRequest):
                 boilerplate_code=boilerplate_to_store,
                 test_cases=test_cases_to_store,
                 optimal_solution_explanation=optimal_to_store,
-                created_by=req.user_id
+                created_by=req.user_id,
+                assignment_type=req.assignment_type or "code_completion"
             )
         else:
             res = create_course_exam(
