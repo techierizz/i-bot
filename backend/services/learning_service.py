@@ -296,7 +296,7 @@ def generate_ai_coding_challenge(course_title: str, difficulty: str) -> Dict[str
             print(f"[!] Grok fallback error: {str(grok_e)}. Using local fallback challenge.")
             return get_fallback_coding_challenge(course_title, difficulty)
 
-def generate_exam_for_lesson_ai(course_title: str, lesson_title: str, lesson_content: str, topics: str, difficulty: str, num_questions: int = 1) -> Dict[str, Any]:
+def generate_exam_for_lesson_ai(course_title: str, lesson_title: str, lesson_content: str, topics: str, difficulty: str, num_questions: int = 1, assignment_type: str = "code_completion") -> Dict[str, Any]:
     """
     Generates a coding challenge tailored for a specific syllabus index/lesson.
     """
@@ -305,24 +305,63 @@ def generate_exam_for_lesson_ai(course_title: str, lesson_title: str, lesson_con
         
     is_multi = num_questions > 1
     
-    if is_multi:
-        prompt = f"""
-        Generate a coding exam for the course '{course_title}', lesson '{lesson_title}'.
-        Lesson content summary: {lesson_content[:500]}
-        Topics to cover: {topics}
-        
-        Difficulty: '{difficulty}' — use Leetcode-level rigor matching this difficulty.
-        Number of tasks: exactly {num_questions}.
-        
-        You MUST generate exactly {num_questions} separate coding questions as a list.
-        
-        CRITICAL RULES FOR boilerplate_code of each question:
+    # Dynamic Rules based on assignment_type
+    assignment_rules = ""
+    if assignment_type == "bug_hunt":
+        assignment_rules = """
+        - The boilerplate_code MUST contain a fully written but BUGGY and INCORRECT implementation of the solution.
+        - It should contain subtle logic errors. 
+        - The student's job is to find and fix the bugs so the tests pass. 
+        - DO NOT provide empty function stubs.
+        """
+    elif assignment_type == "refactoring":
+        assignment_rules = """
+        - The boilerplate_code MUST contain a fully working but extremely messy, inefficient, and poorly-written implementation of the solution (e.g., deeply nested loops, terrible variable names, bad practices).
+        - The student's job is to refactor it cleanly. 
+        - DO NOT provide empty function stubs.
+        """
+    elif assignment_type == "system_design":
+        assignment_rules = """
+        - This is a system design architecture task. 
+        - The boilerplate_code MUST be an empty string or empty array.
+        - The test_cases MUST be an empty array.
+        - The description should contain a rich, comprehensive system design prompt asking the student to design an architecture.
+        """
+    elif assignment_type == "github_pr":
+        assignment_rules = """
+        - This is a GitHub PR review/fix task. 
+        - The boilerplate_code MUST be an empty string.
+        - The description should explain a hypothetical issue in an open-source repository that the student needs to fork and fix.
+        """
+    elif assignment_type == "api_integration":
+        assignment_rules = """
+        - The boilerplate_code should contain basic setup (like imports and an empty async function), but leave the actual API fetching and data parsing logic entirely blank for the student to write.
+        - Test cases should mock API behavior.
+        """
+    else: # code_completion, tdd, coding_challenge
+        assignment_rules = """
         - The boilerplate_code MUST contain ONLY empty function signatures with placeholder bodies.
         - For Python: use 'pass' as the body. Example: 'def task_one(nums: list) -> int:\n    # Write your solution here\n    pass'
         - For JavaScript: use 'return null;' as the body.
         - ABSOLUTELY DO NOT include any solution logic, algorithms, loops, conditionals, or working code.
         - ABSOLUTELY DO NOT include comments that hint at the solution approach.
         - The student must write the entire solution themselves.
+        """
+    
+    if is_multi:
+        prompt = f"""
+        Generate a coding exam for the course '{course_title}', lesson '{lesson_title}'.
+        Lesson content summary: {lesson_content[:500]}
+        Topics to cover: {topics}
+        Assignment Type: {assignment_type}
+        
+        Difficulty: '{difficulty}' — use Leetcode-level rigor matching this difficulty.
+        Number of tasks: exactly {num_questions}.
+        
+        You MUST generate exactly {num_questions} separate coding questions as a list.
+        
+        CRITICAL RULES FOR boilerplate_code and logic of each question:
+        {assignment_rules}
         
         Language: Either 'python' or 'javascript' (suitable for the course topic).
         """
@@ -332,17 +371,13 @@ def generate_exam_for_lesson_ai(course_title: str, lesson_title: str, lesson_con
         Generate a coding exam for the course '{course_title}', lesson '{lesson_title}'.
         Lesson content summary: {lesson_content[:500]}
         Topics to cover: {topics}
+        Assignment Type: {assignment_type}
         
         Difficulty: '{difficulty}' — use Leetcode-level rigor matching this difficulty.
         Number of tasks: exactly 1.
         
-        CRITICAL RULES FOR boilerplate_code:
-        - The boilerplate_code MUST contain ONLY empty function signatures with placeholder bodies.
-        - For Python: use 'pass' as the body. Example: 'def task_one(nums: list) -> int:\n    # Write your solution here\n    pass'
-        - For JavaScript: use 'return null;' as the body.
-        - ABSOLUTELY DO NOT include any solution logic, algorithms, loops, conditionals, or working code.
-        - ABSOLUTELY DO NOT include comments that hint at the solution approach.
-        - The student must write the entire solution themselves.
+        CRITICAL RULES FOR boilerplate_code and logic:
+        {assignment_rules}
         
         Language: Either 'python' or 'javascript' (suitable for the course topic).
         """
