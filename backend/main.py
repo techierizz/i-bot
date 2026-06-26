@@ -1432,7 +1432,8 @@ def submit_quiz_route(req: QuizSubmitRequest):
             lesson_id=req.lesson_id,
             is_final=req.is_final or False,
             exam_id=exam_id,
-            exam_type=exam_type
+            exam_type=exam_type,
+            question_description=req.description
         )
 
         if is_exam:
@@ -1446,11 +1447,16 @@ def submit_quiz_route(req: QuizSubmitRequest):
         if penalty > 0:
             msg = f"Coding challenge submitted successfully with draft AI score {adjusted_score}% (including a {penalty}% penalty for {warnings_count} warning violations)."
 
-        if is_exam:
-            if req.is_final:
-                res = submit_enrollment(user_id=req.user_id, course_id=req.course_id)
-                if res["status"] == "error":
-                    raise HTTPException(status_code=500, detail=res["message"])
+        msg = f"Coding challenge submitted successfully with draft AI score {adjusted_score}%."
+        if penalty > 0:
+            msg = f"Coding challenge submitted successfully with draft AI score {adjusted_score}% (including a {penalty}% penalty for {warnings_count} warning violations)."
+
+        if is_exam and req.is_final:
+            res = submit_enrollment(user_id=req.user_id, course_id=req.course_id)
+            if res["status"] == "error":
+                raise HTTPException(status_code=500, detail=res["message"])
+                
+        if is_exam and req.submission_type in ["github_pr", "system_design"]:
             return {
                 "status": "pending_review",
                 "score": None,
@@ -1466,21 +1472,31 @@ def submit_quiz_route(req: QuizSubmitRequest):
         else:
             if adjusted_score >= 80:
                 gamification_result = add_xp_to_user(req.user_id, xp_earned, [])
+                
+                pass_msg = f"{msg} You passed the lesson coding challenge and earned {xp_earned} XP!"
+                if is_exam:
+                    pass_msg = f"{msg} You passed the AI evaluation with {adjusted_score}%. Note: Your mentor will review and finalize this grade."
+                    
                 return {
                     "status": "success",
                     "score": adjusted_score,
                     "warnings": warnings_count,
-                    "message": f"{msg} You passed the lesson coding challenge and earned {xp_earned} XP!",
+                    "message": pass_msg,
                     "evaluation": eval_result,
                     "gamification": gamification_result
                 }
             else:
                 gamification_result = add_xp_to_user(req.user_id, -100, [])
+                
+                fail_msg = f"{msg} You did not pass the challenge. Deducted 100 XP. Try again!"
+                if is_exam:
+                    fail_msg = f"{msg} You scored {adjusted_score}% (requires 80%). Note: Your mentor will review and finalize this grade."
+                    
                 return {
                     "status": "failed",
                     "score": adjusted_score,
                     "warnings": warnings_count,
-                    "message": f"{msg} You did not pass the challenge. Deducted 100 XP. Try again!",
+                    "message": fail_msg,
                     "evaluation": eval_result,
                     "gamification": gamification_result
                 }
