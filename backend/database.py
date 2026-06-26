@@ -349,6 +349,12 @@ def init_db():
     except Exception:
         conn.rollback()
 
+    try:
+        cursor.execute("ALTER TABLE quiz_submissions ADD COLUMN question_description TEXT")
+        conn.commit()
+    except Exception:
+        conn.rollback()
+
     # Create proctoring_violations table
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS proctoring_violations (
@@ -1833,7 +1839,7 @@ def create_lesson(course_id: int, title: str, content: str, video_url: str, prac
     finally:
         conn.close()
 
-def create_quiz_submission(user_id: int, username: str, course_id: int, course_title: str, challenge_title: str, student_code: str, language: str, ai_score: int, warnings: int, is_passed: bool, feedback: str, lesson_id: Optional[int] = None, is_final: bool = False, exam_id: Optional[int] = None, exam_type: Optional[str] = None) -> Dict[str, Any]:
+def create_quiz_submission(user_id: int, username: str, course_id: int, course_title: str, challenge_title: str, student_code: str, language: str, ai_score: int, warnings: int, is_passed: bool, feedback: str, lesson_id: Optional[int] = None, is_final: bool = False, exam_id: Optional[int] = None, exam_type: Optional[str] = None, question_description: str = "") -> Dict[str, Any]:
     conn = get_db_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
     try:
@@ -1860,10 +1866,10 @@ def create_quiz_submission(user_id: int, username: str, course_id: int, course_t
         cursor.execute(
             """
             INSERT INTO quiz_submissions (
-                user_id, username, course_id, course_title, challenge_title, student_code, language, ai_score, warnings, is_passed, feedback, lesson_id, is_final, exam_id, exam_type, review_status
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'pending') RETURNING id
+                user_id, username, course_id, course_title, challenge_title, student_code, language, ai_score, warnings, is_passed, feedback, lesson_id, is_final, exam_id, exam_type, review_status, question_description
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'pending', %s) RETURNING id
             """,
-            (user_id, username, course_id, course_title, challenge_title, student_code, language, ai_score, warnings, passed_val, feedback, lesson_id, 1 if is_final else 0, exam_id, exam_type)
+            (user_id, username, course_id, course_title, challenge_title, student_code, language, ai_score, warnings, passed_val, feedback, lesson_id, 1 if is_final else 0, exam_id, exam_type, question_description)
         )
         sub_id = cursor.fetchone()["id"]
         conn.commit()
@@ -2658,7 +2664,7 @@ def get_submissions_for_exam(exam_id: int, exam_type: str) -> List[Dict[str, Any
             """
             SELECT qs.id, qs.user_id, qs.username, qs.course_id, qs.course_title, qs.challenge_title, 
                    qs.student_code, qs.language, qs.ai_score, qs.mentor_score, qs.warnings, qs.is_passed, 
-                   qs.feedback, qs.mentor_feedback, qs.lesson_id, qs.review_status, qs.exam_id, qs.exam_type, qs.created_at
+                   qs.feedback, qs.mentor_feedback, qs.lesson_id, qs.review_status, qs.exam_id, qs.exam_type, qs.created_at, qs.question_description
             FROM quiz_submissions qs
             WHERE qs.exam_id = %s AND qs.exam_type = %s
             ORDER BY qs.created_at DESC
