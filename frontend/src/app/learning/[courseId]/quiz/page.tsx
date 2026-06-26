@@ -997,11 +997,42 @@ function CourseQuizPageContent() {
     setIsExecuting(true);
     setExecutionOutput(null);
     try {
+      let codeToRun = studentCode;
+      
+      // Auto-inject test case for testing
+      const isMulti = quiz?.questions && quiz.questions.length > 0;
+      const currentTestCases = isMulti 
+        ? (quiz?.questions?.[activeQuestionIndex]?.test_cases || [])
+        : (quiz?.test_cases || []);
+        
+      if (currentTestCases && currentTestCases.length > 0) {
+        const firstTestCase = currentTestCases[0];
+        let funcName = "";
+        
+        if (selectedLanguage === "python") {
+            const match = studentCode.match(/def\s+([a-zA-Z_]\w*)\s*\(/);
+            if (match) funcName = match[1];
+        } else if (selectedLanguage === "javascript") {
+            let match = studentCode.match(/function\s+([a-zA-Z_]\w*)\s*\(/);
+            if (!match) match = studentCode.match(/(?:const|let|var)\s+([a-zA-Z_]\w*)\s*=\s*(?:function|\(|async)/);
+            if (match) funcName = match[1];
+        }
+        
+        if (funcName) {
+            const args = firstTestCase.input;
+            if (selectedLanguage === "python") {
+                codeToRun += `\n\n# --- Auto-injected test case ---\nprint("\\n--- Test Case ---")\nprint("Input:", ${JSON.stringify(args)})\nprint("Output:", ${funcName}(${args}))\n`;
+            } else if (selectedLanguage === "javascript") {
+                codeToRun += `\n\n// --- Auto-injected test case ---\nconsole.log("\\n--- Test Case ---");\nconsole.log("Input:", ${JSON.stringify(args)});\nconsole.log("Output:", ${funcName}(${args}));\n`;
+            }
+        }
+      }
+
       const res = await fetch(`${API_BASE_URL}/api/learning/execute`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          code: studentCode,
+          code: codeToRun,
           language: selectedLanguage
         })
       });
