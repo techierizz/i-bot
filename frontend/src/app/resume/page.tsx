@@ -133,9 +133,6 @@ export default function ResumeHub() {
               Manage your master resume and view ATS Optimization insights.
             </p>
           </div>
-          <Link href="/interview" className="px-6 py-3 bg-white text-black font-semibold rounded-xl shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] transition-all flex items-center gap-2">
-            Start Interview <ChevronRight className="w-4 h-4" />
-          </Link>
         </div>
 
         {/* Two Column Layout */}
